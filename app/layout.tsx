@@ -1,15 +1,12 @@
 'use client'
 
-import { Suspense } from 'react'
+import * as React from 'react'
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { inter, jetbrainsMono } from './fonts-local'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import './globals.css'
 import NextTopLoader from 'nextjs-toploader'
-
-// Import des configurations de polices
-import { inter, jetbrainsMono } from './fonts'
 
 // Import dynamique des composants côté client
 const Header = dynamic(() => import('@/components/layout/Header'), { 
@@ -34,7 +31,7 @@ export const viewport: Viewport = {
   colorScheme: 'light dark',
 };
 
-function LayoutContent({ children }: { children: React.ReactNode }) {
+function LayoutContent({ children }: { children: any }) {
   const pathname = usePathname()
   const isDashboard = pathname?.startsWith('/dashboard')
 
@@ -64,13 +61,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           shadow="0 0 8px #09d600, 0 0 4px #09d600"
           zIndex={1600}
         />
-        <Suspense fallback={null}>
-          {!isDashboard && <Header />}
-          <main className="flex-1">
-            {children}
-          </main>
-          {!isDashboard && <Footer />}
-        </Suspense>
+        {!isDashboard && <Header />}
+        <main className="flex-1">
+          {children}
+        </main>
+        {!isDashboard && <Footer />}
       </body>
     </html>
   )
@@ -79,7 +74,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: any;
 }) {
   return <LayoutContent>{children}</LayoutContent>;
 }

@@ -244,16 +244,83 @@ export default ${workbenchConfig.componentName};
     <TooltipProvider>
       <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
         
-        {/* HEADER */}
+        {/* HEADER PROFESSIONNEL */}
         <header className="flex-shrink-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="px-6 py-3 flex items-center justify-between max-w-screen-2xl mx-auto">
             <div className="flex items-center gap-6 flex-wrap">
+              {/* Plan / Moteur / Statut */}
               <div className={`flex items-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-${planColors[activePlan as PlanType].bg}-50 to-${planColors[activePlan as PlanType].bg}-100 dark:from-${planColors[activePlan as PlanType].bg}-950/40 dark:to-${planColors[activePlan as PlanType].bg}-900/30 border border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
                 <Cpu className={`w-6 h-6 text-${planColors[activePlan as PlanType].text}`} />
                 <div>
                   <p className="font-bold text-base leading-tight">{config.name}</p>
                   <p className={`text-xs ${config.statusColor} font-medium`}>{config.engine} · {config.status}</p>
                 </div>
+              </div>
+
+              {/* Framework */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
+                  {getFrameworkIcon(workbenchConfig.framework)}
+                  <span className="font-medium text-sm">{workbenchConfig.framework.charAt(0).toUpperCase() + workbenchConfig.framework.slice(1)}</span>
+                </div>
+                {activePlan === "starter" && (
+                  <span className="text-xs text-amber-600 dark:text-amber-400 italic whitespace-nowrap">
+                    Next.js et Vue disponibles en Pro ✨
+                  </span>
+                )}
+              </div>
+
+              {/* Style Engine */}
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
+                <Palette className="w-4 h-4 text-cyan-500" />
+                <span className="font-medium text-sm">
+                  {workbenchConfig.styleEngine === "tailwind" ? "Tailwind" :
+                   workbenchConfig.styleEngine === "css-modules" ? "CSS Modules" : "Styled Components"}
+                </span>
+              </div>
+            </div>
+
+            {/* Éléments à droite */}
+            <div className="flex items-center gap-4">
+              {/* Statistiques de génération */}
+              {generatedCode && (
+                <div className="flex items-center gap-3 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <div className="text-sm">
+                    <span className="font-medium text-green-700 dark:text-green-300">
+                      {generatedCode.split('\n').length} lignes
+                    </span>
+                    <span className="text-green-600 dark:text-green-400 ml-1">
+                      · {(generatedCode.length / 1024).toFixed(1)} KB
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions rapides */}
+              <div className="flex items-center gap-2">
+                {generatedCode && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyCode}
+                    className="hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copier
+                  </Button>
+                )}
+                
+                {activePlan !== "starter" && (
+                  <Button
+                    size="sm"
+                    onClick={() => toast("Fonctionnalité à venir !")}
+                    className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 hover:border-slate-300 dark:bg-white dark:hover:bg-slate-50 dark:text-slate-900 dark:border-slate-300 dark:hover:border-slate-400"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Exporter
+                  </Button>
+                )}
               </div>
             </div>
           </div>

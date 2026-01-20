@@ -1,33 +1,13 @@
 "use client";
 
 import * as React from 'react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, Toaster } from "sonner";
 import {
-  Sparkles,
-  Upload,
-  Download,
-  Copy,
-  Settings,
-  Cpu,
-  Activity,
-  Clock,
-  ChevronRight,
-  CheckCircle,
-  AlertCircle,
-  X,
-  Loader2,
-  GitBranch,
-  Lock,
-  Crown,
-  Zap,
-  ShieldCheck,
-  Code2,
-  Atom,
-  Globe,
-  Triangle,
-  Palette,
+  Sparkles, Upload, Download, Copy, Cpu, Activity, ChevronRight, 
+  CheckCircle, X, Loader2, GitBranch, Lock, Crown, Zap, Code2, 
+  Atom, Globe, Triangle, Palette, Eye, FileJson,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,10 +17,10 @@ import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePlan } from '../layout';
 import dynamic from 'next/dynamic';
 
-// Lazy load Monaco
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
   loading: () => (
@@ -53,7 +33,6 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ),
 });
 
-// Types
 type PlanType = "starter" | "pro" | "business";
 type FrameworkType = "react" | "nextjs" | "vue" | "html" | "tailwind";
 type StyleEngine = "tailwind" | "css-modules" | "styled-components";
@@ -78,59 +57,33 @@ interface GenerationLog {
   type: "info" | "success" | "warning" | "error";
 }
 
-// Configurations par plan
 const planConfigs = {
   starter: {
-    name: "Starter",
+    name: "Codeo Starter",
     engine: "V-AST Standard",
-    status: "Traitement classique",
+    status: "Traitement intelligent",
     statusColor: "text-green-600",
     frameworks: ["react", "html"] as FrameworkType[],
     styleEngines: ["tailwind"] as StyleEngine[],
-    logs: [
-      "Analyse des formes géométriques...",
-      "Détection des conteneurs principaux...",
-      "Extraction de la palette de couleurs...",
-      "Génération HTML sémantique...",
-      "Application des styles Tailwind...",
-      "✅ Finalisation du composant...",
-    ],
+    logs: ["🧠 Analyse...", "🎨 Extraction...", "⚡ Génération...", "✅ Finalisation..."],
   },
   pro: {
-    name: "Pro",
+    name: "Codeo Pro",
     engine: "V-AST Turbo v4.2",
-    status: "Priorité GPU Active",
+    status: "Accélération GPU Active",
     statusColor: "text-amber-600",
     frameworks: ["react", "nextjs", "vue", "html"] as FrameworkType[],
     styleEngines: ["tailwind", "css-modules", "styled-components"] as StyleEngine[],
-    logs: [
-      "🧠 Analyse deep learning des patterns UI...",
-      "🎨 Extraction des tokens design...",
-      "⚡ Optimisation Tailwind v4...",
-      "🔧 Injection des hooks React...",
-      "🎭 Ajout des micro-interactions...",
-      "📊 Optimisation des performances...",
-      "✨ Finalisation avec animations...",
-    ],
+    logs: ["🚀 Analyse deep learning...", "🎨 Tokens design...", "✨ Finalisation premium..."],
   },
   business: {
-    name: "Business",
+    name: "Codeo Enterprise",
     engine: "V-AST Enterprise Custom",
     status: "Instance Dédiée - Latence Zéro",
     statusColor: "text-purple-600",
     frameworks: ["react", "nextjs", "vue", "html"] as FrameworkType[],
     styleEngines: ["tailwind", "css-modules", "styled-components"] as StyleEngine[],
-    logs: [
-      "Analyse des patterns entreprise...",
-      "Vérification conformité design system...",
-      "Calcul structure sémantique accessible...",
-      "Scan de sécurité intégré...",
-      "Synchronisation tokens design...",
-      "Génération optimisée GPU...",
-      "Injection hooks React avancés...",
-      "Validation SEO et performance...",
-      "Finalisation composant enterprise...",
-    ],
+    logs: ["🔍 Analyse patterns...", "🛡️ Sécurité...", "🏢 Finalisation enterprise..."],
   },
 };
 
@@ -160,12 +113,10 @@ export default function WorkbenchPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const [generationStartTime, setGenerationStartTime] = useState<number | null>(null);
-  const [generationTime, setGenerationTime] = useState<string>("0.0");
-  const [currentLog, setCurrentLog] = useState<string>("");
   const [logs, setLogs] = useState<GenerationLog[]>([]);
   const [generatedCode, setGeneratedCode] = useState<string>("");
   const [isConfigPanelCollapsed, setIsConfigPanelCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState("code");
 
   const [workbenchConfig, setWorkbenchConfig] = useState<WorkbenchConfig>({
     framework: config.frameworks[0],
@@ -174,7 +125,7 @@ export default function WorkbenchPage() {
     enableAccessibility: false,
     enableSecurity: false,
     enableDesignSystem: false,
-    darkMode: false,
+    darkMode: true,
     mobile: false,
     useTypeScript: true,
     componentName: "MyComponent",
@@ -182,7 +133,6 @@ export default function WorkbenchPage() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Reset framework/style quand le plan change
   useEffect(() => {
     setWorkbenchConfig(prev => ({
       ...prev,
@@ -203,9 +153,8 @@ export default function WorkbenchPage() {
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
@@ -214,29 +163,28 @@ export default function WorkbenchPage() {
         toast.success("Image déposée avec succès !");
       };
       reader.readAsDataURL(file);
-    } else {
-      toast.error("Veuillez déposer une image valide");
     }
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = () => setIsDragging(false);
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
 
   const generateCode = async () => {
     if (!uploadedImage) {
-      toast.error("Veuillez uploader une image d'abord");
+      toast.error("Veuillez d'abord uploader une image !");
       return;
     }
 
     setIsGenerating(true);
-    setGenerationStartTime(Date.now());
-    setLogs([]);
-    setGeneratedCode("");
     setGenerationProgress(0);
+    setLogs([]);
 
     for (let i = 0; i < config.logs.length; i++) {
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -247,412 +195,368 @@ export default function WorkbenchPage() {
         type: i === config.logs.length - 1 ? "success" : "info",
       };
       setLogs(prev => [...prev, log]);
-      setCurrentLog(config.logs[i]);
       setGenerationProgress(((i + 1) / config.logs.length) * 100);
     }
 
-    await new Promise(resolve => setTimeout(resolve, 600));
-    const timeTaken = ((Date.now() - (generationStartTime || Date.now())) / 1000).toFixed(1);
-    setGenerationTime(timeTaken);
-
-    // Code mock avec les options activées
     const mockCode = `// Composant généré avec ${config.engine}
-import React from 'react';
-${workbenchConfig.enableAnimations ? "import { motion } from 'framer-motion';\n" : ""}
+import React${workbenchConfig.useTypeScript ? ", { useState }" : ""} from 'react';
 
-${workbenchConfig.useTypeScript ? `const ${workbenchConfig.componentName}: React.FC = () => {` : `function ${workbenchConfig.componentName}() {`}
-
+const ${workbenchConfig.componentName} = () => {
   return (
-    <div className="p-8 bg-white dark:bg-slate-900 rounded-xl shadow-lg">
-      <h2 className="text-3xl font-bold mb-6">Composant généré ✨</h2>
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>Framework : ${workbenchConfig.framework}</div>
-        <div>Style : ${workbenchConfig.styleEngine}</div>
-        ${workbenchConfig.enableAnimations ? "<div>Animations : Oui ✨</div>" : ""}
-        ${workbenchConfig.enableAccessibility ? "<div>Accessibilité : Oui ♿</div>" : ""}
-        ${workbenchConfig.enableSecurity ? "<div>Sécurité entreprise : Oui 🔒</div>" : ""}
-        ${workbenchConfig.enableDesignSystem ? "<div>Design System synchronisé : Oui 🎨</div>" : ""}
-      </div>
+    <div className="p-6 rounded-xl ${workbenchConfig.darkMode ? "bg-slate-800 text-white" : "bg-white text-slate-900"}">
+      <h2 className="text-xl font-bold mb-4">${workbenchConfig.componentName}</h2>
+      <p>Composant généré par ${config.engine} avec ${workbenchConfig.framework}</p>
     </div>
   );
 };
 
-${workbenchConfig.useTypeScript ? "export default " + workbenchConfig.componentName + ";" : "export default " + workbenchConfig.componentName + ";"}
+export default ${workbenchConfig.componentName};
 `;
 
     setGeneratedCode(mockCode);
-    setGenerationProgress(100);
     setIsGenerating(false);
-    setCurrentLog("");
-    toast.success("Composant généré avec succès !");
+    toast.success("Code généré avec succès !");
   };
 
   const copyCode = () => {
-    navigator.clipboard.writeText(generatedCode);
-    toast.success("Code copié !");
+    if (generatedCode) {
+      navigator.clipboard.writeText(generatedCode);
+      toast.success("Code copié !");
+    }
   };
 
   const downloadCode = () => {
+    if (!generatedCode) return;
     const blob = new Blob([generatedCode], { type: "text/typescript" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${workbenchConfig.componentName || "component"}.${workbenchConfig.useTypeScript ? "tsx" : "jsx"}`;
+    a.download = `${workbenchConfig.componentName}.${workbenchConfig.useTypeScript ? "tsx" : "jsx"}`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Fichier téléchargé !");
   };
 
-  const linesOfCode = generatedCode ? generatedCode.split("\n").length : 0;
-  const bundleSize = generatedCode ? (generatedCode.length / 1024).toFixed(1) : "0";
-
   return (
     <TooltipProvider>
-      <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
-        {/* Zone principale */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Upload */}
-          <div className="p-8">
-            <h2 className="text-2xl font-bold mb-6">Uploader votre design</h2>
-
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all ${isDragging ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-slate-300"}`}
-            >
-              {uploadedImage ? (
-                <div className="relative max-w-2xl mx-auto">
-                  <img src={uploadedImage} alt="Design" className="max-h-96 mx-auto rounded-lg shadow-lg" />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-4 right-4"
-                    onClick={() => setUploadedImage(null)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ) : (
+      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
+        
+        {/* HEADER */}
+        <header className="flex-shrink-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="px-6 py-3 flex items-center justify-between max-w-screen-2xl mx-auto">
+            <div className="flex items-center gap-6 flex-wrap">
+              <div className={`flex items-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-${planColors[activePlan as PlanType].bg}-50 to-${planColors[activePlan as PlanType].bg}-100 dark:from-${planColors[activePlan as PlanType].bg}-950/40 dark:to-${planColors[activePlan as PlanType].bg}-900/30 border border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
+                <Cpu className={`w-6 h-6 text-${planColors[activePlan as PlanType].text}`} />
                 <div>
-                  <Upload className="w-16 h-16 mx-auto mb-6 text-slate-400" />
-                  <p className="text-lg font-medium mb-2">Glissez-déposez votre image ici</p>
-                  <p className="text-sm text-slate-500 mb-6">ou cliquez pour parcourir</p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <Button onClick={() => fileInputRef.current?.click()} size="lg">
-                    Parcourir les fichiers
-                  </Button>
+                  <p className="font-bold text-base leading-tight">{config.name}</p>
+                  <p className={`text-xs ${config.statusColor} font-medium`}>{config.engine} · {config.status}</p>
                 </div>
-              )}
+              </div>
             </div>
+          </div>
+        </header>
 
-            {uploadedImage && (
-              <div className="flex justify-center gap-4 mt-8">
-                <Button size="lg" onClick={generateCode} disabled={isGenerating}>
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Génération...
-                    </>
+        {/* MAIN CONTENT */}
+        <div className="flex flex-1 overflow-hidden">
+          
+          {/* GAUCHE - Upload - 35% */}
+          <div className="hidden md:flex md:w-[35%] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+            <div className="flex flex-col h-full overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6">
+                <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Upload Design</h2>
+
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 min-h-[400px] flex items-center justify-center ${
+                    isDragging ? "border-green-500 bg-green-50 dark:bg-green-900/20 scale-[1.01] shadow-lg" : "border-slate-300 dark:border-slate-700"
+                  }`}
+                >
+                  {uploadedImage ? (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <img 
+                        src={uploadedImage} 
+                        alt="Design uploadé" 
+                        className="max-h-full max-w-full object-contain rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105" 
+                      />
+                      <Button 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-4 right-4 z-10 shadow-md" 
+                        onClick={() => setUploadedImage(null)}
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </div>
                   ) : (
-                    <>
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Générer le code
-                    </>
+                    <div className="py-8">
+                      <Upload className="w-16 h-16 mx-auto mb-6 text-slate-400" />
+                      <p className="text-lg font-medium mb-3">Glissez-déposez votre image ici</p>
+                      <p className="text-sm text-slate-500 mb-8">ou cliquez pour parcourir</p>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        ref={fileInputRef} 
+                        onChange={handleFileChange} 
+                        className="hidden" 
+                      />
+                      <Button 
+                        onClick={() => fileInputRef.current?.click()} 
+                        size="lg" 
+                        className="shadow-md"
+                      >
+                        Parcourir les fichiers
+                      </Button>
+                    </div>
                   )}
-                </Button>
+                </div>
 
-                {(activePlan === "pro" || activePlan === "business") && (
-                  <Button variant="outline" size="lg" onClick={() => toast("Fonctionnalité à venir !")}>
-                    <GitBranch className="mr-2 h-5 w-5" />
-                    Commit to Git
-                  </Button>
+                {uploadedImage && (
+                  <div className="flex justify-center gap-4 mt-8">
+                    <Button 
+                      size="lg" 
+                      onClick={generateCode} 
+                      disabled={isGenerating} 
+                      className="shadow-lg min-w-[200px]"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Génération...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          Générer le code
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 )}
               </div>
-            )}
-
-            {generationTime !== "0.0" && !isGenerating && (
-              <p className="text-center mt-6 text-sm text-slate-600">
-                Généré en <span className="font-semibold">{generationTime}s</span>
-              </p>
-            )}
+            </div>
           </div>
 
-          {/* Logs + progression */}
-          {(isGenerating || generatedCode) && (
-            <div className="px-8 pb-4">
-              {isGenerating && (
-                <div className="mb-6">
-                  <Progress value={generationProgress} className="h-3" />
-                  <p className="text-center mt-2 text-sm font-medium">{Math.round(generationProgress)} %</p>
-                </div>
-              )}
+          {/* DROITE - Code - 65% */}
+          <div className="flex flex-col flex-1 overflow-hidden bg-white dark:bg-slate-950">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+              <TabsList className="justify-start px-4 border-b bg-transparent">
+                <TabsTrigger value="code" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">
+                  <Code2 className="w-4 h-4 mr-2" />
+                  Code
+                </TabsTrigger>
+                <TabsTrigger value="preview" disabled={!generatedCode}>
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview
+                </TabsTrigger>
+              </TabsList>
 
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Logs de génération
-                </h3>
-                <div className="space-y-3">
-                  <AnimatePresence>
-                    {logs.map(log => (
-                      <motion.div
-                        key={log.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-start gap-3 text-sm"
-                      >
-                        {log.type === "success" ? (
-                          <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
-                        ) : (
-                          <Activity className="w-4 h-4 text-blue-500 mt-0.5 animate-pulse" />
-                        )}
-                        <span className="flex-1">{log.message}</span>
-                        <span className="text-xs text-slate-500">
-                          {log.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-
-                  {isGenerating && currentLog && (
-                    <div className="flex items-center gap-3 text-sm text-slate-500">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>{currentLog}</span>
+              <TabsContent value="code" className="h-full mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col">
+                {generatedCode ? (
+                  <div className="h-full flex flex-col">
+                    <div className="flex-shrink-0 p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Code2 className="w-5 h-5" />
+                          <span className="font-semibold">Code généré</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" onClick={copyCode}>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copier
+                          </Button>
+                          <Button size="sm" onClick={downloadCode}>
+                            <Download className="w-4 h-4 mr-2" />
+                            Télécharger
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </Card>
-            </div>
-          )}
 
-          {/* Éditeur de code */}
-          {generatedCode && (
-            <div className="flex-1 px-8 pb-8">
-              <div className="h-full bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col overflow-hidden">
-                <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Code2 className="w-5 h-5" />
-                    <span className="font-semibold">Code généré</span>
-                    <span className="text-sm text-slate-500">
-                      {linesOfCode} lignes • {bundleSize} KB
-                    </span>
+                    <div className="flex-1 overflow-hidden">
+                      <MonacoEditor
+                        language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
+                        theme="vs-dark"
+                        value={generatedCode}
+                        height="100%"
+                        options={{
+                          readOnly: true,
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          lineNumbers: "on",
+                          scrollBeyondLastLine: false,
+                          wordWrap: "on",
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={copyCode}>
-                      <Copy className="w-4 h-4 mr-2" />
-                      Copier
-                    </Button>
-                    <Button onClick={downloadCode}>
-                      <Download className="w-4 h-4 mr-2" />
-                      Télécharger
-                    </Button>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-slate-500">
+                    <div className="text-center max-w-md px-6">
+                      <Code2 className="w-16 h-16 mx-auto mb-6 opacity-50" />
+                      <p className="text-xl font-medium mb-4">Prêt à générer</p>
+                      <p className="text-base">Upload une image puis cliquez sur "Générer le code"</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex-1">
-                  <MonacoEditor
-                    language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
-                    theme="vs-dark"
-                    value={generatedCode}
-                    options={{
-                      readOnly: true,
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      lineNumbers: "on",
-                      scrollBeyondLastLine: false,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+                )}
+              </TabsContent>
 
-        {/* Panneau latéral collapsible à droite */}
-        <motion.div
-          className="bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
-          animate={{ width: isConfigPanelCollapsed ? 48 : 320 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
-        >
-          {/* Header / bouton collapse */}
-          <div className="h-12 border-b border-slate-200 dark:border-slate-700 flex items-center">
-            {isConfigPanelCollapsed ? (
-              <Button
-                variant="ghost"
-                className="w-full h-full rounded-none justify-center"
-                onClick={() => setIsConfigPanelCollapsed(false)}
-              >
-                <motion.div animate={{ rotate: 180 }}>
-                  <ChevronRight className="w-5 h-5" />
-                </motion.div>
-              </Button>
-            ) : (
-              <div className="flex items-center justify-between w-full px-4">
-                <h2 className="text-lg font-semibold">Configuration</h2>
+              <TabsContent value="preview" className="h-full mt-0 p-6 overflow-auto flex items-center justify-center">
+                <div className="text-center text-slate-500 max-w-md">
+                  <Eye className="w-16 h-16 mx-auto mb-6 opacity-50" />
+                  <p className="text-xl font-medium mb-4">Aperçu en direct</p>
+                  <p className="text-sm mt-2">Fonctionnalité preview à venir</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* PANNEAU CONFIGURATION */}
+          <motion.div
+            className="bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-2xl"
+            animate={{ width: isConfigPanelCollapsed ? 64 : 320 }}
+            transition={{ type: "spring", stiffness: 220, damping: 28, mass: 0.9 }}
+          >
+            <div className="flex-shrink-0 h-12 border-b border-slate-200 dark:border-slate-800 flex items-center">
+              {isConfigPanelCollapsed ? (
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="w-16 h-10"
-                  onClick={() => setIsConfigPanelCollapsed(true)}
+                  className="w-full h-full rounded-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  onClick={() => setIsConfigPanelCollapsed(false)}
                 >
-                  <motion.div animate={{ rotate: 0 }}>
-                    <ChevronRight className="w-5 h-5" />
-                  </motion.div>
+                  <ChevronRight className="w-6 h-6" />
                 </Button>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="flex items-center justify-between w-full px-5">
+                  <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
+                  <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(true)}>
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </div>
+              )}
+            </div>
 
-          {/* Contenu du panneau */}
-          <div className={`flex-1 overflow-y-auto p-4 space-y-6 transition-opacity ${isConfigPanelCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-            {/* Carte moteur IA */}
-            <Card className={`p-4 bg-gradient-to-r from-${planColors[activePlan as PlanType].bg}-100 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-900/30 border border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
-              <div className="flex items-center gap-3">
-                <Cpu className={`w-8 h-8 text-${planColors[activePlan as PlanType].text}`} />
+            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+              <Card className={`p-5 bg-gradient-to-br from-${planColors[activePlan as PlanType].bg}-50 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-950/30 border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
+                <div className="flex items-center gap-4">
+                  <Cpu className={`w-8 h-8 text-${planColors[activePlan as PlanType].text}`} />
+                  <div>
+                    <p className="font-bold text-lg">{config.name}</p>
+                    <p className={`text-sm ${config.statusColor}`}>{config.engine}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <div className="space-y-5">
                 <div>
-                  <p className="font-semibold text-lg">{config.name}</p>
-                  <p className={`text-sm ${config.statusColor}`}>{config.engine}</p>
+                  <Label className="text-sm font-medium">Framework</Label>
+                  <Select 
+                    value={workbenchConfig.framework} 
+                    onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {config.frameworks.map((f: FrameworkType) => (
+                        <SelectItem key={f} value={f}>
+                          <div className="flex items-center gap-2">
+                            {getFrameworkIcon(f)}
+                            {f.charAt(0).toUpperCase() + f.slice(1)}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Nom du composant</Label>
+                  <Input
+                    className="mt-1.5"
+                    value={workbenchConfig.componentName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
+                    placeholder="MyComponent"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="ts" className="text-sm font-medium">TypeScript</Label>
+                    <Switch
+                      id="ts"
+                      checked={workbenchConfig.useTypeScript}
+                      onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="dark" className="text-sm font-medium">Dark Mode</Label>
+                    <Switch
+                      id="dark"
+                      checked={workbenchConfig.darkMode}
+                      onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))}
+                    />
+                  </div>
                 </div>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">{config.status}</p>
-            </Card>
-
-            {/* Options de base */}
-            <div className="space-y-5">
-              <div>
-                <Label>Framework</Label>
-                <Select value={workbenchConfig.framework} onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {config.frameworks.map((f: FrameworkType) => (
-                      <SelectItem key={f} value={f}>
-                        <div className="flex items-center gap-2">
-                          {getFrameworkIcon(f)}
-                          {f.charAt(0).toUpperCase() + f.slice(1)}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {activePlan === "starter" && <p className="text-xs text-slate-500 mt-1">Next.js et Vue disponibles en Pro ✨</p>}
-              </div>
-
-              <div>
-                <Label>Style Engine</Label>
-                <Select value={workbenchConfig.styleEngine} onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {config.styleEngines.map((s: StyleEngine) => (
-                      <SelectItem key={s} value={s}>{s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Nom du composant</Label>
-                <Input
-                  value={workbenchConfig.componentName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
-                  placeholder="MyComponent"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="ts">TypeScript</Label>
-                <Switch id="ts" checked={workbenchConfig.useTypeScript} onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))} />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="dark">Dark Mode</Label>
-                <Switch id="dark" checked={workbenchConfig.darkMode} onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))} />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="mobile">Preview Mobile</Label>
-                <Switch id="mobile" checked={workbenchConfig.mobile} onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, mobile: v }))} />
-              </div>
             </div>
+          </motion.div>
+        </div>
 
-            {/* Section Pro */}
-            <div className={`rounded-lg p-4 border ${activePlan === "starter" ? "opacity-50" : ""} bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800`}>
-              <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-5 h-5 text-amber-600" />
-                <h3 className="font-semibold">Fonctionnalités Pro</h3>
-                {activePlan === "starter" && <Lock className="w-4 h-4 text-amber-600" />}
-              </div>
-              <div className="space-y-4">
-                {(["enableAnimations", "enableAccessibility"] as const).map(key => {
-                  const canUse = activePlan === "pro" || activePlan === "business";
-                  const labels = { enableAnimations: "Animations fluides", enableAccessibility: "Accessibilité ARIA" };
-                  return (
-                    <div key={key} className="flex items-center justify-between">
-                      <Label className={!canUse ? "text-slate-500" : ""}>{labels[key]}</Label>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div>
-                            <Switch
-                              checked={workbenchConfig[key]}
-                              onCheckedChange={canUse ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, [key]: v })) : undefined}
-                              disabled={!canUse}
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        {!canUse && <TooltipContent>Disponible en plan Pro</TooltipContent>}
-                      </Tooltip>
-                    </div>
-                  );
-                })}
-              </div>
+        {/* FOOTER LOGS */}
+        <div className="flex-shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-2xl h-32">
+          <div className="flex-1 overflow-hidden flex flex-col h-full">
+            <div className="flex-shrink-0 p-4">
+              <h4 className="font-semibold text-base flex items-center gap-2 mb-3">
+                <Activity className="w-4 h-4" />
+                Logs de génération
+              </h4>
+              {isGenerating && (
+                <div className="flex items-center gap-4 text-sm mb-3">
+                  <Progress value={generationProgress} className="w-32 h-2" />
+                  <span className="font-medium">{Math.round(generationProgress)}%</span>
+                </div>
+              )}
             </div>
+            
+            <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+              <AnimatePresence mode="popLayout">
+                {logs.map(log => (
+                  <motion.div
+                    key={log.id}
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -12, scale: 0.98 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="flex items-start gap-3 py-1"
+                  >
+                    {log.type === "success" ? (
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    ) : (
+                      <Activity className="w-4 h-4 text-blue-500 mt-0.5 animate-pulse flex-shrink-0" />
+                    )}
+                    <span className="flex-1 leading-relaxed text-sm">{log.message}</span>
+                    <span className="text-xs text-slate-500 whitespace-nowrap mt-0.5">
+                      {log.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
-            {/* Section Business */}
-            <div className={`rounded-lg p-4 border ${activePlan !== "business" ? "opacity-50" : ""} bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800`}>
-              <div className="flex items-center gap-2 mb-4">
-                <Crown className="w-5 h-5 text-purple-600" />
-                <h3 className="font-semibold">Fonctionnalités Business</h3>
-                {activePlan !== "business" && <Lock className="w-4 h-4 text-purple-600" />}
-              </div>
-              <div className="space-y-4">
-                {(["enableSecurity", "enableDesignSystem"] as const).map(key => {
-                  const canUse = activePlan === "business";
-                  const labels = { enableSecurity: "Sécurité entreprise", enableDesignSystem: "Design System synchronisé" };
-                  return (
-                    <div key={key} className="flex items-center justify-between">
-                      <Label className={!canUse ? "text-slate-500" : ""}>{labels[key]}</Label>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div>
-                            <Switch
-                              checked={workbenchConfig[key]}
-                              onCheckedChange={canUse ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, [key]: v })) : undefined}
-                              disabled={!canUse}
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        {!canUse && <TooltipContent>Disponible en plan Business</TooltipContent>}
-                      </Tooltip>
-                    </div>
-                  );
-                })}
-              </div>
+              {logs.length === 0 && (
+                <div className="text-center text-slate-500 italic py-6 text-sm">
+                  Les logs s'afficheront ici pendant la génération
+                </div>
+              )}
             </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
 
-      <Toaster position="bottom-center" />
+        <Toaster position="bottom-center" richColors closeButton />
+      </div>
     </TooltipProvider>
   );
 }

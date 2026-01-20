@@ -1,0 +1,554 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.5rem;
+    
+    /* Polices personnalisées */
+    --font-sans: var(--font-inter);
+    --font-mono: var(--font-jetbrains-mono);
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  
+  /* Remove focus outline for language selector buttons */
+button[class*="px-3 py-1.5"] {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button[class*="px-3 py-1.5"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30;
+  }
+  
+  /* Selection styles */
+  ::selection {
+    @apply bg-primary/20 text-primary-foreground;
+  }
+  
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background rounded-sm;
+  }
+  
+  /* Typography improvements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-balance;
+  }
+  
+  p {
+    @apply text-pretty;
+  }
+  
+  /* Smooth transitions */
+  a, button, input, textarea, select {
+    @apply transition-colors duration-200;
+  }
+  
+  /* Remove default button styles */
+  button {
+    @apply focus:outline-none;
+  }
+  
+  /* Custom focus styles for interactive elements */
+  [role='button'], button, input, select, textarea, a[href] {
+    @apply focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm;
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Animation classes */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
+}
+
+/* Custom utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Custom scrollbar for code blocks */
+.code-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.code-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30;
+}
+
+/* Scrollbar invisible pour navigation */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Animations personnalisées */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+/* Custom selection for code blocks */
+pre::selection,
+code::selection {
+  @apply bg-primary/30 text-foreground;
+}
+
+/* Animation fluide avec visibilité permanente */
+@keyframes ballMove {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  25% {
+    transform: translateY(-30px) scale(1.05);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-60px) scale(1.1);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-30px) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes barPulse {
+  0%, 100% {
+    height: 20%;
+    opacity: 0.8;
+    animation-timing-function: ease-in-out;
+  }
+  25% {
+    height: 60%;
+  }
+  50% {
+    height: 100%;
+    opacity: 1;
+  }
+  75% {
+    height: 60%;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    height: 20%;
+    opacity: 0.3;
+  }
+  50% {
+    height: 100%;
+    opacity: 1;
+  }
+}
+
+/* Custom focus styles for code blocks */
+pre:focus-visible {
+  @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
+}
+
+/* Custom styles for syntax highlighting */
+:not(pre) > code {
+  @apply bg-muted text-foreground/80 px-1.5 py-0.5 rounded text-sm font-mono;
+  font-size: 0.9em;
+}
+
+/* Custom styles for links */
+a:not(.no-underline) {
+  @apply text-primary underline underline-offset-4 hover:text-primary/80;
+}
+
+/* Custom styles for buttons */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+}
+
+/* Custom styles for form elements */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='tel'],
+input[type='url'],
+input[type='search'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='time'],
+input[type='month'],
+input[type='week'],
+select,
+textarea {
+  @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* Custom styles for checkboxes and radio buttons */
+input[type='checkbox'],
+input[type='radio'] {
+  @apply h-4 w-4 rounded border-input text-primary focus:ring-primary focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* Custom styles for tooltips */
+[data-tooltip] {
+  @apply relative cursor-help;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-foreground text-background rounded whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200;
+  z-index: 50;
+}
+
+[data-tooltip]:hover::before {
+  content: '';
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-l-transparent border-r-transparent border-t-4 border-t-foreground opacity-0 pointer-events-none transition-opacity duration-200;
+  z-index: 50;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before {
+  opacity: 1;
+}
+
+/* Custom styles for code blocks */
+:not(pre) > code::before,
+:not(pre) > code::after {
+  content: '';
+}
+
+/* Custom styles for blockquotes */
+blockquote {
+  @apply border-l-4 border-muted-foreground/20 pl-4 italic text-muted-foreground;
+}
+
+/* Custom styles for tables */
+table {
+  @apply w-full border-collapse;
+}
+
+th, td {
+  @apply border border-muted-foreground/20 p-3 text-left;
+}
+
+th {
+  @apply bg-muted/50 font-semibold;
+}
+
+tr:nth-child(even) {
+  @apply bg-muted/10;
+}
+
+/* Custom styles for dividers */
+hr {
+  @apply border-t border-muted-foreground/10 my-6;
+}
+
+/* Custom styles for lists */
+ul, ol {
+  @apply pl-5 my-4;
+}
+
+ul {
+  @apply list-disc;
+}
+
+ol {
+  @apply list-decimal;
+}
+
+li {
+  @apply my-1.5;
+}
+
+/* Custom styles for images */
+img {
+  @apply max-w-full h-auto rounded-md;
+}
+
+/* Custom styles for iframes */
+iframe {
+  @apply w-full border-0 rounded-md;
+}
+
+/* Custom styles for markdown content */
+.prose {
+  @apply max-w-none;
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6):not(:first-child) {
+  @apply mt-8 mb-4;
+}
+
+.prose :where(p, ul, ol):not(:last-child) {
+  @apply mb-4;
+}
+
+/* Custom styles for code blocks with line numbers */
+.line-number::before {
+  @apply inline-block w-8 text-muted-foreground/50 text-right pr-3 select-none;
+  content: attr(line);
+}
+
+
+/* Couleurs spécifiques pour le bloc de code VUE */
+.language-vue .token.tag {
+  color: hsl(123.8, 69.2%, 50.4%) !important; /* Notre vert principal pour les balises */
+}
+
+.language-vue .token.attr-name {
+  color: #2d3748 !important; /* Gris foncé pour les attributs */
+}
+
+.language-vue .token.string {
+  color: #2b6cb0 !important; /* Bleu pour les chaînes de caractères */
+}
+
+.language-vue .token.keyword {
+  color: #805ad5 !important; /* Violet pour les mots-clés */
+}
+
+/* Bordure ou lueur spécifique pour le bloc Vue */
+div:has(> .language-vue) {
+  border-left: 4px solid hsl(123.8, 69.2%, 50.4%);
+  background: rgba(44, 255, 0, 0.05);
+}
+
+/* --- Correction universelle des champs Codeo UI --- */
+
+/* Conteneur d'input avec icône */
+.codeo-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* L'icône à gauche (Mail, Lock, etc.) */
+.codeo-input-icon-left {
+  position: absolute;
+  left: 0;
+  width: 3rem; /* 48px correspond à pl-12 */
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* L'icône à droite (L'œil du password) */
+.codeo-input-icon-right {
+  position: absolute;
+  right: 0;
+  width: 3.5rem; /* 56px correspond à pr-14 */
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* L'Input lui-même */
+.codeo-input-field {
+  width: 100%;
+  padding-left: 3rem !important; /* Force le texte à démarrer après l'icône */
+}
+
+.codeo-input-field.has-right-icon {
+  padding-right: 3.5rem !important; /* Évite le texte sous l'icône de droite */
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -15,12 +15,12 @@ import {
   Settings,
   Bell,
   User,
-  Menu,
   ChevronDown,
-  Search,
   X,
   Check,
 } from "lucide-react";
+import { HiOutlineMenuAlt2, HiOutlineMenuAlt3 } from "react-icons/hi";
+import { IoSearch } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePlan } from "@/app/dashboard/layout";
@@ -119,6 +119,7 @@ export default function DynamicHeader({
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
   const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null!);
   const profileMenuRef = useRef<HTMLDivElement>(null!);
   const notificationMenuRef = useRef<HTMLDivElement>(null!);
@@ -189,21 +190,40 @@ export default function DynamicHeader({
     >
       <div className="px-4 lg:px-6 py-3">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
-          {/* Menu hamburger à gauche - visible sur mobile */}
-          <button
-            onClick={() =>
-              isSidebarOpen
-                ? onMenuClose && onMenuClose()
-                : onMenuClick && onMenuClick()
-            }
-            className="sm:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            {isSidebarOpen ? (
-              <X className="w-5 h-5 text-slate-600" />
-            ) : (
-              <Menu className="w-5 h-5 text-slate-600" />
-            )}
-          </button>
+          {/* Menu hamburger + Logo mobile - visible sur mobile */}
+          <div className="sm:hidden flex items-center gap-3">
+            <button
+              onClick={() =>
+                isSidebarOpen
+                  ? onMenuClose && onMenuClose()
+                  : onMenuClick && onMenuClick()
+              }
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
+            >
+              <div className="relative w-5 h-5 overflow-hidden">
+                <HiOutlineMenuAlt2
+                  className={`absolute inset-0 w-5 h-5 text-slate-600 transition-all duration-500 ease-out ${
+                    isSidebarOpen
+                      ? "opacity-0 -translate-x-6"
+                      : "opacity-100 translate-x-0"
+                  }`}
+                />
+                <HiOutlineMenuAlt3
+                  className={`absolute inset-0 w-5 h-5 text-slate-600 transition-all duration-500 ease-out ${
+                    isSidebarOpen
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 translate-x-6"
+                  }`}
+                />
+              </div>
+            </button>
+
+            {/* Logo Codeo UI sur mobile */}
+            <div className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+              Code<span className="text-codeo-green">o</span> U
+              <span className="text-codeo-green">I</span>
+            </div>
+          </div>
 
           {/* Nom de la section active avec trait - caché sur mobile */}
           <div className="hidden sm:flex flex-col items-center min-w-0 flex-shrink-0 w-[120px] relative">
@@ -220,21 +240,22 @@ export default function DynamicHeader({
             ></div>
           </div>
 
-          {/* Barre de recherche - centrée */}
+          {/* Barre de recherche - cachée sur mobile, complète sur desktop */}
           <div
-            className="relative flex-1 max-w-md mx-auto"
+            className="relative flex-1 max-w-md mx-auto hidden sm:block"
             ref={searchResultsRef}
           >
-            <div className="flex items-center gap-2">
-              <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-              <Input
+            {/* Barre complète sur desktop uniquement */}
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 rounded-lg px-3 py-2 border-2 border-gray-300 dark:border-gray-600">
+              <IoSearch className="w-5 h-5 text-slate-400 flex-shrink-0" />
+              <input
                 type="text"
                 placeholder="Rechercher dans votre espace..."
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearchQuery(e.target.value)
                 }
-                className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent"
+                className="w-full bg-transparent border-none text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-0"
                 autoFocus={false}
               />
               {searchQuery && (
@@ -319,6 +340,14 @@ export default function DynamicHeader({
 
           {/* Actions utilisateur - fixées à droite */}
           <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0 w-[120px] sm:w-auto justify-end">
+            {/* Icône recherche mobile uniquement */}
+            <button
+              onClick={() => setIsMobileSearchOpen(true)}
+              className="sm:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <IoSearch className="w-5 h-5 text-slate-500" />
+            </button>
+
             {/* Crédits (desktop) */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
               <Zap className="w-4 h-4 text-codeo-green" />
@@ -513,6 +542,137 @@ export default function DynamicHeader({
           </div>
         </div>
       </div>
+
+      {/* Barre de recherche mobile en plein écran */}
+      <AnimatePresence>
+        {isMobileSearchOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="sm:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={() => {
+                setIsMobileSearchOpen(false);
+                clearSearch();
+              }}
+            />
+
+            {/* Barre de recherche animée */}
+            <motion.div
+              initial={{ opacity: 0, y: -100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -100 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="sm:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 shadow-xl"
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-3">
+                  {/* Bouton retour */}
+                  <button
+                    onClick={() => {
+                      setIsMobileSearchOpen(false);
+                      clearSearch();
+                    }}
+                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <X className="w-5 h-5 text-slate-600" />
+                  </button>
+
+                  {/* Champ de recherche */}
+                  <div className="flex-1 flex items-center gap-3 bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3">
+                    <IoSearch className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                    <input
+                      type="text"
+                      placeholder="Rechercher dans votre espace..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      autoFocus
+                      className="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={clearSearch}
+                        className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        <X className="w-4 h-4 text-slate-400" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Résultats de recherche mobile */}
+                {searchQuery && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 max-h-[70vh] overflow-y-auto"
+                  >
+                    {isSearching ? (
+                      <div className="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                        Recherche en cours...
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div>
+                        {searchResults.map((result: SearchResult) => (
+                          <button
+                            key={result.id}
+                            onClick={() => {
+                              router.push(result.path);
+                              clearSearch();
+                              setIsMobileSearchOpen(false);
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors border-b border-slate-100 dark:border-slate-700 last:border-b-0"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex-shrink-0 mt-0.5">
+                                {result.type === "project" && (
+                                  <Folder className="w-4 h-4 text-blue-500" />
+                                )}
+                                {result.type === "component" && (
+                                  <Layout className="w-4 h-4 text-purple-500" />
+                                )}
+                                {result.type === "collection" && (
+                                  <Palette className="w-4 h-4 text-pink-500" />
+                                )}
+                                {result.type === "user" && (
+                                  <Users className="w-4 h-4 text-green-500" />
+                                )}
+                                {result.type === "setting" && (
+                                  <Settings className="w-4 h-4 text-orange-500" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm text-slate-900 dark:text-white truncate">
+                                  {result.title}
+                                </div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1">
+                                  {result.description}
+                                </div>
+                                {result.metadata?.framework && (
+                                  <div className="text-xs text-codeo-green mt-1">
+                                    {result.metadata.framework}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                        Aucun résultat trouvé pour "{searchQuery}"
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

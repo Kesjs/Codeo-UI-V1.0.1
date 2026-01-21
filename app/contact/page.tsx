@@ -126,7 +126,7 @@ export default function ContactPage() {
                   </label>
                   <select
                     value={formData.type}
-                    onChange={(e) => handleInputChange('type', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange('type', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="support">Technical Support</option>
@@ -144,7 +144,7 @@ export default function ContactPage() {
                     </label>
                     <Input
                       value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
                       placeholder="Your name"
                       required
                     />
@@ -157,7 +157,7 @@ export default function ContactPage() {
                     <Input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('email', e.target.value)}
                       placeholder="your@email.com"
                       required
                     />
@@ -170,7 +170,7 @@ export default function ContactPage() {
                   </label>
                   <Input
                     value={formData.subject}
-                    onChange={(e) => handleInputChange('subject', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('subject', e.target.value)}
                     placeholder="How can we help?"
                     required
                   />
@@ -182,7 +182,7 @@ export default function ContactPage() {
                   </label>
                   <textarea
                     value={formData.message}
-                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('message', e.target.value)}
                     placeholder="Tell us more about your question or issue..."
                     rows={6}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"

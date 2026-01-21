@@ -161,7 +161,7 @@ export default function SettingsPage() {
             {isDevMode && (
               <div className="bg-white rounded-xl border border-slate-200 p-6">
                 <h3 className="text-lg font-semibold text-slate-900 mb-4">Simulation de plan (Dev)</h3>
-                <Select value={simulatedPlan} onValueChange={(v) => setSimulatedPlan(v as 'starter' | 'pro' | 'business')}>
+                <Select value={simulatedPlan} onValueChange={(v: string) => setSimulatedPlan(v as 'starter' | 'pro' | 'business')}>
                   <SelectTrigger className="w-48">
                     <SelectValue />
                   </SelectTrigger>

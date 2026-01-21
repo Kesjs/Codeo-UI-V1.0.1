@@ -148,7 +148,7 @@ export default function ProjectCard({
       )}
     >
       {/* Thumbnail */}
-      <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+      <div className="aspect-[3/2] bg-slate-100 relative overflow-hidden">
         <img
           src={project.thumbnail}
           alt={project.name}
@@ -176,8 +176,8 @@ export default function ProjectCard({
       </div>
 
       {/* Content */}
-      <div className="p-3">
-        <h3 className="font-medium text-sm text-slate-900 dark:text-slate-100 mb-1.5 line-clamp-1">
+      <div className="p-2.5">
+        <h3 className="font-medium text-xs text-slate-900 dark:text-slate-100 mb-1.5 line-clamp-1">
           {project.name}
         </h3>
         
@@ -188,7 +188,7 @@ export default function ProjectCard({
             return (
               <div
                 key={framework}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 text-[11px] rounded-md border border-slate-200 dark:border-slate-700"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 text-[10px] rounded border border-slate-200 dark:border-slate-700"
                 title={framework}
               >
                 <div className="flex items-center justify-center">
@@ -201,7 +201,7 @@ export default function ProjectCard({
         </div>
 
         {/* Date */}
-        <div className="flex items-center justify-between text-[11px] text-slate-500">
+        <div className="flex items-center justify-between text-[10px] text-slate-500">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             <span>{formatDate(project.date)}</span>

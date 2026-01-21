@@ -1,29 +1,33 @@
 'use client'
 
-import { useState, createContext, useContext } from 'react'
+import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Sidebar from '@/components/dashboard/Sidebar'
 import Header from '@/components/dashboard/Header'
 
 // Contexte global pour le plan
-const PlanContext = createContext<{
+type PlanContextType = {
   activePlan: 'starter' | 'pro' | 'business'
   simulatedPlan: 'starter' | 'pro' | 'business'
   setSimulatedPlan: (plan: 'starter' | 'pro' | 'business') => void
   isDevMode: boolean
-}>({
+}
+
+const defaultContext: PlanContextType = {
   activePlan: 'starter',
   simulatedPlan: 'starter',
   setSimulatedPlan: () => {},
   isDevMode: false
-})
+}
 
-export const usePlan = () => useContext(PlanContext)
+const PlanContext = (React as any).createContext(defaultContext)
+
+export const usePlan = () => (React as any).useContext(PlanContext)
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: any;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()

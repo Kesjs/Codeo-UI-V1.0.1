@@ -1,22 +1,221 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import CountUp from 'react-countup'
 import { toast, Toaster } from 'sonner'
-import { 
+import {
   Sparkles, Zap, History, Layout, ArrowRight, ArrowUpRight, ShieldCheck, UserCog,
-  Search, ThumbsUp, ThumbsDown, Users, Clock, Activity, ChevronDown, Bell, CheckCircle, AlertCircle, X, ArrowUp
+  Search, ThumbsUp, ThumbsDown, Users, Clock, Activity, ChevronDown, Bell, CheckCircle, AlertCircle, X, ArrowUp,
+  User, Settings, LayoutDashboard, Cpu, Folder, Palette, Menu, LogOut, HelpCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import ProjectCard from '@/components/dashboard/ProjectCard'
 import { usePlan } from '../layout'
+
+// ── COMPOSANTS HEADER ──────────────────────────────────────
+
+// Indicateur de section active
+function ActiveSectionIndicator({ pathname }: { pathname: string }) {
+  const getActiveSection = () => {
+    if (pathname === '/dashboard') return { icon: LayoutDashboard, label: 'Dashboard', color: 'bg-blue-500' }
+    if (pathname === '/dashboard/workbench') return { icon: Cpu, label: 'Generation', color: 'bg-codeo-green' }
+    if (pathname === '/dashboard/components') return { icon: Folder, label: 'Library', color: 'bg-purple-500' }
+    if (pathname === '/dashboard/collections') return { icon: Palette, label: 'Collections', color: 'bg-pink-500' }
+    if (pathname === '/dashboard/team') return { icon: Users, label: 'Team', color: 'bg-indigo-500' }
+    if (pathname === '/dashboard/api') return { icon: Activity, label: 'API', color: 'bg-orange-500' }
+    return { icon: LayoutDashboard, label: 'Dashboard', color: 'bg-slate-500' }
+  }
+
+  const section = getActiveSection()
+  const Icon = section.icon
+
+  return (
+    <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+      <div className={`p-1 rounded ${section.color} text-white`}>
+        <Icon className="w-3 h-3" />
+      </div>
+      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        {section.label}
+      </span>
+    </div>
+  )
+}
+
+// Profil intelligent avec menu déroulant
+function SmartProfile() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          <div className="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center relative">
+            <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-codeo-green border-2 border-white dark:border-slate-900 rounded-full"></div>
+          </div>
+          <div className="hidden lg:block text-left">
+            <div className="text-sm font-semibold text-slate-900 dark:text-white">Ken Kennedy</div>
+            <div className="text-xs text-slate-500 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-codeo-green" />
+              Early Adopter
+            </div>
+          </div>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <div className="px-2 py-1.5 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+            </div>
+            <div>
+              <div className="font-medium text-sm">Ken Kennedy</div>
+              <div className="text-xs text-slate-500">ken@codeo.ai</div>
+            </div>
+          </div>
+        </div>
+        <div className="py-1">
+          <DropdownMenuItem className="cursor-pointer">
+            <Settings className="w-4 h-4 mr-2" />
+            Paramètres
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
+            <Bell className="w-4 h-4 mr-2" />
+            Notifications
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
+            <HelpCircle className="w-4 h-4 mr-2" />
+            Aide & Support
+          </DropdownMenuItem>
+        </div>
+        <div className="border-t border-slate-100 dark:border-slate-800 py-1">
+          <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+            <LogOut className="w-4 h-4 mr-2" />
+            Déconnexion
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+// Fonctions helper pour les titres
+function getPageTitle(pathname: string): string {
+  switch (pathname) {
+    case '/dashboard': return 'Tableau de bord'
+    case '/dashboard/workbench': return 'V-AST Workbench'
+    case '/dashboard/components': return 'Mes Composants'
+    case '/dashboard/collections': return 'Collections'
+    case '/dashboard/team': return 'Équipe Business'
+    case '/dashboard/api': return 'API & Webhooks'
+    default: return 'Codeo UI'
+  }
+}
+
+function getPageSubtitle(pathname: string, projectCount: number): string {
+  switch (pathname) {
+    case '/dashboard':
+      return `${projectCount} projet${projectCount > 1 ? 's' : ''} actif${projectCount > 1 ? 's' : ''}`
+    case '/dashboard/workbench':
+      return 'Génération IA ultra-rapide'
+    case '/dashboard/components':
+      return 'Bibliothèque de composants réutilisables'
+    case '/dashboard/collections':
+      return 'Designs organisés et partagés'
+    case '/dashboard/team':
+      return 'Gestion d\'équipe collaborative'
+    case '/dashboard/api':
+      return 'Intégrations et automatisations'
+    default:
+      return 'Interface de design IA'
+  }
+}
+
+// Crédits du plan (desktop)
+function PlanCredits({ config }: { config: PlanConfig }) {
+  return (
+    <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+      <Zap className="w-4 h-4 text-codeo-green" />
+      <div className="text-sm">
+        <div className="font-semibold text-slate-900 dark:text-white">
+          {config.showQuota ? `${config.scansUsed}/${config.scansMax}` : 'Illimités'}
+        </div>
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Scans IA restants
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Actions du header (desktop)
+function HeaderActions() {
+  return (
+    <div className="flex items-center gap-2">
+      <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800">
+        <Bell className="w-5 h-5" />
+      </Button>
+      <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800">
+        <Settings className="w-5 h-5" />
+      </Button>
+    </div>
+  )
+}
+
+// Barre de recherche et filtres
+function SearchAndFilters({
+  searchQuery,
+  setSearchQuery,
+  filterFramework,
+  setFilterFramework,
+  searchInputRef
+}: {
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  filterFramework: string
+  setFilterFramework: (filter: string) => void
+  searchInputRef: React.RefObject<HTMLInputElement>
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+      <div className="relative flex-1 group">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within:text-codeo-green transition-colors duration-200 z-10 pointer-events-none" />
+        <Input
+          ref={searchInputRef}
+          placeholder="Rechercher un projet (nom, date...)"
+          value={searchQuery}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+          className="pl-10 bg-white dark:bg-slate-900 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black/20 border border-black/10 transition-colors duration-200 hover:border-black/15 shadow-sm"
+        />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 text-xs text-muted-foreground">
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground opacity-100">
+            {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}
+          </kbd>
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground opacity-100">
+            K
+          </kbd>
+        </div>
+      </div>
+      <Select value={filterFramework} onValueChange={setFilterFramework}>
+        <SelectTrigger className="w-full sm:w-48">
+          <SelectValue placeholder="Framework" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Tous</SelectItem>
+          <SelectItem value="React">React</SelectItem>
+          <SelectItem value="Next.js">Next.js</SelectItem>
+          <SelectItem value="Vue">Vue</SelectItem>
+          <SelectItem value="Tailwind">Tailwind</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  )
+}
 
 // ── Types ────────────────────────────────────────────────
 interface Project {
@@ -354,14 +553,16 @@ function NotificationBell({ showQuota, scansUsed, scansMax }: NotificationBellPr
 
 export default function DashboardPage() {
   const router = useRouter()
+  const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterFramework, setFilterFramework] = useState('all')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Simulation dev toggle
   const { activePlan, simulatedPlan, setSimulatedPlan, isDevMode } = usePlan() // ← remplace en prod par auth réelle
 
-  const config = planConfigs[activePlan]
+  const config = planConfigs[activePlan as PlanType]
 
   // Fonction pour générer un graphique sparkline
   const renderSparkline = (data: number[], color: string) => {
@@ -401,7 +602,7 @@ export default function DashboardPage() {
     // En prod : POST vers ton API
   }
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 700)
@@ -457,7 +658,7 @@ export default function DashboardPage() {
           <div className="fixed top-16 right-6 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg px-4 py-2.5">
             <div className="flex items-center gap-3 text-sm font-medium">
               <UserCog size={16} className="text-slate-500" />
-              <Select value={simulatedPlan} onValueChange={(v) => setSimulatedPlan(v as PlanType)}>
+              <Select value={simulatedPlan} onValueChange={(v: string) => setSimulatedPlan(v as PlanType)}>
                 <SelectTrigger className="w-40 h-8 border-none focus:ring-0">
                   <SelectValue />
                 </SelectTrigger>
@@ -471,58 +672,56 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* HEADER + Recherche */}
+        {/* HEADER FUSIONNÉ - NAVIGATION ACTIVE + PROFIL SMART */}
         <motion.header
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="space-y-6"
+          className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60"
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <div className="flex items-center justify-between w-full">
-                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Heureux de vous revoir, Ken <span className="text-codeo-green">.</span>
-                </h1>
-                <p className="text-slate-500 dark:text-slate-400 font-medium mt-1 capitalize">
-                  {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                </p>
-              </div>
-            </div>
-          </div>
+          <div className="px-4 lg:px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* GAUCHE : INDICATEUR ACTIF + TITRE ADAPTATIF */}
+              <div className="flex items-center gap-4">
+                {/* Indicateur de section active */}
+                <ActiveSectionIndicator pathname={pathname} />
 
-          {/* Recherche + filtre */}
-          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-            <div className="relative flex-1 group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within:text-codeo-green transition-colors duration-200 z-10 pointer-events-none" />
-              <Input
-                ref={searchInputRef}
-                placeholder="Rechercher un projet (nom, date...)"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white dark:bg-slate-900 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black/20 border border-black/10 transition-colors duration-200 hover:border-black/15 shadow-sm"
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 text-xs text-muted-foreground">
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground opacity-100">
-                  {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}
-                </kbd>
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground opacity-100">
-                  K
-                </kbd>
+                {/* Titre intelligent selon la page */}
+                <div>
+                  <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {getPageTitle(pathname)}
+                  </h1>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                    {getPageSubtitle(pathname, filteredProjects.length)}
+                  </p>
+                </div>
+              </div>
+
+              {/* DROITE : CRÉDITS + PROFIL (Desktop) / MENU (Mobile) */}
+              <div className="flex items-center gap-4">
+                {/* Desktop : Crédits + Profil */}
+                <div className="hidden md:flex items-center gap-4">
+                  <PlanCredits config={config} />
+                  <SmartProfile />
+                </div>
+
+                {/* Mobile : Crédits seulement (sidebar gérée par layout) */}
+                <div className="md:hidden">
+                  <PlanCredits config={config} />
+                </div>
               </div>
             </div>
-            <Select value={filterFramework} onValueChange={setFilterFramework}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Framework" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous</SelectItem>
-                <SelectItem value="React">React</SelectItem>
-                <SelectItem value="Next.js">Next.js</SelectItem>
-                <SelectItem value="Vue">Vue</SelectItem>
-                <SelectItem value="Tailwind">Tailwind</SelectItem>
-              </SelectContent>
-            </Select>
+
+            {/* BARRE DE RECHERCHE + FILTRES (responsive) */}
+            <div className="mt-6">
+              <SearchAndFilters
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                filterFramework={filterFramework}
+                setFilterFramework={setFilterFramework}
+                searchInputRef={searchInputRef}
+              />
+            </div>
           </div>
         </motion.header>
 

@@ -280,7 +280,7 @@ export default function BillingPage() {
                   <Input
                     placeholder="1234 5678 9012 3456"
                     value={cardInfo.number}
-                    onChange={(e) => setCardInfo(prev => ({ ...prev, number: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardInfo(prev => ({ ...prev, number: e.target.value }))}
                   />
                 </div>
                 
@@ -291,7 +291,7 @@ export default function BillingPage() {
                   <Input
                     placeholder="MM/YY"
                     value={cardInfo.expiry}
-                    onChange={(e) => setCardInfo(prev => ({ ...prev, expiry: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardInfo(prev => ({ ...prev, expiry: e.target.value }))}
                   />
                 </div>
                 
@@ -302,7 +302,7 @@ export default function BillingPage() {
                   <Input
                     placeholder="123"
                     value={cardInfo.cvv}
-                    onChange={(e) => setCardInfo(prev => ({ ...prev, cvv: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardInfo(prev => ({ ...prev, cvv: e.target.value }))}
                   />
                 </div>
                 
@@ -313,7 +313,7 @@ export default function BillingPage() {
                   <Input
                     placeholder="John Doe"
                     value={cardInfo.name}
-                    onChange={(e) => setCardInfo(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardInfo(prev => ({ ...prev, name: e.target.value }))}
                   />
                 </div>
               </div>

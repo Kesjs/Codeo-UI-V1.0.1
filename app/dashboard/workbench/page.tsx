@@ -5,9 +5,10 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, Toaster } from "sonner";
 import {
-  Sparkles, Upload, Download, Copy, Cpu, Activity, ChevronRight, 
-  CheckCircle, X, Loader2, GitBranch, Lock, Crown, Zap, Code2, 
+  Sparkles, Upload, Download, Copy, Cpu, Activity, ChevronRight,
+  CheckCircle, X, Loader2, GitBranch, Lock, Crown, Zap, Code2,
   Atom, Globe, Triangle, Palette, Eye, FileJson, ChevronDown, ChevronUp,
+  Settings, Smartphone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -118,6 +119,8 @@ export default function WorkbenchPage() {
   const [isConfigPanelCollapsed, setIsConfigPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("code");
   const [areLogsCollapsed, setAreLogsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileView, setMobileView] = useState<"upload" | "code" | "config">("upload");
 
   const [workbenchConfig, setWorkbenchConfig] = useState<WorkbenchConfig>({
     framework: config.frameworks[0],
@@ -244,30 +247,26 @@ export default ${workbenchConfig.componentName};
     <TooltipProvider>
       <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
         
-        {/* HEADER PROFESSIONNEL */}
+        {/* HEADER PROFESSIONNEL - RESPONSIVE */}
         <header className="flex-shrink-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="px-6 py-3 flex items-center justify-between max-w-screen-2xl mx-auto">
-            <div className="flex items-center gap-6 flex-wrap">
-              {/* Plan / Moteur / Statut */}
-              <div className={`flex items-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-${planColors[activePlan as PlanType].bg}-50 to-${planColors[activePlan as PlanType].bg}-100 dark:from-${planColors[activePlan as PlanType].bg}-950/40 dark:to-${planColors[activePlan as PlanType].bg}-900/30 border border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
-                <Cpu className={`w-6 h-6 text-${planColors[activePlan as PlanType].text}`} />
-                <div>
-                  <p className="font-bold text-base leading-tight">{config.name}</p>
-                  <p className={`text-xs ${config.statusColor} font-medium`}>{config.engine} · {config.status}</p>
+          <div className="px-4 sm:px-6 py-3 flex items-center justify-between max-w-screen-2xl mx-auto">
+            {/* Logo et titre principal */}
+            <div className="flex items-center gap-3">
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-${planColors[activePlan as PlanType].bg}-50 to-${planColors[activePlan as PlanType].bg}-100 dark:from-${planColors[activePlan as PlanType].bg}-950/40 dark:to-${planColors[activePlan as PlanType].bg}-900/30 border border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
+                <Cpu className={`w-5 h-5 sm:w-6 sm:h-6 text-${planColors[activePlan as PlanType].text}`} />
+                <div className="hidden sm:block">
+                  <p className="font-bold text-sm sm:text-base leading-tight">{config.name}</p>
+                  <p className={`text-xs ${config.statusColor} font-medium`}>{config.status}</p>
                 </div>
               </div>
+            </div>
 
+            {/* Desktop - Éléments centraux */}
+            <div className="hidden md:flex items-center gap-4 lg:gap-6">
               {/* Framework */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
-                  {getFrameworkIcon(workbenchConfig.framework)}
-                  <span className="font-medium text-sm">{workbenchConfig.framework.charAt(0).toUpperCase() + workbenchConfig.framework.slice(1)}</span>
-                </div>
-                {activePlan === "starter" && (
-                  <span className="text-xs text-amber-600 dark:text-amber-400 italic whitespace-nowrap">
-                    Next.js et Vue disponibles en Pro ✨
-                  </span>
-                )}
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
+                {getFrameworkIcon(workbenchConfig.framework)}
+                <span className="font-medium text-sm">{workbenchConfig.framework.charAt(0).toUpperCase() + workbenchConfig.framework.slice(1)}</span>
               </div>
 
               {/* Style Engine */}
@@ -278,15 +277,12 @@ export default ${workbenchConfig.componentName};
                    workbenchConfig.styleEngine === "css-modules" ? "CSS Modules" : "Styled Components"}
                 </span>
               </div>
-            </div>
 
-            {/* Éléments à droite */}
-            <div className="flex items-center gap-4">
               {/* Statistiques de génération */}
               {generatedCode && (
-                <div className="flex items-center gap-3 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
                   <CheckCircle className="w-4 h-4 text-green-600" />
-                  <div className="text-sm">
+                  <div className="hidden lg:block text-sm">
                     <span className="font-medium text-green-700 dark:text-green-300">
                       {generatedCode.split('\n').length} lignes
                     </span>
@@ -296,9 +292,12 @@ export default ${workbenchConfig.componentName};
                   </div>
                 </div>
               )}
+            </div>
 
-              {/* Actions rapides */}
-              <div className="flex items-center gap-2">
+            {/* Actions et menu mobile */}
+            <div className="flex items-center gap-2">
+              {/* Actions rapides - Desktop */}
+              <div className="hidden sm:flex items-center gap-2">
                 {generatedCode && (
                   <Button
                     variant="outline"
@@ -306,378 +305,787 @@ export default ${workbenchConfig.componentName};
                     onClick={copyCode}
                     className="hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copier
+                    <Copy className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Copier</span>
                   </Button>
                 )}
-                
+
                 {activePlan !== "starter" && (
                   <Button
                     size="sm"
                     onClick={() => toast("Fonctionnalité à venir !")}
                     className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 hover:border-slate-300 dark:bg-white dark:hover:bg-slate-50 dark:text-slate-900 dark:border-slate-300 dark:hover:border-slate-400"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    Exporter
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Exporter</span>
                   </Button>
                 )}
               </div>
+
+              {/* Menu hamburger mobile */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <motion.div
+                  animate={{ rotate: isMobileMenuOpen ? 90 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown className="w-5 h-5" />
+                </motion.div>
+              </Button>
             </div>
           </div>
+
+          {/* Menu mobile déroulant */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+              >
+                <div className="px-4 py-4 space-y-4">
+                  {/* Framework et Style Engine */}
+                  <div className="flex gap-3">
+                    <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
+                      {getFrameworkIcon(workbenchConfig.framework)}
+                      <span className="font-medium text-sm">{workbenchConfig.framework.charAt(0).toUpperCase() + workbenchConfig.framework.slice(1)}</span>
+                    </div>
+                    <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
+                      <Palette className="w-4 h-4 text-cyan-500" />
+                      <span className="font-medium text-sm">
+                        {workbenchConfig.styleEngine === "tailwind" ? "Tailwind" :
+                         workbenchConfig.styleEngine === "css-modules" ? "CSS Modules" : "Styled Components"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Statistiques */}
+                  {generatedCode && (
+                    <div className="flex items-center gap-3 px-3 py-2 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <div className="text-sm">
+                        <span className="font-medium text-green-700 dark:text-green-300">
+                          {generatedCode.split('\n').length} lignes
+                        </span>
+                        <span className="text-green-600 dark:text-green-400 ml-1">
+                          · {(generatedCode.length / 1024).toFixed(1)} KB
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    {generatedCode && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyCode}
+                        className="flex-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copier
+                      </Button>
+                    )}
+
+                    {activePlan !== "starter" && (
+                      <Button
+                        size="sm"
+                        onClick={() => toast("Fonctionnalité à venir !")}
+                        className="flex-1 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 hover:border-slate-300 dark:bg-white dark:hover:bg-slate-50 dark:text-slate-900 dark:border-slate-300 dark:hover:border-slate-400"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Exporter
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </header>
 
-        {/* MAIN CONTENT */}
+        {/* MAIN CONTENT - RESPONSIVE */}
         <div className="flex flex-1 overflow-hidden">
-          
-          {/* GAUCHE - Upload - 35% */}
-          <div className="hidden md:flex md:w-[35%] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-            <div className="flex flex-col h-full overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-6">
-                <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Upload Design</h2>
+          {/* DESKTOP LAYOUT - Split View */}
+          <div className="hidden lg:flex flex-1 overflow-hidden">
+            {/* GAUCHE - Upload - 35% */}
+            <div className="w-[35%] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+              <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex-1 overflow-y-auto p-6">
+                  <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Upload Design</h2>
 
-                <div
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 min-h-[400px] flex items-center justify-center ${
-                    isDragging ? "border-green-500 bg-green-50 dark:bg-green-900/20 scale-[1.01] shadow-lg" : "border-slate-300 dark:border-slate-700"
-                  }`}
-                >
-                  {uploadedImage ? (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <img 
-                        src={uploadedImage} 
-                        alt="Design uploadé" 
-                        className="max-h-full max-w-full object-contain rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105" 
-                      />
-                      <Button 
-                        variant="destructive" 
-                        size="icon" 
-                        className="absolute top-4 right-4 z-10 shadow-md" 
-                        onClick={() => setUploadedImage(null)}
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 min-h-[400px] flex items-center justify-center ${
+                      isDragging ? "border-green-500 bg-green-50 dark:bg-green-900/20 scale-[1.01] shadow-lg" : "border-slate-300 dark:border-slate-700"
+                    }`}
+                  >
+                    {uploadedImage ? (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <img
+                          src={uploadedImage}
+                          alt="Design uploadé"
+                          className="max-h-full max-w-full object-contain rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-4 right-4 z-10 shadow-md"
+                          onClick={() => setUploadedImage(null)}
+                        >
+                          <X className="w-5 h-5" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="py-8">
+                        <Upload className="w-16 h-16 mx-auto mb-6 text-slate-400" />
+                        <p className="text-lg font-medium mb-3">Glissez-déposez votre image ici</p>
+                        <p className="text-sm text-slate-500 mb-8">ou cliquez pour parcourir</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                        <Button
+                          onClick={() => fileInputRef.current?.click()}
+                          size="lg"
+                          className="shadow-md"
+                        >
+                          Parcourir les fichiers
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {uploadedImage && (
+                    <div className="flex justify-center gap-4 mt-8">
+                      <Button
+                        size="lg"
+                        onClick={generateCode}
+                        disabled={isGenerating}
+                        className="shadow-lg min-w-[200px]"
                       >
-                        <X className="w-5 h-5" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="py-8">
-                      <Upload className="w-16 h-16 mx-auto mb-6 text-slate-400" />
-                      <p className="text-lg font-medium mb-3">Glissez-déposez votre image ici</p>
-                      <p className="text-sm text-slate-500 mb-8">ou cliquez pour parcourir</p>
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        ref={fileInputRef} 
-                        onChange={handleFileChange} 
-                        className="hidden" 
-                      />
-                      <Button 
-                        onClick={() => fileInputRef.current?.click()} 
-                        size="lg" 
-                        className="shadow-md"
-                      >
-                        Parcourir les fichiers
+                        {isGenerating ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Génération...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-2 h-5 w-5" />
+                            Générer le code
+                          </>
+                        )}
                       </Button>
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
 
-                {uploadedImage && (
-                  <div className="flex justify-center gap-4 mt-8">
-                    <Button 
-                      size="lg" 
-                      onClick={generateCode} 
-                      disabled={isGenerating} 
-                      className="shadow-lg min-w-[200px]"
-                    >
-                      {isGenerating ? (
-                        <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Génération...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="mr-2 h-5 w-5" />
-                          Générer le code
-                        </>
+            {/* DROITE - Code - 65% */}
+            <div className="flex flex-col flex-1 overflow-hidden bg-white dark:bg-slate-950">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+                <TabsList className="justify-start px-6 py-2 border-b bg-transparent h-12 items-center">
+                  <TabsTrigger value="code" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800 h-8">
+                    <Code2 className="w-4 h-4 mr-2" />
+                    Code
+                  </TabsTrigger>
+                  <TabsTrigger value="preview" disabled={!generatedCode} className="h-8">
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="code" className="h-full mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col">
+                  {generatedCode ? (
+                    <div className="h-full flex flex-col">
+                      <div className="flex-shrink-0 p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <Code2 className="w-5 h-5" />
+                            <span className="font-semibold">Code généré</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={copyCode}>
+                              <Copy className="w-4 h-4 mr-2" />
+                              Copier
+                            </Button>
+                            <Button size="sm" onClick={downloadCode}>
+                              <Download className="w-4 h-4 mr-2" />
+                              Télécharger
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 overflow-hidden">
+                        <MonacoEditor
+                          language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
+                          theme="vs-dark"
+                          value={generatedCode}
+                          height="100%"
+                          options={{
+                            readOnly: true,
+                            minimap: { enabled: false },
+                            fontSize: 14,
+                            lineNumbers: "on",
+                            scrollBeyondLastLine: false,
+                            wordWrap: "on",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-slate-500">
+                      <div className="text-center max-w-md px-6">
+                        <Code2 className="w-16 h-16 mx-auto mb-6 opacity-50" />
+                        <p className="text-xl font-medium mb-4">Prêt à générer</p>
+                        <p className="text-base">Upload une image puis cliquez sur "Générer le code"</p>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="preview" className="h-full mt-0 p-6 overflow-auto flex items-center justify-center">
+                  <div className="text-center text-slate-500 max-w-md">
+                    <Eye className="w-16 h-16 mx-auto mb-6 opacity-50" />
+                    <p className="text-xl font-medium mb-4">Aperçu en direct</p>
+                    <p className="text-sm mt-2">Fonctionnalité preview à venir</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+
+          {/* MOBILE LAYOUT - Navigation par tabs */}
+          <div className="lg:hidden flex flex-col flex-1 bg-white dark:bg-slate-950">
+            {/* Navigation mobile */}
+            <div className="flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+              <div className="flex">
+                <button
+                  onClick={() => setMobileView("upload")}
+                  className={`flex-1 flex flex-col items-center justify-center py-3 px-2 transition-colors ${
+                    mobileView === "upload"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  <Upload className="w-5 h-5 mb-1" />
+                  <span className="text-xs font-medium">Upload</span>
+                </button>
+                <button
+                  onClick={() => setMobileView("code")}
+                  className={`flex-1 flex flex-col items-center justify-center py-3 px-2 transition-colors ${
+                    mobileView === "code"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  <Code2 className="w-5 h-5 mb-1" />
+                  <span className="text-xs font-medium">Code</span>
+                </button>
+                <button
+                  onClick={() => setMobileView("config")}
+                  className={`flex-1 flex flex-col items-center justify-center py-3 px-2 transition-colors ${
+                    mobileView === "config"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  <Settings className="w-5 h-5 mb-1" />
+                  <span className="text-xs font-medium">Config</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Contenu mobile */}
+            <div className="flex-1 overflow-hidden">
+              {/* Upload View */}
+              <AnimatePresence mode="wait">
+                {mobileView === "upload" && (
+                  <motion.div
+                    key="upload"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full flex flex-col"
+                  >
+                    <div className="flex-1 overflow-y-auto p-4">
+                      <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-white">Upload Design</h2>
+
+                      <div
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all duration-300 min-h-[250px] flex items-center justify-center ${
+                          isDragging ? "border-green-500 bg-green-50 dark:bg-green-900/20 scale-[1.01]" : "border-slate-300 dark:border-slate-700"
+                        }`}
+                      >
+                        {uploadedImage ? (
+                          <div className="relative w-full h-full flex items-center justify-center">
+                            <img
+                              src={uploadedImage}
+                              alt="Design uploadé"
+                              className="max-h-full max-w-full object-contain rounded-lg shadow-lg"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 z-10"
+                              onClick={() => setUploadedImage(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="py-4">
+                            <Upload className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                            <p className="text-base font-medium mb-2">Glissez-déposez votre image</p>
+                            <p className="text-sm text-slate-500 mb-4">ou cliquez pour parcourir</p>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              className="hidden"
+                            />
+                            <Button
+                              onClick={() => fileInputRef.current?.click()}
+                              size="sm"
+                            >
+                              Parcourir
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+
+                      {uploadedImage && (
+                        <div className="flex justify-center mt-6">
+                          <Button
+                            onClick={generateCode}
+                            disabled={isGenerating}
+                            className="w-full"
+                          >
+                            {isGenerating ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Génération...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                Générer le code
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Code View */}
+                {mobileView === "code" && (
+                  <motion.div
+                    key="code"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full flex flex-col"
+                  >
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+                      <TabsList className="justify-center px-4 py-2 border-b bg-transparent h-10 items-center">
+                        <TabsTrigger value="code" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800 h-7 text-sm">
+                          <Code2 className="w-4 h-4 mr-1" />
+                          Code
+                        </TabsTrigger>
+                        <TabsTrigger value="preview" disabled={!generatedCode} className="h-7 text-sm">
+                          <Eye className="w-4 h-4 mr-1" />
+                          Preview
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="code" className="h-full mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col">
+                        {generatedCode ? (
+                          <div className="h-full flex flex-col">
+                            <div className="flex-shrink-0 p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <Code2 className="w-4 h-4" />
+                                  <span className="font-semibold text-sm">Code généré</span>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button variant="outline" size="sm" onClick={copyCode} className="h-8 px-2">
+                                    <Copy className="w-3 h-3 mr-1" />
+                                    <span className="text-xs">Copier</span>
+                                  </Button>
+                                  <Button size="sm" onClick={downloadCode} className="h-8 px-2">
+                                    <Download className="w-3 h-3 mr-1" />
+                                    <span className="text-xs">Télécharger</span>
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex-1 overflow-hidden">
+                              <MonacoEditor
+                                language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
+                                theme="vs-dark"
+                                value={generatedCode}
+                                height="100%"
+                                options={{
+                                  readOnly: true,
+                                  minimap: { enabled: false },
+                                  fontSize: 12,
+                                  lineNumbers: "on",
+                                  scrollBeyondLastLine: false,
+                                  wordWrap: "on",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="h-full flex items-center justify-center text-slate-500 p-4">
+                            <div className="text-center max-w-sm">
+                              <Code2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                              <p className="text-lg font-medium mb-2">Prêt à générer</p>
+                              <p className="text-sm">Upload une image puis cliquez sur "Générer le code"</p>
+                            </div>
+                          </div>
+                        )}
+                      </TabsContent>
+
+                      <TabsContent value="preview" className="h-full mt-0 p-4 overflow-auto flex items-center justify-center">
+                        <div className="text-center text-slate-500 max-w-sm">
+                          <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p className="text-lg font-medium mb-2">Aperçu en direct</p>
+                          <p className="text-xs">Fonctionnalité preview à venir</p>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </motion.div>
+                )}
+
+                {/* Config View */}
+                {mobileView === "config" && (
+                  <motion.div
+                    key="config"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full overflow-y-auto"
+                  >
+                    <div className="p-4 space-y-4">
+                      <Card className={`p-4 bg-gradient-to-br from-${planColors[activePlan as PlanType].bg}-50 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-950/30 border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
+                        <div className="flex items-center gap-3">
+                          <Cpu className={`w-6 h-6 text-${planColors[activePlan as PlanType].text}`} />
+                          <div>
+                            <p className="font-bold text-sm">{config.name}</p>
+                            <p className={`text-xs ${config.statusColor}`}>{config.engine}</p>
+                          </div>
+                        </div>
+                      </Card>
+
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm font-medium mb-2 block">Framework</Label>
+                          <Select
+                            value={workbenchConfig.framework}
+                            onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
+                          >
+                            <SelectTrigger className="h-10">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {config.frameworks.map((f: FrameworkType) => (
+                                <SelectItem key={f} value={f}>
+                                  <div className="flex items-center gap-2">
+                                    {getFrameworkIcon(f)}
+                                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium mb-2 block">Style Engine</Label>
+                          <Select
+                            value={workbenchConfig.styleEngine}
+                            onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}
+                          >
+                            <SelectTrigger className="h-10">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {config.styleEngines.map((s: StyleEngine) => (
+                                <SelectItem key={s} value={s}>
+                                  {s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium mb-2 block">Nom du composant</Label>
+                          <Input
+                            className="h-10"
+                            value={workbenchConfig.componentName}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
+                            placeholder="MyComponent"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="ts-mobile" className="text-sm font-medium">TypeScript</Label>
+                            <Switch
+                              id="ts-mobile"
+                              checked={workbenchConfig.useTypeScript}
+                              onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="dark-mobile" className="text-sm font-medium">Dark Mode</Label>
+                            <Switch
+                              id="dark-mobile"
+                              checked={workbenchConfig.darkMode}
+                              onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="mobile-preview" className="text-sm font-medium">Preview Mobile</Label>
+                          <Switch
+                            id="mobile-preview"
+                            checked={workbenchConfig.mobile}
+                            onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, mobile: v }))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* PANNEAU CONFIGURATION - UNIQUEMENT DESKTOP */}
+          <div className="hidden xl:block">
+            <motion.div
+              className="bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-md"
+              animate={{ width: isConfigPanelCollapsed ? 64 : 320 }}
+              transition={{ type: "spring", stiffness: 220, damping: 28, mass: 0.9 }}
+            >
+              {/* Header du panneau */}
+              <div className="flex-shrink-0 h-12 border-b border-slate-200 dark:border-slate-800 flex items-center">
+                {isConfigPanelCollapsed ? (
+                  <Button
+                    variant="ghost"
+                    className="w-full h-full rounded-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center"
+                    onClick={() => setIsConfigPanelCollapsed(false)}
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </Button>
+                ) : (
+                  <div className="flex items-center justify-between w-full px-5">
+                    <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
+                    <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(true)} className="border-t border-slate-200 dark:border-slate-800 h-8 w-8">
+                      <ChevronRight className="w-5 h-5" />
                     </Button>
                   </div>
                 )}
               </div>
-            </div>
-          </div>
 
-          {/* DROITE - Code - 65% */}
-          <div className="flex flex-col flex-1 overflow-hidden bg-white dark:bg-slate-950">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-              <TabsList className="justify-start px-6 py-2 border-b bg-transparent h-12 items-center">
-                <TabsTrigger value="code" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800 h-8">
-                  <Code2 className="w-4 h-4 mr-2" />
-                  Code
-                </TabsTrigger>
-                <TabsTrigger value="preview" disabled={!generatedCode} className="h-8">
-                  <Eye className="w-4 h-4 mr-2" />
-                  Preview
-                </TabsTrigger>
-              </TabsList>
+              {/* Contenu du panneau - seulement visible quand non réduit */}
+              {!isConfigPanelCollapsed && (
+                <div className="flex-1 overflow-y-auto p-5 space-y-6">
+                  <Card className={`p-5 bg-gradient-to-br from-${planColors[activePlan as PlanType].bg}-50 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-950/30 border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
+                    <div className="flex items-center gap-4">
+                      <Cpu className={`w-8 h-8 text-${planColors[activePlan as PlanType].text}`} />
+                      <div>
+                        <p className="font-bold text-lg">{config.name}</p>
+                        <p className={`text-sm ${config.statusColor}`}>{config.engine}</p>
+                      </div>
+                    </div>
+                  </Card>
 
-              <TabsContent value="code" className="h-full mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col">
-                {generatedCode ? (
-                  <div className="h-full flex flex-col">
-                    <div className="flex-shrink-0 p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                  <div className="space-y-5">
+                    <div>
+                      <Label className="text-sm font-medium">Framework</Label>
+                      <Select
+                        value={workbenchConfig.framework}
+                        onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
+                      >
+                        <SelectTrigger className="mt-1.5">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {config.frameworks.map((f: FrameworkType) => (
+                            <SelectItem key={f} value={f}>
+                              <div className="flex items-center gap-2">
+                                {getFrameworkIcon(f)}
+                                {f.charAt(0).toUpperCase() + f.slice(1)}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {activePlan === "starter" && <p className="text-xs text-slate-500 mt-1">Next.js et Vue disponibles en Pro ✨</p>}
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium">Style Engine</Label>
+                      <Select
+                        value={workbenchConfig.styleEngine}
+                        onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}
+                      >
+                        <SelectTrigger className="mt-1.5">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {config.styleEngines.map((s: StyleEngine) => (
+                            <SelectItem key={s} value={s}>
+                              {s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium">Nom du composant</Label>
+                      <Input
+                        className="mt-1.5"
+                        value={workbenchConfig.componentName}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
+                        placeholder="MyComponent"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Code2 className="w-5 h-5" />
-                          <span className="font-semibold">Code généré</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" onClick={copyCode}>
-                            <Copy className="w-4 h-4 mr-2" />
-                            Copier
-                          </Button>
-                          <Button size="sm" onClick={downloadCode}>
-                            <Download className="w-4 h-4 mr-2" />
-                            Télécharger
-                          </Button>
-                        </div>
+                        <Label htmlFor="ts" className="text-sm font-medium">TypeScript</Label>
+                        <Switch
+                          id="ts"
+                          checked={workbenchConfig.useTypeScript}
+                          onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="dark" className="text-sm font-medium">Dark Mode</Label>
+                        <Switch
+                          id="dark"
+                          checked={workbenchConfig.darkMode}
+                          onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))}
+                        />
                       </div>
                     </div>
 
-                    <div className="flex-1 overflow-hidden">
-                      <MonacoEditor
-                        language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
-                        theme="vs-dark"
-                        value={generatedCode}
-                        height="100%"
-                        options={{
-                          readOnly: true,
-                          minimap: { enabled: false },
-                          fontSize: 14,
-                          lineNumbers: "on",
-                          scrollBeyondLastLine: false,
-                          wordWrap: "on",
-                        }}
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="mobile" className="text-sm font-medium">Preview Mobile</Label>
+                      <Switch
+                        id="mobile"
+                        checked={workbenchConfig.mobile}
+                        onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, mobile: v }))}
                       />
                     </div>
-                  </div>
-                ) : (
-                  <div className="h-full flex items-center justify-center text-slate-500">
-                    <div className="text-center max-w-md px-6">
-                      <Code2 className="w-16 h-16 mx-auto mb-6 opacity-50" />
-                      <p className="text-xl font-medium mb-4">Prêt à générer</p>
-                      <p className="text-base">Upload une image puis cliquez sur "Générer le code"</p>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
 
-              <TabsContent value="preview" className="h-full mt-0 p-6 overflow-auto flex items-center justify-center">
-                <div className="text-center text-slate-500 max-w-md">
-                  <Eye className="w-16 h-16 mx-auto mb-6 opacity-50" />
-                  <p className="text-xl font-medium mb-4">Aperçu en direct</p>
-                  <p className="text-sm mt-2">Fonctionnalité preview à venir</p>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+                    {/* Fonctionnalités Pro */}
+                    <Card className={`p-5 ${activePlan === "starter" ? "opacity-50" : ""} bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800`}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Zap className="w-5 h-5 text-amber-600" />
+                        <h3 className="font-semibold">Fonctionnalités Pro</h3>
+                        {activePlan === "starter" && <Lock className="w-4 h-4 text-amber-600" />}
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
+                          <Switch
+                            checked={workbenchConfig.enableAnimations}
+                            onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
+                            disabled={activePlan === "starter"}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
+                          <Switch
+                            checked={workbenchConfig.enableAccessibility}
+                            onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
+                            disabled={activePlan === "starter"}
+                          />
+                        </div>
+                      </div>
+                    </Card>
 
-          {/* PANNEAU CONFIGURATION */}
-          <motion.div
-            className="bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-md"
-            animate={{ width: isConfigPanelCollapsed ? 64 : 320 }}
-            transition={{ type: "spring", stiffness: 220, damping: 28, mass: 0.9 }}
-          >
-            {/* Header du panneau */}
-            <div className="flex-shrink-0 h-12 border-b border-slate-200 dark:border-slate-800 flex items-center">
-              {isConfigPanelCollapsed ? (
-                <Button
-                  variant="ghost"
-                  className="w-full h-full rounded-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center"
-                  onClick={() => setIsConfigPanelCollapsed(false)}
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </Button>
-              ) : (
-                <div className="flex items-center justify-between w-full px-5">
-                  <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
-                  <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(true)} className="border-t border-slate-200 dark:border-slate-800 h-8 w-8">
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
+                    {/* Fonctionnalités Business */}
+                    <Card className={`p-5 ${activePlan !== "business" ? "opacity-50" : ""} bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800`}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Crown className="w-5 h-5 text-purple-600" />
+                        <h3 className="font-semibold">Fonctionnalités Business</h3>
+                        {activePlan !== "business" && <Lock className="w-4 h-4 text-purple-600" />}
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Sécurité entreprise</Label>
+                          <Switch
+                            checked={workbenchConfig.enableSecurity}
+                            onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableSecurity: v })) : undefined}
+                            disabled={activePlan !== "business"}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Design System synchronisé</Label>
+                          <Switch
+                            checked={workbenchConfig.enableDesignSystem}
+                            onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableDesignSystem: v })) : undefined}
+                            disabled={activePlan !== "business"}
+                          />
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
                 </div>
               )}
-            </div>
-
-            {/* Contenu du panneau - seulement visible quand non réduit */}
-            {!isConfigPanelCollapsed && (
-              <div className="flex-1 overflow-y-auto p-5 space-y-6">
-                <Card className={`p-5 bg-gradient-to-br from-${planColors[activePlan as PlanType].bg}-50 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-950/30 border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
-                  <div className="flex items-center gap-4">
-                    <Cpu className={`w-8 h-8 text-${planColors[activePlan as PlanType].text}`} />
-                    <div>
-                      <p className="font-bold text-lg">{config.name}</p>
-                      <p className={`text-sm ${config.statusColor}`}>{config.engine}</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <div className="space-y-5">
-                  <div>
-                    <Label className="text-sm font-medium">Framework</Label>
-                    <Select 
-                      value={workbenchConfig.framework} 
-                      onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
-                    >
-                      <SelectTrigger className="mt-1.5">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {config.frameworks.map((f: FrameworkType) => (
-                          <SelectItem key={f} value={f}>
-                            <div className="flex items-center gap-2">
-                              {getFrameworkIcon(f)}
-                              {f.charAt(0).toUpperCase() + f.slice(1)}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {activePlan === "starter" && <p className="text-xs text-slate-500 mt-1">Next.js et Vue disponibles en Pro ✨</p>}
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Style Engine</Label>
-                    <Select 
-                      value={workbenchConfig.styleEngine} 
-                      onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}
-                    >
-                      <SelectTrigger className="mt-1.5">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {config.styleEngines.map((s: StyleEngine) => (
-                          <SelectItem key={s} value={s}>
-                            {s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Nom du composant</Label>
-                    <Input
-                      className="mt-1.5"
-                      value={workbenchConfig.componentName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
-                      placeholder="MyComponent"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="ts" className="text-sm font-medium">TypeScript</Label>
-                      <Switch
-                        id="ts"
-                        checked={workbenchConfig.useTypeScript}
-                        onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="dark" className="text-sm font-medium">Dark Mode</Label>
-                      <Switch
-                        id="dark"
-                        checked={workbenchConfig.darkMode}
-                        onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="mobile" className="text-sm font-medium">Preview Mobile</Label>
-                    <Switch
-                      id="mobile"
-                      checked={workbenchConfig.mobile}
-                      onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, mobile: v }))}
-                    />
-                  </div>
-
-                  {/* Fonctionnalités Pro */}
-                  <Card className={`p-5 ${activePlan === "starter" ? "opacity-50" : ""} bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Zap className="w-5 h-5 text-amber-600" />
-                      <h3 className="font-semibold">Fonctionnalités Pro</h3>
-                      {activePlan === "starter" && <Lock className="w-4 h-4 text-amber-600" />}
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
-                        <Switch
-                          checked={workbenchConfig.enableAnimations}
-                          onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
-                          disabled={activePlan === "starter"}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
-                        <Switch
-                          checked={workbenchConfig.enableAccessibility}
-                          onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
-                          disabled={activePlan === "starter"}
-                        />
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Fonctionnalités Business */}
-                  <Card className={`p-5 ${activePlan !== "business" ? "opacity-50" : ""} bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Crown className="w-5 h-5 text-purple-600" />
-                      <h3 className="font-semibold">Fonctionnalités Business</h3>
-                      {activePlan !== "business" && <Lock className="w-4 h-4 text-purple-600" />}
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Sécurité entreprise</Label>
-                        <Switch
-                          checked={workbenchConfig.enableSecurity}
-                          onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableSecurity: v })) : undefined}
-                          disabled={activePlan !== "business"}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Design System synchronisé</Label>
-                        <Switch
-                          checked={workbenchConfig.enableDesignSystem}
-                          onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableDesignSystem: v })) : undefined}
-                          disabled={activePlan !== "business"}
-                        />
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              </div>
-            )}
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
 
-        {/* FOOTER LOGS */}
-        <motion.div 
+        {/* FOOTER LOGS - RESPONSIVE */}
+        <motion.div
           className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-md"
-          animate={{ height: areLogsCollapsed ? 48 : 128 }}
+          animate={{ height: areLogsCollapsed ? 44 : 120 }}
           transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
         >
           {/* Header des logs avec bouton de réduction */}
-          <div className="flex-shrink-0 h-12 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4">
+          <div className="flex-shrink-0 h-11 sm:h-12 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 sm:px-4">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
-              <h4 className="font-semibold text-base">Logs de génération</h4>
+              <h4 className="font-semibold text-sm sm:text-base">Logs de génération</h4>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setAreLogsCollapsed(!areLogsCollapsed)}
-              className="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors h-10 w-10"
+              className="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors h-8 w-8 sm:h-10 sm:w-10"
             >
               <motion.div
                 animate={{ rotate: areLogsCollapsed ? 0 : 180 }}
@@ -685,9 +1093,9 @@ export default ${workbenchConfig.componentName};
                 className="flex items-center justify-center"
               >
                 {areLogsCollapsed ? (
-                  <ChevronUp className="w-5 h-5" />
+                  <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
                 ) : (
-                  <ChevronDown className="w-5 h-5" />
+                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </motion.div>
             </Button>
@@ -695,33 +1103,33 @@ export default ${workbenchConfig.componentName};
 
           {/* Contenu des logs */}
           <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="flex-shrink-0 p-4">
+            <div className="flex-shrink-0 p-3 sm:p-4">
               {isGenerating && (
-                <div className="flex items-center gap-4 text-sm mb-3">
-                  <Progress value={generationProgress} className="w-32 h-2" />
-                  <span className="font-medium">{Math.round(generationProgress)}%</span>
+                <div className="flex items-center gap-3 sm:gap-4 text-sm mb-2 sm:mb-3">
+                  <Progress value={generationProgress} className="w-24 sm:w-32 h-2" />
+                  <span className="font-medium text-sm">{Math.round(generationProgress)}%</span>
                 </div>
               )}
             </div>
-            
-            <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+
+            <div className="flex-1 overflow-y-auto space-y-1 sm:space-y-2 pr-2">
               <AnimatePresence mode="popLayout">
                 {logs.map(log => (
                   <motion.div
                     key={log.id}
-                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 8, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -12, scale: 0.98 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    className="flex items-start gap-3 py-1"
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="flex items-start gap-2 sm:gap-3 py-1 px-1"
                   >
                     {log.type === "success" ? (
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
                     ) : (
-                      <Activity className="w-4 h-4 text-blue-500 mt-0.5 animate-pulse flex-shrink-0" />
+                      <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mt-0.5 animate-pulse flex-shrink-0" />
                     )}
-                    <span className="flex-1 leading-relaxed text-sm">{log.message}</span>
-                    <span className="text-xs text-slate-500 whitespace-nowrap mt-0.5">
+                    <span className="flex-1 leading-relaxed text-xs sm:text-sm">{log.message}</span>
+                    <span className="text-xs text-slate-500 whitespace-nowrap mt-0.5 hidden sm:inline">
                       {log.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </motion.div>
@@ -729,7 +1137,7 @@ export default ${workbenchConfig.componentName};
               </AnimatePresence>
 
               {logs.length === 0 && (
-                <div className="text-center text-slate-500 italic py-6 text-sm">
+                <div className="text-center text-slate-500 italic py-4 sm:py-6 text-xs sm:text-sm px-2">
                   Les logs s'afficheront ici pendant la génération
                 </div>
               )}

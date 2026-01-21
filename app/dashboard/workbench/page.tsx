@@ -519,7 +519,7 @@ export default ${workbenchConfig.componentName};
         </div>
 
         {/* MAIN CONTENT - RESPONSIVE */}
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 h-screen overflow-hidden">
           {/* DESKTOP LAYOUT - Split View */}
           <div className="hidden lg:flex flex-1 overflow-hidden">
             {/* GAUCHE - Upload - 35% */}
@@ -624,7 +624,7 @@ export default ${workbenchConfig.componentName};
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ duration: 0.5, ease: "easeOut" }}
-                          className={`h-full bg-slate-950 rounded-[2rem] border border-white/5 shadow-2xl transition-all duration-300 ${
+                          className={`h-full bg-slate-950 border border-white/5 shadow-2xl transition-all duration-300 ${
                             isEditorFocused ? 'ring-2 ring-codeo-green/50 border-codeo-green/30' : ''
                           }`}
                           onFocus={() => setIsEditorFocused(true)}
@@ -632,7 +632,7 @@ export default ${workbenchConfig.componentName};
                           tabIndex={0}
                         >
                           {/* Barre de titre style Mac OS */}
-                          <div className="h-10 bg-black/20 backdrop-blur-md rounded-t-[2rem] flex items-center justify-between px-4 border-b border-white/5">
+                          <div className="h-10 bg-black/20 backdrop-blur-md flex items-center justify-between px-4 border-b border-white/5">
                             {/* Contrôles de fenêtre Mac */}
                             <div className="flex items-center gap-1.5">
                               <div className="w-2.5 h-2.5 rounded-full bg-red-500/70 hover:bg-red-500 transition-colors cursor-pointer" />
@@ -658,7 +658,7 @@ export default ${workbenchConfig.componentName};
                           </div>
                           
                           {/* Conteneur de l'éditeur */}
-                          <div className="h-[calc(100%-2.5rem)] rounded-b-[2rem] overflow-hidden">
+                          <div className="h-[calc(100%-2.5rem)] overflow-hidden">
                             {isClient && (
                               <MonacoEditor
                                 language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
@@ -1225,7 +1225,7 @@ export default ${workbenchConfig.componentName};
         {/* FOOTER LOGS - RESPONSIVE */}
         <motion.div
           className="bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 shadow-md"
-          animate={{ height: areLogsCollapsed ? 44 : 120 }}
+          animate={{ height: areLogsCollapsed ? 44 : 80 }}
           transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
         >
           {/* Header des logs avec bouton de réduction */}

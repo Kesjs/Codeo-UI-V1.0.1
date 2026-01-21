@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState, createContext, useContext } from 'react'
 import { usePathname } from 'next/navigation'
 import Sidebar from '@/components/dashboard/Sidebar'
 import DynamicHeader from '@/components/dashboard/DynamicHeader'
+import { SearchProvider } from '@/contexts/SearchContext'
 
 // Contexte global pour le plan
 type PlanContextType = {
@@ -20,9 +21,9 @@ const defaultContext: PlanContextType = {
   isDevMode: false
 }
 
-const PlanContext = (React as any).createContext(defaultContext)
+const PlanContext = createContext(defaultContext)
 
-export const usePlan = () => (React as any).useContext(PlanContext)
+export const usePlan = () => useContext(PlanContext)
 
 export default function DashboardLayout({
   children,
@@ -54,22 +55,24 @@ export default function DashboardLayout({
   const { remainingScans, totalScans } = getScanData()
 
   return (
-    <PlanContext.Provider value={{ activePlan, simulatedPlan, setSimulatedPlan, isDevMode }}>
-      <div className="flex h-screen bg-gray-50">
-        {/* Sidebar */}
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header dynamique global */}
-          <DynamicHeader onMenuClick={() => setSidebarOpen(true)} />
+    <SearchProvider>
+      <PlanContext.Provider value={{ activePlan, simulatedPlan, setSimulatedPlan, isDevMode }}>
+        <div className="flex h-screen bg-gray-50">
+          {/* Sidebar */}
+          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Header dynamique global */}
+            <DynamicHeader onMenuClick={() => setSidebarOpen(true)} />
 
-          {/* Page Content */}
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
-            {children}
-          </main>
+            {/* Page Content */}
+            <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
-    </PlanContext.Provider>
+      </PlanContext.Provider>
+    </SearchProvider>
   )
 }

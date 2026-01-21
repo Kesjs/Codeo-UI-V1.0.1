@@ -9,15 +9,27 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { usePlan } from '@/app/dashboard/layout'
+import { useSearch } from '@/contexts/SearchContext'
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
+// Import du type SearchResult depuis le contexte
+interface SearchResult {
+  id: string
+  type: 'project' | 'component' | 'collection' | 'user' | 'setting'
+  title: string
+  description: string
+  path: string
+  metadata?: {
+    framework?: string
+    efficiency?: number
+    date?: string
+    tags?: string[]
+  }
+}
+
 interface DynamicHeaderProps {
   onMenuClick?: () => void
-  searchQuery?: string
-  onSearchChange?: (query: string) => void
-  filterFramework?: string
-  onFilterChange?: (filter: string) => void
 }
 
 const sections = [
@@ -72,21 +84,20 @@ const sections = [
 ]
 
 export default function DynamicHeader({ 
-  onMenuClick, 
-  searchQuery = '', 
-  onSearchChange = () => {}, 
-  filterFramework = 'all',
-  onFilterChange = () => {}
+  onMenuClick
 }: DynamicHeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { activePlan } = usePlan()
+  const { searchQuery, setSearchQuery, searchResults, isSearching, clearSearch } = useSearch()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false)
+  const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null!)
   const profileMenuRef = useRef<HTMLDivElement>(null!)
   const notificationMenuRef = useRef<HTMLDivElement>(null!)
+  const searchResultsRef = useRef<HTMLDivElement>(null!)
 
   // Fermer les menus quand on clique en dehors
   useEffect(() => {
@@ -100,12 +111,20 @@ export default function DynamicHeader({
       if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target as Node)) {
         setIsNotificationMenuOpen(false)
       }
+      if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
+        setIsSearchResultsOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  // Ouvrir/fermer les résultats de recherche
+  useEffect(() => {
+    setIsSearchResultsOpen(searchQuery.length > 0 && searchResults.length > 0)
+  }, [searchQuery, searchResults])
 
   const currentSection = sections.find(section => section.path === pathname) || sections[0]
   const Icon = currentSection?.icon
@@ -149,23 +168,85 @@ export default function DynamicHeader({
             </div>
 
             {/* Barre de recherche */}
-            <div className="flex items-center gap-2 flex-1 max-w-md mx-4">
-              <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-              <Input
-                type="text"
-                placeholder="Rechercher un projet..."
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus-visible:ring-codeo-green"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => onSearchChange('')}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex-shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
+            <div className="relative flex-1 max-w-md mx-4" ref={searchResultsRef}>
+              <div className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher dans votre espace..."
+                  value={searchQuery}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent"
+                  autoFocus={false}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex-shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Résultats de recherche dropdown */}
+              <AnimatePresence>
+                {isSearchResultsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-50 max-h-96 overflow-y-auto"
+                  >
+                    {isSearching ? (
+                      <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">
+                        Recherche en cours...
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div>
+                        {searchResults.map((result: SearchResult) => (
+                          <button
+                            key={result.id}
+                            onClick={() => {
+                              router.push(result.path)
+                              clearSearch()
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors border-b border-slate-100 dark:border-slate-700 last:border-b-0"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex-shrink-0 mt-0.5">
+                                {result.type === 'project' && <Folder className="w-4 h-4 text-blue-500" />}
+                                {result.type === 'component' && <Layout className="w-4 h-4 text-purple-500" />}
+                                {result.type === 'collection' && <Palette className="w-4 h-4 text-pink-500" />}
+                                {result.type === 'user' && <Users className="w-4 h-4 text-green-500" />}
+                                {result.type === 'setting' && <Settings className="w-4 h-4 text-orange-500" />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm text-slate-900 dark:text-white truncate">
+                                  {result.title}
+                                </div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1">
+                                  {result.description}
+                                </div>
+                                {result.metadata?.framework && (
+                                  <div className="text-xs text-codeo-green mt-1">
+                                    {result.metadata.framework}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">
+                        Aucun résultat trouvé pour "{searchQuery}"
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Actions utilisateur */}

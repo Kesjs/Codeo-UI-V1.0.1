@@ -8,7 +8,7 @@ import {
   Sparkles, Upload, Download, Copy, Cpu, Activity, ChevronRight,
   CheckCircle, X, Loader2, GitBranch, Lock, Crown, Zap, Code2,
   Atom, Globe, Triangle, Palette, Eye, FileJson, ChevronDown, ChevronUp,
-  Settings, Smartphone,
+  Settings, Smartphone, ChevronLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -410,6 +410,36 @@ export default ${workbenchConfig.componentName};
             )}
           </AnimatePresence>
         </header>
+
+        {/* TITRE DESCRIPTIF - STYLE TABLEAU DE BORD */}
+        <div className="px-4 sm:px-6 lg:px-10 py-8 bg-white border-b border-slate-100">
+          <div className="max-w-screen-2xl mx-auto">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="space-y-2">
+                <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">
+                  Workbench IA
+                </h1>
+                <p className="text-base text-slate-600 dark:text-slate-400 max-w-2xl">
+                  Transformez vos designs UI en code propre et optimisé avec notre moteur de vision V-AST. Upload une image et générez instantanément des composants React, Vue ou HTML.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 bg-codeo-green/10 border border-codeo-green/20 rounded-lg">
+                  <Sparkles className="w-4 h-4 text-codeo-green" />
+                  <span className="text-sm font-medium text-codeo-green">
+                    {config.engine}
+                  </span>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Mode {activePlan === "starter" ? "Standard" : activePlan === "pro" ? "Turbo" : "Enterprise"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* MAIN CONTENT - RESPONSIVE */}
         <div className="flex flex-1 overflow-hidden">
@@ -888,184 +918,152 @@ export default ${workbenchConfig.componentName};
             </div>
           </div>
 
-          {/* PANNEAU CONFIGURATION - UNIQUEMENT DESKTOP */}
-          <div className="hidden xl:block">
-            <motion.div
-              className="bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-md"
-              animate={{ width: isConfigPanelCollapsed ? 64 : 320 }}
-              transition={{ type: "spring", stiffness: 220, damping: 28, mass: 0.9 }}
-            >
-              {/* Header du panneau */}
-              <div className="flex-shrink-0 h-12 border-b border-slate-200 dark:border-slate-800 flex items-center">
-                {isConfigPanelCollapsed ? (
-                  <Button
-                    variant="ghost"
-                    className="w-full h-full rounded-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-0"
-                    onClick={() => setIsConfigPanelCollapsed(false)}
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </Button>
-                ) : (
-                  <div className="flex items-center justify-between w-full px-5">
-                    <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
-                    <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(true)} className="border-t border-slate-200 dark:border-slate-800 h-8 w-8 focus-visible:outline-none focus-visible:ring-0">
-                      <ChevronRight className="w-5 h-5" />
-                    </Button>
-                  </div>
-                )}
+          {/* PANNEAU CONFIGURATION - CONTENEUR SÉPARÉ AVEC SCROLL INDÉPENDANT */}
+          <div className="hidden xl:block w-80 h-full overflow-y-auto border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <div className="p-4 space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
+                <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(!isConfigPanelCollapsed)} className="h-8 w-8">
+                  {isConfigPanelCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+                </Button>
               </div>
-
-              {/* Contenu du panneau - seulement visible quand non réduit */}
-              {!isConfigPanelCollapsed && (
-                <div className="flex-1 overflow-y-auto p-5 space-y-6">
-                  <Card className={`p-5 bg-gradient-to-br from-${planColors[activePlan as PlanType].bg}-50 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-950/30 border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
-                    <div className="flex items-center gap-4">
-                      <Cpu className={`w-8 h-8 text-${planColors[activePlan as PlanType].text}`} />
-                      <div>
-                        <p className="font-bold text-lg">{config.name}</p>
-                        <p className={`text-sm ${config.statusColor}`}>{config.engine}</p>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <div className="space-y-5">
-                    <div>
-                      <Label className="text-sm font-medium">Framework</Label>
-                      <Select
-                        value={workbenchConfig.framework}
-                        onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
-                      >
-                        <SelectTrigger className="mt-1.5">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {config.frameworks.map((f: FrameworkType) => (
-                            <SelectItem key={f} value={f}>
-                              <div className="flex items-center gap-2">
-                                {getFrameworkIcon(f)}
-                                {f.charAt(0).toUpperCase() + f.slice(1)}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {activePlan === "starter" && <p className="text-xs text-slate-500 mt-1">Next.js et Vue disponibles en Pro ✨</p>}
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium">Style Engine</Label>
-                      <Select
-                        value={workbenchConfig.styleEngine}
-                        onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}
-                      >
-                        <SelectTrigger className="mt-1.5">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {config.styleEngines.map((s: StyleEngine) => (
-                            <SelectItem key={s} value={s}>
-                              {s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium">Nom du composant</Label>
-                      <Input
-                        className="mt-1.5"
-                        value={workbenchConfig.componentName}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
-                        placeholder="MyComponent"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="ts" className="text-sm font-medium">TypeScript</Label>
-                        <Switch
-                          id="ts"
-                          checked={workbenchConfig.useTypeScript}
-                          onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="dark" className="text-sm font-medium">Dark Mode</Label>
-                        <Switch
-                          id="dark"
-                          checked={workbenchConfig.darkMode}
-                          onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="mobile" className="text-sm font-medium">Preview Mobile</Label>
-                      <Switch
-                        id="mobile"
-                        checked={workbenchConfig.mobile}
-                        onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, mobile: v }))}
-                      />
-                    </div>
-
-                    {/* Fonctionnalités Pro */}
-                    <Card className={`p-5 ${activePlan === "starter" ? "opacity-50" : ""} bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800`}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <Zap className="w-5 h-5 text-amber-600" />
-                        <h3 className="font-semibold">Fonctionnalités Pro</h3>
-                        {activePlan === "starter" && <Lock className="w-4 h-4 text-amber-600" />}
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
-                          <Switch
-                            checked={workbenchConfig.enableAnimations}
-                            onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
-                            disabled={activePlan === "starter"}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
-                          <Switch
-                            checked={workbenchConfig.enableAccessibility}
-                            onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
-                            disabled={activePlan === "starter"}
-                          />
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Fonctionnalités Business */}
-                    <Card className={`p-5 ${activePlan !== "business" ? "opacity-50" : ""} bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800`}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <Crown className="w-5 h-5 text-purple-600" />
-                        <h3 className="font-semibold">Fonctionnalités Business</h3>
-                        {activePlan !== "business" && <Lock className="w-4 h-4 text-purple-600" />}
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Sécurité entreprise</Label>
-                          <Switch
-                            checked={workbenchConfig.enableSecurity}
-                            onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableSecurity: v })) : undefined}
-                            disabled={activePlan !== "business"}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Design System synchronisé</Label>
-                          <Switch
-                            checked={workbenchConfig.enableDesignSystem}
-                            onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableDesignSystem: v })) : undefined}
-                            disabled={activePlan !== "business"}
-                          />
-                        </div>
-                      </div>
-                    </Card>
+              <Card className={`p-5 bg-gradient-to-br from-${planColors[activePlan as PlanType].bg}-50 to-transparent dark:from-${planColors[activePlan as PlanType].bg}-950/30 border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
+                <div className="flex items-center gap-4">
+                  <Cpu className={`w-8 h-8 text-${planColors[activePlan as PlanType].text}`} />
+                  <div>
+                    <p className="font-bold text-lg">{config.name}</p>
+                    <p className={`text-sm ${config.statusColor}`}>{config.engine}</p>
                   </div>
                 </div>
-              )}
-            </motion.div>
+              </Card>
+
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">Framework</Label>
+                  <Select
+                    value={workbenchConfig.framework}
+                    onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {config.frameworks.map((f: FrameworkType) => (
+                        <SelectItem key={f} value={f}>
+                          <div className="flex items-center gap-2">
+                            {getFrameworkIcon(f)}
+                            {f.charAt(0).toUpperCase() + f.slice(1)}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {activePlan === "starter" && <p className="text-xs text-slate-500 mt-1">Next.js et Vue disponibles en Pro ✨</p>}
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Style Engine</Label>
+                  <Select
+                    value={workbenchConfig.styleEngine}
+                    onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {config.styleEngines.map((s: StyleEngine) => (
+                        <SelectItem key={s} value={s}>
+                          {s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Nom du composant</Label>
+                  <Input
+                    className="mt-1.5"
+                    value={workbenchConfig.componentName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
+                    placeholder="MyComponent"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
+                    <Switch
+                      checked={workbenchConfig.enableAnimations}
+                      onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
+                      disabled={activePlan === "starter"}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
+                    <Switch
+                      checked={workbenchConfig.enableAccessibility}
+                      onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
+                      disabled={activePlan === "starter"}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Fonctionnalités Pro */}
+              <Card className={`p-5 ${activePlan === "starter" ? "opacity-50" : ""} bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800`}>
+                <div className="flex items-center gap-2 mb-4">
+                  <Zap className="w-5 h-5 text-amber-600" />
+                  <h3 className="font-semibold">Fonctionnalités Pro</h3>
+                  {activePlan === "starter" && <Lock className="w-4 h-4 text-amber-600" />}
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
+                    <Switch
+                      checked={workbenchConfig.enableAnimations}
+                      onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
+                      disabled={activePlan === "starter"}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
+                    <Switch
+                      checked={workbenchConfig.enableAccessibility}
+                      onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
+                      disabled={activePlan === "starter"}
+                    />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Fonctionnalités Business */}
+              <Card className={`p-5 ${activePlan !== "business" ? "opacity-50" : ""} bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800`}>
+                <div className="flex items-center gap-2 mb-4">
+                  <Crown className="w-5 h-5 text-purple-600" />
+                  <h3 className="font-semibold">Fonctionnalités Business</h3>
+                  {activePlan !== "business" && <Lock className="w-4 h-4 text-purple-600" />}
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Sécurité entreprise</Label>
+                    <Switch
+                      checked={workbenchConfig.enableSecurity}
+                      onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableSecurity: v })) : undefined}
+                      disabled={activePlan !== "business"}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Design System synchronisé</Label>
+                    <Switch
+                      checked={workbenchConfig.enableDesignSystem}
+                      onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableDesignSystem: v })) : undefined}
+                      disabled={activePlan !== "business"}
+                    />
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
 

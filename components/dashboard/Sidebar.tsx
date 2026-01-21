@@ -301,7 +301,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           {/* BOUTON PILULE - DESKTOP */}
-          <div className="hidden lg:flex absolute top-1/2 -translate-y-1/2 -right-3 z-50">
+          <div className="hidden lg:flex absolute top-48 -right-3 z-50">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -393,7 +393,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* NAVIGATION AREA (Invisible Scroll) */}
           <div
-            className="flex-1 px-3 overflow-y-auto space-y-4 pt-8"
+            className="flex-1 px-3 overflow-y-auto space-y-4 pt-8 min-h-0"
             style={{
               scrollbarWidth: "none", // Firefox
               msOverflowStyle: "none", // IE/Edge

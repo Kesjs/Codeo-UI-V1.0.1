@@ -309,7 +309,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="group w-6 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700
                     hover:bg-slate-50 dark:hover:bg-slate-700 dark:hover:border-slate-600
-                    rounded-full shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center
+                    rounded-full transition-all duration-300 flex items-center justify-center
                     focus:outline-none overflow-hidden"
                     aria-label={
                       isCollapsed

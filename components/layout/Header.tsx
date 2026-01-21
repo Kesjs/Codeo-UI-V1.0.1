@@ -51,7 +51,7 @@ export function Header() {
         ? 'bg-white/90 backdrop-blur-xl py-1 shadow-sm' 
         : 'bg-white py-3'
     }`}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 flex items-center justify-between h-16">
+      <div className="mx-auto max-w-5xl px-6 lg:px-10 flex items-center justify-between h-16">
         
         {/* --- ZONE LOGO AVEC GLOW STATIQUE --- */}
         <Link 

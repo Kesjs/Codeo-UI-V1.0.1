@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: any }) {
       <PlanContext.Provider
         value={{ activePlan, simulatedPlan, setSimulatedPlan, isDevMode }}
       >
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-white">
           {/* Sidebar */}
           <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }: { children: any }) {
             />
 
             {/* Page Content */}
-            <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
+            <main className="flex-1 overflow-y-auto bg-white p-4 md:p-6">
               {children}
             </main>
           </div>

@@ -246,7 +246,7 @@ export default function DynamicHeader({
             ref={searchResultsRef}
           >
             {/* Barre complète sur desktop uniquement */}
-            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 rounded-lg px-3 py-2 border-2 border-gray-300 dark:border-gray-600">
+            <div className="flex items-center gap-3 bg-white dark:bg-slate-900 rounded-lg px-3 py-2 border-2 border-gray-300 dark:border-gray-600">
               <IoSearch className="w-5 h-5 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
@@ -582,7 +582,7 @@ export default function DynamicHeader({
                   </button>
 
                   {/* Champ de recherche */}
-                  <div className="flex-1 flex items-center gap-3 bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3">
+                  <div className="flex-1 flex items-center gap-3 bg-white dark:bg-slate-900 rounded-lg px-4 py-3 border-2 border-gray-300 dark:border-gray-600">
                     <IoSearch className="w-5 h-5 text-slate-400 flex-shrink-0" />
                     <input
                       type="text"

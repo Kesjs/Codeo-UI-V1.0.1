@@ -245,10 +245,10 @@ export default ${workbenchConfig.componentName};
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
+      <div className="flex flex-col h-screen bg-white overflow-hidden">
         
         {/* HEADER PROFESSIONNEL - RESPONSIVE */}
-        <header className="flex-shrink-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <header className="flex-shrink-0 z-30 bg-white/95 border-b border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="px-4 sm:px-6 py-3 flex items-center justify-between max-w-screen-2xl mx-auto">
             {/* Logo et titre principal */}
             <div className="flex items-center gap-3">
@@ -347,7 +347,7 @@ export default ${workbenchConfig.componentName};
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+                className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95"
               >
                 <div className="px-4 py-4 space-y-4">
                   {/* Framework et Style Engine */}
@@ -572,7 +572,7 @@ export default ${workbenchConfig.componentName};
           {/* MOBILE LAYOUT - Navigation par tabs */}
           <div className="lg:hidden flex flex-col flex-1 bg-white dark:bg-slate-950">
             {/* Navigation mobile */}
-            <div className="flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+            <div className="flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95">
               <div className="flex">
                 <button
                   onClick={() => setMobileView("upload")}
@@ -900,7 +900,7 @@ export default ${workbenchConfig.componentName};
                 {isConfigPanelCollapsed ? (
                   <Button
                     variant="ghost"
-                    className="w-full h-full rounded-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center"
+                    className="w-full h-full rounded-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-0"
                     onClick={() => setIsConfigPanelCollapsed(false)}
                   >
                     <ChevronRight className="w-6 h-6" />
@@ -908,7 +908,7 @@ export default ${workbenchConfig.componentName};
                 ) : (
                   <div className="flex items-center justify-between w-full px-5">
                     <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
-                    <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(true)} className="border-t border-slate-200 dark:border-slate-800 h-8 w-8">
+                    <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(true)} className="border-t border-slate-200 dark:border-slate-800 h-8 w-8 focus-visible:outline-none focus-visible:ring-0">
                       <ChevronRight className="w-5 h-5" />
                     </Button>
                   </div>
@@ -1071,7 +1071,7 @@ export default ${workbenchConfig.componentName};
 
         {/* FOOTER LOGS - RESPONSIVE */}
         <motion.div
-          className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-md"
+          className="bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 shadow-md"
           animate={{ height: areLogsCollapsed ? 44 : 120 }}
           transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
         >

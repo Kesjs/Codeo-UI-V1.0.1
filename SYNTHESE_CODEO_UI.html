@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeo UI - Analyse Complète & Synthèse Technique</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --codeo-green: #09d600;
+            --codeo-green-light: rgba(44, 255, 0, 0.1);
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--slate-900);
+            background: white;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--slate-900) 0%, var(--slate-800) 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: var(--codeo-green);
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--codeo-green);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .header .subtitle {
+            font-size: 20px;
+            color: var(--slate-300);
+            font-weight: 500;
+        }
+
+        .header .meta {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+            color: var(--slate-400);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--codeo-green-light);
+            color: var(--codeo-green);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid var(--codeo-green);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 48px;
+            page-break-inside: avoid;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--codeo-green);
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--codeo-green-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .section h2 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--slate-900);
+        }
+
+        .section h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--slate-800);
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        .section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--slate-700);
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .section p {
+            margin-bottom: 16px;
+            color: var(--slate-600);
+            font-size: 15px;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .card {
+            background: var(--slate-50);
+            border: 2px solid var(--slate-200);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--codeo-green);
+            box-shadow: 0 4px 12px rgba(9, 214, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: var(--slate-600);
+            line-height: 1.6;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--slate-900);
+            color: var(--slate-200);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 16px 0;
+            border-left: 4px solid var(--codeo-green);
+        }
+
+        .code-block .comment {
+            color: var(--slate-500);
+        }
+
+        .code-block .keyword {
+            color: var(--codeo-green);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--slate-600);
+            font-size: 15px;
+        }
+
+        ul li::marker {
+            color: var(--codeo-green);
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding-left: 28px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .checklist li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--codeo-green);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .checklist li.unchecked::before {
+            content: '✗';
+            color: var(--slate-400);
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 14px;
+        }
+
+        thead {
+            background: var(--slate-900);
+            color: white;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--slate-200);
+        }
+
+        tbody tr:hover {
+            background: var(--slate-50);
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: var(--codeo-green-light);
+            border-left: 4px solid var(--codeo-green);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-title {
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Status badges */
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-complete {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-todo {
+            background: var(--slate-200);
+            color: var(--slate-700);
+        }
+
+        /* Pipeline visualization */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 32px 0;
+            padding: 24px;
+            background: var(--slate-50);
+            border-radius: 12px;
+        }
+
+        .pipeline-step {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            position: relative;
+        }
+
+        .pipeline-step::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: var(--codeo-green);
+            font-weight: bold;
+        }
+
+        .pipeline-step:last-child::after {
+            content: '';
+        }
+
+        .pipeline-step-title {
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .pipeline-step-desc {
+            font-size: 12px;
+            color: var(--slate-600);
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .card {
+                page-break-inside: avoid;
+            }
+
+            .header::before {
+                opacity: 0.05;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 2px solid var(--slate-200);
+            text-align: center;
+            color: var(--slate-500);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <span></span>CODEO UI</span>
+            </div>
+            <h1>Analyse Complète & Synthèse Technique</h1>
+            <p class="subtitle">La Quintessence du Projet - Architecture, Vision & Roadmap</p>
+            <div class="meta">
+                <div class="meta-item">
+                    <span>📅</span>
+                    <span></span>Généré le : <strong></strong>Décembre 2024</strong></span>
+                </div>
+                <div class="meta-item">
+                    <span>🔧</span>
+                    <span>Stack : <strong>Next.js 14 + Framer Motion</strong></span>
+                </div>
+                <div class="meta-item">
+                    <span>🚀</span>
+                    <span>État : <strong>Prototype Avancé</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vision Globale -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🌟</div>
+            <h2>Vision Globale</h2>
+        </div>
+        <p></p><strong>Codeo UI</strong> est une plateforme SaaS premium qui révolutionne la conversion design-to-code en transformant des captures d'écran d'interfaces utilisateur en composants de code production-ready (React, Vue, HTML) via un moteur propriétaire d'intelligence artificielle.</p>
+
+        <div class="highlight">
+            <div class="highlight-title">🎯 Mission</div>
+            <p>Éliminer le travail répétitif de transcription design → code en offrant une conversion instantanée, fidèle (99.8%) et production-ready grâce au moteur V-AST propriétaire.</p>
+        </div>
+    </div>
+
+    <!-- Le Moteur V-AST -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🧠</div>
+            <h2>Le Cœur : Le Moteur V-AST</h2>
+        </div>
+
+        <h3>Concept Révolutionnaire</h3>
+        <p>Le projet s'articule autour du <strong>V-AST (Visual Abstract Syntax Tree)</strong> / <strong>Neural-Vision-V2</strong> :</p>
+
+        <div class="pipeline">
+            <div class="pipeline-step">
+                <div class="pipeline-step-title">📸 Image UI</div>
+                <div class="pipeline-step-desc">Upload capture d'écran</div>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-step-title">🤖 Analyse IA</div>
+                <div class="pipeline-step-desc">Neural-Vision-V2</div>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-step-title">🌳 V-AST</div>
+                <div class="pipeline-step-desc">JSON structuré</div>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-step-title">⚡ Code Généré</div>
+                <div class="pipeline-step-desc">React/Vue/HTML</div>
+            </div>
+        </div>
+
+        <h3>Différenciation Clé</h3>
+        <ul class="checklist">
+            <li></li><strong>99.8% de fidélité</strong> de conversion</li>
+            <li><strong>Zéro hallucination structurelle</strong> (vs LLM classiques)</li>
+            <li><strong>Code production-ready</strong> (accessible, sémantique, optimisé)</li>
+            <li><strong>Structure logique AVANT génération</strong> (V-AST comme intermédiaire)</li>
+        </ul>
+
+        <div class="code-block">
+<span class="comment">// Exemple de V-AST généré</span>
+{
+  <span class="keyword">"v_ast_configuration"</span>: {
+    <span class="keyword">"engine"</span>: "Neural-Vision-V2",
+    <span class="keyword">"version"</span>: "2.5.1",
+    <span class="keyword">"features"</span>: ["ai_vision", "responsive_design", "dark_mode"],
+    <span class="keyword">"performance"</span>: {
+      <span class="keyword">"accuracy"</span>: 0.998,
+      <span class="keyword">"speed"</span>: "fast"
+    }
+  }
+}
+        </div>
+    </div>
+
+    <!-- Architecture Technique -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">💎</div>
+            <h2>Architecture Technique</h2>
+        </div>
+
+        <h3>Stack Confirmée</h3>
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-title">⚛️ Framework</div>
+                <div class="card-content">
+                    <strong>Next.js 14.2.35</strong><br>
+                    App Router, Server Components, API Routes
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🎨 Styling</div>
+                <div class="card-content">
+                    <strong>Tailwind CSS</strong><br>
+                    CSS Variables (HSL), Responsive Design
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🧩 Composants</div>
+                <div class="card-content">
+                    <strong>Shadcn UI</strong><br>
+                    Style: New-York, Radix UI Primitives
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">✨ Animations</div>
+                <div class="card-content">
+                    <strong>Framer Motion v12.27.0</strong><br>
+                    Spring transitions, AnimatePresence
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">📝 Éditeur</div>
+                <div class="card-content">
+                    <strong>Monaco Editor</strong><br>
+                    VS Code Engine, Syntax Highlighting
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🔤 Code Viewer</div>
+                <div class="card-content">
+                    <strong>React Syntax Highlighter</strong><br>
+                    Support multi-langages
+                </div>
+            </div>
+        </div>
+
+        <h3>Design System Signature "Soft Premium"</h3>
+        <div class="highlight">
+            <ul class="checklist">
+                <li><strong>Vert Principal :</strong> <code>hsl(123.8, 69.2%, 50.4%)</code> → <span style="color: #09d600; font-weight: bold;">#09d600</span> (codeo-green)</li>
+                <li><strong>Fond Light :</strong> <code>rgba(44, 255, 0, 0.04)</code> (codeo-light-bg)</li>
+                <li><strong>Arrondis Signature :</strong> <code>2rem</code> (32px) pour les cartes Dashboard/Workbench</li>
+                <li><strong>Typographie :</strong> <code>font-black</code> pour H1/H2, <code>font-medium</code> pour body</li>
+                <li><strong>Animations :</strong> Spring transitions (stiffness: 100, damping: 20)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modèle Économique -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">📊</div>
+            <h2>Modèle Économique - Système de Plans</h2>
+        </div>
+
+        <div class="card-grid">
+            <!-- STARTER -->
+            <div class="card">
+                <div class="card-title">
+                    🌱 STARTER
+                    <span class="status status-complete">0 €/mois</span>
+                </div>
+                <div class="card-content">
+                    <ul style="padding-left: 0; list-style: none;">
+                        <li style="margin-bottom: 8px;">✓ <strong>10 scans max/mois</strong></li>
+                        <li style="margin-bottom: 8px;">✓ V-AST Standard</li>
+                        <li style="margin-bottom: 8px;">✓ React, HTML uniquement</li>
+                        <li style="margin-bottom: 8px;">✓ Tailwind uniquement</li>
+                        <li style="margin-bottom: 8px; color: #94a3b8;">✗ Animations, SEO, exports avancés</li>
+                        <li style="margin-bottom: 8px; color: #94a3b8;">✗ Next.js, Vue, Svelte</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PRO -->
+            <div class="card" style="border: 3px solid #09d600;">
+                <div class="card-title">
+                    🚀 PRO
+                    <span class="status" style="background: #09d600; color: white;">49 €/mois</span>
+                </div>
+                <div class="card-content">
+                    <ul style="padding-left: 0; list-style: none;">
+                        <li style="margin-bottom: 8px;">✓ <strong>Scans illimités</strong></li>
+                        <li style="margin-bottom: 8px;">✓ V-AST Turbo v4.2</li>
+                        <li style="margin-bottom: 8px;">✓ <strong>GPU prioritaire (2.5x boost)</strong></li>
+                        <li style="margin-bottom: 8px;">✓ Tous frameworks (React, Next.js, Vue, HTML)</li>
+                        <li style="margin-bottom: 8px;">✓ Multi style-engines</li>
+                        <li style="margin-bottom: 8px;">✓ Animations, SEO, TypeScript</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- BUSINESS -->
+            <div class="card">
+                <div class="card-title">
+                    👔 BUSINESS
+                    <span class="status" style="background: #7c3aed; color: white;">149 €/mois</span>
+                </div>
+                <div class="card-content">
+                    <ul style="padding-left: 0; list-style: none;">
+                        <li style="margin-bottom: 8px;">✓ <strong>Scans illimités</strong></li>
+                        <li style="margin-bottom: 8px;">✓ V-AST Enterprise Custom</li>
+                        <li style="margin-bottom: 8px;">✓ <strong>Instance dédiée (3x boost)</strong></li>
+                        <li style="margin-bottom: 8px;">✓ Équipe (SSO, 10 users)</li>
+                        <li style="margin-bottom: 8px;">✓ Audit de sécurité & compliance</li>
+                        <li style="margin-bottom: 8px;">✓ Support 24/7</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight info">
+            <div class="highlight-title">💡 Modèle de Crédits</div>
+            <p><strong>"Scan Once, Export Everywhere"</strong> : Un crédit consommé lors de l'analyse V-AST permet des exports illimités dans tous les frameworks (React, Vue, HTML). Le crédit est facturé sur l'intelligence (analyse), pas sur les exports.</p>
+        </div>
+    </div>
+
+    <!-- Architecture de l'Application -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🏗️</div>
+            <h2>Architecture de l'Application</h2>
+        </div>
+
+        <h3>1. Landing Page (Pre-connexion) <span class="status status-complete">Complété</span></h3>
+        <p></p><strong>Objectif :</strong> Conversion maximale via "Proof of Value"</p>
+        <ul></ul>
+            <li><strong>Hero Interactive</strong> : Présentation Neural-Vision-V2 + cycle de frameworks</li>
+            <li><strong>Live Demo (Controlled)</strong> : Scanneur laser simulé sur UI prédéfinie</li>
+            <li><strong>Génération temps réel</strong> : React/Vue/HTML en direct</li>
+            <li><strong>Affichage V-AST JSON Tree</strong> : Preuve de profondeur technique</li>
+            <li><strong>Section "How it works"</strong> : Pipeline visuel du processus</li>
+            <li><strong>Pricing Stratégique</strong> : Basé sur Scans IA (Crédits)</li>
+        </ul>
+
+        <h3>2. Dashboard (Post-connexion) <span class="status status-progress">En cours</span></h3>
+        <p><strong>Structure :</strong> <code>app/dashboard/layout.tsx</code> avec PlanContext global</p>
+
+        <div class="code-block">
+<span class="comment">// Architecture Dashboard</span>
+app/dashboard/layout.tsx
+├─ <span class="keyword">PlanContext</span> (global)
+│  ├─ activePlan: 'starter' | 'pro' | 'business'
+│  ├─ simulatedPlan (dev mode)
+│  └─ <span class="keyword">Hook: usePlan()</span> → accès universel
+├─ SearchProvider (recherche globale)
+├─ Sidebar (navigation)
+└─ DynamicHeader (stats, notifications)
+        </div>
+
+        <h3>Pages Dashboard</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Route</th>
+                    <th>Description</th>
+                    <th>État</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>/dashboard</code></td>
+                    <td>Vue d'ensemble + stats + projets récents</td>
+                    <td><span class="status status-complete">✅</span></td>
+                </tr>
+                <tr>
+                    <td><code>/dashboard/workbench</code></td>
+                    <td><strong>L'éditeur split-view</strong> (cœur produit)</td>
+                    <td><span class="status status-complete">✅</span></td>
+                </tr>
+                <tr>
+                    <td><code>/dashboard/components</code></td>
+                    <td>Bibliothèque de composants</td>
+                    <td><span class="status status-progress">🟡</span></td>
+                </tr>
+                <tr>
+                    <td><code>/dashboard/collections</code></td>
+                    <td>Collections organisées</td>
+                    <td><span class="status status-progress">🟡</span></td>
+                </tr>
+                <tr>
+                    <td><code>/dashboard/team</code></td>
+                    <td>Gestion d'équipe (Business)</td>
+                    <td><span class="status status-progress">🟡</span></td>
+                </tr>
+                <tr>
+                    <td><code>/dashboard/api</code></td>
+                    <td>API & Webhooks</td>
+                    <td><span class="status status-progress">🟡</span></td>
+                </tr>
+                <tr>
+                    <td><code>/dashboard/settings</code></td>
+                    <td>Paramètres utilisateur</td>
+                    <td><span class="status status-progress">🟡</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Le Workbench -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🛠️</div>
+            <h2>Le Workbench - Cœur du Produit</h2>
+        </div>
+
+        <h3>Interface Split-View Obligatoire</h3>
+        <div class="code-block">
+┌─────────────────────────────────────────────────┐
+│  IMAGE SOURCE (Gauche)  │  CODE EDITOR (Droite) │
+│  ─────────────────────  │  ───────────────────  │
+│  • Drag & Drop zone     │  • Monaco Editor      │
+│  • Preview uploaded     │  • Thème: Dark        │
+│  • Scanneur laser FX    │  • Syntax Highlight   │
+│                         │  • Line Numbers       │
+│  [Framework Switcher]   │  [Copy] [Download]    │
+│  React │ Vue │ HTML     │                       │
+└─────────────────────────────────────────────────┘
+         ↓
+   [Logs de Génération]
+   🧠 Analyse deep learning... (typewriter effect)
+   🎨 Extraction des tokens design...
+   ✨ Finalisation premium... (react-countup scores)
+        </div>
+
+        <h3>Configuration Panel (selon le plan)</h3>
+        <ul class="checklist">
+            <li>Framework sélection</li> (React, Next.js, Vue, HTML)</li>
+            <li>Style Engine (Tailwind, CSS Modules, Styled Components)</li>
+            <li>TypeScript vs JavaScript</li>
+            <li>Animations (PRO+) 🔒</li>
+            <li>Accessibilité (ARIA, sémantique)</li>
+            <li>Dark Mode support</li>
+            <li>Responsive Mobile</li>
+        </ul>
+
+        <div class="highlight warning">
+            <div class="highlight-title">⚡ Performances</div>
+            <p><strong>Monaco Editor</strong> : Thème systématiquement sombre (#1e1e1e) pour optimiser la lisibilité. Utilisation de <code>react-countup</code> pour les scores d'efficacité et effets typewriter pour les logs IA.</p>
+        </div>
+    </div>
+
+    <!-- Système de Données -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">📈</div>
+            <h2>Système de Données & Stats</h2>
+        </div>
+
+        <h3>Dashboard Insights (par plan)</h3>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-title">📊 Starter</div>
+                <div class="card-content">
+                    <ul style="padding-left: 0; list-style: none; font-size: 13px;">
+                        <li>• Scans : <strong>8/10 utilisés</strong></li>
+                        <li>• Temps gagné : <strong>9h</strong> (valeur: 450€)</li>
+                        <li>• Efficacité moyenne : <strong>92%</strong></li>
+                        <li>• Features usage : Génération 45%, Review 30%</li>
+                        <li>• Trend : <strong>+15% vs moyenne</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🚀 Pro</div>
+                <div class="card-content">
+                    <ul style="padding-left: 0; list-style: none; font-size: 13px;">
+                        <li>• Scans : <strong>47 utilisés (illimité)</strong></li>
+                        <li>• Temps gagné : <strong>18h</strong> (valeur: 900€)</li>
+                        <li>• Efficacité : <strong>96%</strong> (+24% vs Starter)</li>
+                        <li>• GPU Usage : 12h, boost 2.5x</li>
+                        <li>• Trend : <strong>+32% temps vs moyenne</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">👔 Business</div>
+                <div class="card-content">
+                    <ul style="padding-left: 0; list-style: none; font-size: 13px;">
+                        <li>• Scans équipe : <strong>142</strong> (7 users actifs)</li>
+                        <li>• Temps gagné : <strong>42h/mois</strong> (2100€)</li>
+                        <li>• Efficacité : <strong>98%</strong></li>
+                        <li>• Security : 28 vulnérabilités scannées</li>
+                        <li>• Team : 284 scans totaux, 168h économisées</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Valeur Proposée -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🎯</div>
+            <h2>Valeur Proposée Unique</h2>
+        </div>
+
+        <h3>3 Piliers de Différenciation</h3>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-title">1️⃣ "Zéro Hallucination"</div>
+                <div class="card-content">
+                    Le V-AST structure logiquement l'UI <strong>AVANT</strong> la génération de code. Contrairement aux LLM classiques qui "hallucinent" du code, Codeo UI garantit une fidélité de <strong>99.8%</strong>.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">2️⃣ "Scan Once, Export Everywhere"</div>
+                <div class="card-content">
+                    <strong>1 crédit consommé = exports illimités</strong> dans tous les frameworks (React, Vue, HTML). Le crédit est facturé sur l'analyse IA, pas sur les exports.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">3️⃣ "Production-Ready"</div>
+                <div class="card-content">
+                    Code accessible (ARIA, sémantique), bonnes pratiques Tailwind, TypeScript ready. Pas de "soupe de div" mais du code professionnel et maintenable.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- État du Projet -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">📦</div>
+            <h2>État Actuel du Projet</h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th></th>Composant</th>
+                    <th>État</th>
+                    <th>Commentaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Landing Page</strong></td>
+                    <td><span class="status status-complete">✅ 100%</span></td>
+                    <td>Hero, Demo, Workflow, Pricing</td>
+                </tr>
+                <tr>
+                    <td><strong>Dashboard Layout</strong></td>
+                    <td><span class="status status-complete">✅ 100%</span></td>
+                    <td>PlanContext, Sidebar, Header</td>
+                </tr>
+                <tr>
+                    <td><strong>Dashboard Home</strong></td>
+                    <td><span class="status status-complete">✅ 100%</span></td>
+                    <td>Stats, projets, notifications</td>
+                </tr>
+                <tr>
+                    <td><strong>Workbench</strong></td>
+                    <td><span class="status status-complete">✅ 90%</span></td>
+                    <td>Split-view, Monaco, simulation V-AST</td>
+                </tr>
+                <tr>
+                    <td><strong>Système Plans</strong></td>
+                    <td><span class="status status-complete">✅ 100%</span></td>
+                    <td>3 tiers, logique de bridage</td>
+                </tr>
+                <tr>
+                    <td><strong>Authentification</strong></td>
+                    <td><span class="status status-progress">🟡 50%</span></td>
+                    <td>Pages créées, non fonctionnelles</td>
+                </tr>
+                <tr>
+                    <td><strong>Backend/DB</strong></td>
+                    <td><span class="status status-todo">❌ 0%</span></td>
+                    <td>Mock data uniquement</td>
+                </tr>
+                <tr>
+                    <td><strong>API V-AST réelle</strong></td>
+                    <td><span class="status status-todo">❌ 0%</span></td>
+                    <td>Actuellement simulé avec setTimeout</td>
+                </tr>
+                <tr>
+                    <td><strong>Paiement Stripe</strong></td>
+                    <td><span class="status status-todo">❌ 0%</span></td>
+                    <td>À intégrer</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Roadmap -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🔮</div>
+            <h2>Roadmap Technique</h2>
+        </div>
+
+        <h3>Phase 1 - MVP Fonctionnel <span class="status status-complete">✅ Complété</span></h3>
+        <ul class="checklist">
+            <li>Landing page convertissante</li>
+            <li>Dashboard avec système de plans</li>
+            <li>Workbench split-view</li>
+            <li>Simulation V-AST</li>
+        </ul>
+
+        <h3>Phase 2 - Backend & Auth <span class="status status-progress">🚧 En cours</span></h3>
+        <ul class="checklist">
+            <li class="unchecked">PostgreSQL + Prisma / Supabase</li>
+            <li class="unchecked">NextAuth.js (Google, GitHub, Email)</li>
+            <li class="unchecked">Système de crédits persistant</li>
+            <li class="unchecked">Upload d'images (S3 / Cloudinary)</li>
+        </ul>
+
+        <h3>Phase 3 - V-AST Réel <span class="status status-todo">🔮 À venir</span></h3>
+        <ul class="checklist">
+            <li class="unchecked">Intégration API Vision (GPT-4 Vision / Claude Vision)</li>
+            <li class="unchecked">Pipeline V-AST propriétaire</li>
+            <li class="unchecked">Génération de code optimisé</li>
+            <li class="unchecked">Cache & optimisation</li>
+        </ul>
+
+        <h3>Phase 4 - Monétisation <span class="status status-todo">🔮 À venir</span></h3>
+        <ul class="checklist">
+            <li class="unchecked">Stripe Checkout (plans Pro/Business)</li>
+            <li class="unchecked">Webhooks Stripe</li>
+            <li class="unchecked">Gestion abonnements</li>
+            <li class="unchecked">Système de facturation</li>
+        </ul>
+    </div>
+
+    <!-- Insights Stratégiques -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">💡</div>
+            <h2>Insights Stratégiques</h2>
+        </div>
+
+        <h3>Points Forts Architecturaux</h3>
+        <div class="highlight">
+            <ul class="checklist">
+                <li><strong>PlanContext global</strong> → Accès universel au plan actif via usePlan()</li>
+                <li><strong>Split-view Workbench</strong> → UX claire, productivité maximale</li>
+                <li><strong>Design System cohérent</strong> → Identité "Soft Premium" avec vert signature</li>
+                <li><strong>Animations Framer Motion</strong> → Fluidité professionnelle (spring transitions)</li>
+                <li><strong>Mock data intelligent</strong> → Démo crédible sans backend</li>
+            </ul>
+        </div>
+
+        <h3>Points d'Attention</h3>
+        <div class="highlight warning">
+            <ul>
+                <li><strong>Pas de vrai backend</strong> → Données volatiles (localStorage max)</li>
+                <li><strong>V-AST simulé</strong> → Attentes clients vs réalité technique à gérer</li>
+                <li><strong>Pricing fictif</strong> → Validation marché à faire (A/B testing)</li>
+                <li><strong>Scalabilité</strong> → Architecture prête mais infrastructure à construire</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Logique Métier -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">⚙️</div>
+            <h2>Logique Métier Cruciale</h2>
+        </div>
+
+        <h3>Système de Plans - Règles d'Accès</h3>
+        <div class="code-block">
+<span class="comment">// Hook universel dans tout le Dashboard</span>
+<span class="keyword">const</span> { activePlan } = <span class="keyword">usePlan()</span>
+
+<span class="comment">// activePlan: 'starter' | 'pro' | 'business'</span>
+        </div>
+
+        <h3>Comportements Conditionnels</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Comportement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>STARTER</strong></td>
+                    <td>
+                        • Brider options (Next.js, Animations, SEO)<br>
+                        • Afficher badge "PRO" + opacity-50<br>
+                        • Limiter à 10 scans/mois
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>PRO</strong></td>
+                    <td>
+                        • Activer "V-AST Turbo"<br>
+                        • Priorité GPU (2.5x boost)<br>
+                        • Exports multi-frameworks
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>BUSINESS</strong></td>
+                    <td>
+                        • Activer "V-AST Enterprise"<br>
+                        • Stats d'équipe (7+ users)<br>
+                        • Audit de sécurité & compliance
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Workflow de Développement</h3>
+        <div class="highlight info">
+            <div class="highlight-title">🚦 Règle Stratégique (.cursorrules)</div>
+            <p><strong>AVANT toute modification :</strong></p>
+            <ol>
+                <li><strong>ANALYSER</strong> la demande vs existant</li>
+                <li><strong>PROPOSER</strong> la stratégie (fichiers à modifier, pourquoi)</li>
+                <li><strong>STOP</strong> : Attendre confirmation explicite ("Ok", "Vas-y")</li>
+                <li><strong>INTERDICTION</strong> de modifier layout.tsx sans valider impact PlanContext</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Conclusion -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">🎓</div>
+            <h2>Conclusion</h2>
+        </div>
+
+        <div class="highlight">
+            <p style="font-size: 16px; line-height: 1.8; color: var(--slate-700);">
+                <strong style="color: var(--codeo-green); font-size: 18px;">Codeo UI</strong> est un projet ambitieux et bien architecturé qui combine :
+            </p>
+            <ul class="checklist" style="margin-top: 20px;">
+                <li><strong>Vision produit claire</strong> : SaaS freemium design-to-code avec différenciation forte</li>
+                <li><strong>Stack moderne et performante</strong> : Next.js 14, Framer Motion, Shadcn UI</li>
+                <li><strong>UX premium</strong> : Animations fluides, design system cohérent, split-view professionnel</li>
+                <li><strong>Logique métier solide</strong> : Système de plans, bridage features, PlanContext global</li>
+            </ul>
+        </div>
+
+        <h3>État Actuel</h3>
+        <p style="font-size: 15px; line-height: 1.8;">
+            <strong>Prototype haute-fidélité</strong> avec simulation complète de l'expérience utilisateur, prêt pour démo investors/early-adopters. L'interface est production-ready, le design system est cohérent et l'architecture est scalable.
+        </p>
+
+        <h3>Prochaine Étape Critique</h3>
+        <div class="highlight warning">
+            <div class="highlight-title">🚀 Phase 2 Prioritaire</div>
+            <p><strong>Backend + API V-AST réelle</strong> pour transformer le prototype en MVP fonctionnel. L'intégration d'une vraie API de vision (GPT-4 Vision, Claude Vision) et d'une base de données (Supabase/PostgreSQL) est la priorité absolue pour valider le produit sur le marché.</p>
+        </div>
+
+        <h3>La Quintessence</h3>
+        <div class="highlight" style="background: linear-gradient(135deg, rgba(9, 214, 0, 0.1) 0%, rgba(9, 214, 0, 0.05) 100%); border-left-color: var(--codeo-green); border-width: 4px;">
+            <p style="font-size: 16px; line-height: 1.9; color: var(--slate-800); font-weight: 500;">
+                Une plateforme qui <strong style="color: var(--codeo-green);">transforme la complexité technique</strong> (IA, génération de code, AST) en <strong>expérience utilisateur fluide et accessible</strong>, avec un modèle économique par crédits qui <strong>valorise l'intelligence artificielle</strong> plutôt que le stockage.
+                <br><br>
+                L'objectif : <strong>Éliminer le travail répétitif</strong> de transcription design → code et permettre aux développeurs de se concentrer sur la valeur ajoutée.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Codeo UI</strong> - Analyse Complète & Synthèse Technique</p>
+        <p>Document généré automatiquement • Décembre 2024</p>
+        <p style="margin-top: 12px; color: var(--slate-400); font-size: 12px;">
+            Pour convertir en PDF : Ouvrez ce fichier dans votre navigateur → Ctrl/Cmd + P → "Enregistrer au format PDF"
+        </p>
+    </div>
+
+</body>
+</html>

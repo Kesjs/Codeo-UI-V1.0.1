@@ -115,12 +115,38 @@ export default function WorkbenchPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [logs, setLogs] = useState<GenerationLog[]>([]);
-  const [generatedCode, setGeneratedCode] = useState<string>("");
+  // CODE D'EXEMPLE POUR TESTER L'ÉDITEUR (À COMMENTER POUR REVENIR À LA LOGIQUE NORMALE)
+  const [generatedCode, setGeneratedCode] = useState<string>(`// Composant généré avec V-AST Turbo v4.2
+import React, { useState } from 'react';
+
+const MyComponent = () => {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div className="p-6 rounded-xl bg-slate-800 text-white">
+      <h2 className="text-xl font-bold mb-4">MyComponent</h2>
+      <p>Composant généré par V-AST Turbo v4.2 avec react</p>
+      <button 
+        onClick={() => setCount(count + 1)}
+        className="mt-4 px-4 py-2 bg-codeo-green text-black rounded-lg font-bold hover:bg-codeo-green/80 transition-colors"
+      >
+        Count: {count}
+      </button>
+    </div>
+  );
+};
+
+export default MyComponent;`);
+
+  // LOGIQUE ORIGINALE (DÉCOMMENTER POUR REVENIR À LA NORMALE)
+  // const [generatedCode, setGeneratedCode] = useState<string>("");
   const [isConfigPanelCollapsed, setIsConfigPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("code");
   const [areLogsCollapsed, setAreLogsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileView, setMobileView] = useState<"upload" | "code" | "config">("upload");
+  const [isEditorFocused, setIsEditorFocused] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   const [workbenchConfig, setWorkbenchConfig] = useState<WorkbenchConfig>({
     framework: config.frameworks[0],
@@ -136,6 +162,35 @@ export default function WorkbenchPage() {
   });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Définir le thème personnalisé Codeo Dark pour Monaco
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('monaco-editor').then((monaco) => {
+        monaco.editor.defineTheme('codeo-dark', {
+          base: 'vs-dark',
+          inherit: true,
+          rules: [],
+          colors: {
+            'editor.background': '#0f172a',
+            'editorCursor.foreground': '#09b300',
+            'editor.lineHighlightBackground': '#09b30005',
+            'editor.selectionBackground': '#09b30020',
+            'editor.foreground': '#e2e8f0',
+            'editorLineNumber.foreground': '#64748b',
+            'editorIndentGuide.background': '#1e293b',
+            'editorIndentGuide.activeBackground': '#334155',
+            'editorWhitespace.foreground': '#1e293b',
+          }
+        });
+      });
+    }
+  }, []);
+
+  // Vérifier si on est côté client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     setWorkbenchConfig(prev => ({
@@ -310,7 +365,18 @@ export default ${workbenchConfig.componentName};
                   </Button>
                 )}
 
-                {activePlan !== "starter" && (
+                {generatedCode && activePlan !== "starter" && (
+                  <Button
+                    size="sm"
+                    onClick={downloadCode}
+                    className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 hover:border-slate-300 dark:bg-white dark:hover:bg-slate-50 dark:text-slate-900 dark:border-slate-300 dark:hover:border-slate-400"
+                  >
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Télécharger</span>
+                  </Button>
+                )}
+
+                {activePlan !== "starter" && !generatedCode && (
                   <Button
                     size="sm"
                     onClick={() => toast("Fonctionnalité à venir !")}
@@ -394,7 +460,18 @@ export default ${workbenchConfig.componentName};
                       </Button>
                     )}
 
-                    {activePlan !== "starter" && (
+                    {generatedCode && activePlan !== "starter" && (
+                      <Button
+                        size="sm"
+                        onClick={downloadCode}
+                        className="flex-1 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 hover:border-slate-300 dark:bg-white dark:hover:bg-slate-50 dark:text-slate-900 dark:border-slate-300 dark:hover:border-slate-400"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Télécharger
+                      </Button>
+                    )}
+
+                    {activePlan !== "starter" && !generatedCode && (
                       <Button
                         size="sm"
                         onClick={() => toast("Fonctionnalité à venir !")}
@@ -525,9 +602,9 @@ export default ${workbenchConfig.componentName};
             </div>
 
             {/* DROITE - Code - 65% */}
-            <div className="flex flex-col flex-1 overflow-hidden bg-white dark:bg-slate-950">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-                <TabsList className="justify-start px-6 py-2 border-b bg-transparent h-12 items-center">
+            <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-950">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col h-full">
+                <TabsList className="justify-start px-6 py-2 border-b bg-transparent h-12 items-center flex-shrink-0">
                   <TabsTrigger value="code" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800 h-8">
                     <Code2 className="w-4 h-4 mr-2" />
                     Code
@@ -538,47 +615,84 @@ export default ${workbenchConfig.componentName};
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="code" className="h-full mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col">
+                <TabsContent value="code" className="flex-1 mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col h-full">
                   {generatedCode ? (
-                    <div className="h-full flex flex-col">
-                      <div className="flex-shrink-0 p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Code2 className="w-5 h-5" />
-                            <span className="font-semibold">Code généré</span>
+                    <div className="flex-1 overflow-hidden p-4 h-full">
+                      <AnimatePresence>
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                          className={`h-full bg-slate-950 rounded-[2rem] border border-white/5 shadow-2xl transition-all duration-300 ${
+                            isEditorFocused ? 'ring-2 ring-codeo-green/50 border-codeo-green/30' : ''
+                          }`}
+                          onFocus={() => setIsEditorFocused(true)}
+                          onBlur={() => setIsEditorFocused(false)}
+                          tabIndex={0}
+                        >
+                          {/* Barre de titre style Mac OS */}
+                          <div className="h-10 bg-black/20 backdrop-blur-md rounded-t-[2rem] flex items-center justify-between px-4 border-b border-white/5">
+                            {/* Contrôles de fenêtre Mac */}
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2.5 h-2.5 rounded-full bg-red-500/70 hover:bg-red-500 transition-colors cursor-pointer" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70 hover:bg-amber-500 transition-colors cursor-pointer" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-green-500/70 hover:bg-green-500 transition-colors cursor-pointer" />
+                            </div>
+                            
+                            {/* Nom du fichier */}
+                            <div className="flex-1 text-center mx-2">
+                              <span className="font-mono text-xs text-slate-500 truncate">
+                                {workbenchConfig.componentName}.{workbenchConfig.useTypeScript ? 'tsx' : 'jsx'}
+                              </span>
+                            </div>
+                            
+                            {/* Badge de plan */}
+                            <div className="flex items-center">
+                              <div className="px-2 py-0.5 bg-codeo-green/10 border border-codeo-green/20 rounded-full">
+                                <span className="text-[8px] font-black uppercase text-codeo-green">
+                                  {activePlan}
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={copyCode}>
-                              <Copy className="w-4 h-4 mr-2" />
-                              Copier
-                            </Button>
-                            <Button size="sm" onClick={downloadCode}>
-                              <Download className="w-4 h-4 mr-2" />
-                              Télécharger
-                            </Button>
+                          
+                          {/* Conteneur de l'éditeur */}
+                          <div className="h-[calc(100%-2.5rem)] rounded-b-[2rem] overflow-hidden">
+                            {isClient && (
+                              <MonacoEditor
+                                language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
+                                theme="codeo-dark"
+                                value={generatedCode}
+                                height="100%"
+                                options={{
+                                  readOnly: true,
+                                  minimap: { enabled: false },
+                                  fontSize: 13,
+                                  lineNumbers: "on",
+                                  scrollBeyondLastLine: false,
+                                  wordWrap: "on",
+                                  padding: { top: 16, bottom: 16 },
+                                  fontFamily: 'JetBrains Mono, Monaco, Consolas, monospace',
+                                  renderLineHighlight: 'line',
+                                  cursorBlinking: 'smooth',
+                                  smoothScrolling: true,
+                                  scrollbar: {
+                                    vertical: 'visible',
+                                    horizontal: 'visible',
+                                    verticalScrollbarSize: 6,
+                                    horizontalScrollbarSize: 6,
+                                    useShadows: false
+                                  }
+                                }}
+                              />
+                            )}
                           </div>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 overflow-hidden">
-                        <MonacoEditor
-                          language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
-                          theme="vs-dark"
-                          value={generatedCode}
-                          height="100%"
-                          options={{
-                            readOnly: true,
-                            minimap: { enabled: false },
-                            fontSize: 14,
-                            lineNumbers: "on",
-                            scrollBeyondLastLine: false,
-                            wordWrap: "on",
-                          }}
-                        />
-                      </div>
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-slate-500">
+                    <div className="flex-1 flex items-center justify-center text-slate-500 h-full">
                       <div className="text-center max-w-md px-6">
                         <Code2 className="w-16 h-16 mx-auto mb-6 opacity-50" />
                         <p className="text-xl font-medium mb-4">Prêt à générer</p>
@@ -771,21 +885,79 @@ export default ${workbenchConfig.componentName};
                               </div>
                             </div>
 
-                            <div className="flex-1 overflow-hidden">
-                              <MonacoEditor
-                                language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
-                                theme="vs-dark"
-                                value={generatedCode}
-                                height="100%"
-                                options={{
-                                  readOnly: true,
-                                  minimap: { enabled: false },
-                                  fontSize: 12,
-                                  lineNumbers: "on",
-                                  scrollBeyondLastLine: false,
-                                  wordWrap: "on",
-                                }}
-                              />
+                            <div className="flex-1 overflow-hidden p-4">
+                              <AnimatePresence>
+                                <motion.div
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: 20 }}
+                                  transition={{ duration: 0.5, ease: "easeOut" }}
+                                  className={`h-full bg-slate-950 rounded-[2rem] border border-white/5 shadow-2xl transition-all duration-300 ${
+                                    isEditorFocused ? 'ring-2 ring-codeo-green/50 border-codeo-green/30' : ''
+                                  }`}
+                                  onFocus={() => setIsEditorFocused(true)}
+                                  onBlur={() => setIsEditorFocused(false)}
+                                  tabIndex={0}
+                                >
+                                  {/* Barre de titre style Mac OS (mobile) */}
+                                  <div className="h-10 bg-black/20 backdrop-blur-md rounded-t-[2rem] flex items-center justify-between px-4 border-b border-white/5">
+                                    {/* Contrôles de fenêtre Mac (mobile) */}
+                                    <div className="flex items-center gap-1.5">
+                                      <div className="w-2 h-2 rounded-full bg-red-500/70" />
+                                      <div className="w-2 h-2 rounded-full bg-amber-500/70" />
+                                      <div className="w-2 h-2 rounded-full bg-green-500/70" />
+                                    </div>
+                                    
+                                    {/* Nom du fichier (mobile) */}
+                                    <div className="flex-1 text-center mx-2">
+                                      <span className="font-mono text-xs text-slate-500 truncate">
+                                        {workbenchConfig.componentName}.{workbenchConfig.useTypeScript ? 'tsx' : 'jsx'}
+                                      </span>
+                                    </div>
+                                    
+                                    {/* Badge de plan (mobile) */}
+                                    <div className="flex items-center">
+                                      <div className="px-2 py-0.5 bg-codeo-green/10 border border-codeo-green/20 rounded-full">
+                                        <span className="text-[8px] font-black uppercase text-codeo-green">
+                                          {activePlan}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Conteneur de l'éditeur (mobile) */}
+                                  <div className="h-[calc(100%-2.5rem)] rounded-b-[2rem] overflow-hidden">
+                                    {isClient && (
+                                      <MonacoEditor
+                                        language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
+                                        theme="codeo-dark"
+                                        value={generatedCode}
+                                        height="100%"
+                                        options={{
+                                          readOnly: true,
+                                          minimap: { enabled: false },
+                                          fontSize: 12,
+                                          lineNumbers: "on",
+                                          scrollBeyondLastLine: false,
+                                          wordWrap: "on",
+                                          padding: { top: 16, bottom: 16 },
+                                          fontFamily: 'JetBrains Mono, Monaco, Consolas, monospace',
+                                          renderLineHighlight: 'line',
+                                          cursorBlinking: 'smooth',
+                                          smoothScrolling: true,
+                                          scrollbar: {
+                                            vertical: 'visible',
+                                            horizontal: 'visible',
+                                            verticalScrollbarSize: 6,
+                                            horizontalScrollbarSize: 6,
+                                            useShadows: false
+                                          }
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                </motion.div>
+                              </AnimatePresence>
                             </div>
                           </div>
                         ) : (
@@ -990,24 +1162,7 @@ export default ${workbenchConfig.componentName};
                   />
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
-                    <Switch
-                      checked={workbenchConfig.enableAnimations}
-                      onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
-                      disabled={activePlan === "starter"}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
-                    <Switch
-                      checked={workbenchConfig.enableAccessibility}
-                      onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
-                      disabled={activePlan === "starter"}
-                    />
-                  </div>
-                </div>
+                
               </div>
 
               {/* Fonctionnalités Pro */}

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Sidebar from '@/components/dashboard/Sidebar'
-import Header from '@/components/dashboard/Header'
+import DynamicHeader from '@/components/dashboard/DynamicHeader'
 
 // Contexte global pour le plan
 type PlanContextType = {
@@ -61,14 +61,9 @@ export default function DashboardLayout({
         
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header */}
-          <Header 
-            remainingScans={remainingScans} 
-            totalScans={totalScans}
-            plan={activePlan}
-            onMenuClick={() => setSidebarOpen(true)}
-          />
-          
+          {/* Header dynamique global */}
+          <DynamicHeader onMenuClick={() => setSidebarOpen(true)} />
+
           {/* Page Content */}
           <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
             {children}

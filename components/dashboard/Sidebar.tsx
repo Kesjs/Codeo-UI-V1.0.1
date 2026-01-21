@@ -245,7 +245,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </div>
               ) : (
                 <div className="text-2xl font-black text-slate-900 tracking-tight w-full text-center">
-                  <span className="text-codeo-green">C</span>o<span className="text-codeo-green">I</span>
+                  <span className="text-codeo-green">C</span>
                 </div>
               )}
             </Link>
@@ -406,73 +406,69 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
         </div>
 
-        {/* FOOTER: PROFIL & DÉCONNEXION - DESKTOP ONLY */}
-        <div className={`hidden md:block p-6 border-t border-slate-100 bg-slate-50/50 ${isCollapsed ? 'lg:px-2' : ''}`}>
-          {/* Icône profil en mode réduit */}
+        {/* FOOTER: BOUTONS PARAMÈTRES ET DÉCONNEXION */}
+        <div className={`hidden md:block p-4 border-t border-slate-100 bg-slate-50/50 space-y-3 ${isCollapsed ? 'lg:px-2' : ''}`}>
+          {/* Bouton Paramètres */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => router.push('/dashboard/settings')}
-                  className={`hidden lg:flex items-center justify-center mb-4 w-full p-2 rounded-lg hover:bg-slate-100 transition-all cursor-pointer group ${isCollapsed ? '' : 'lg:hidden'}`}
+                  className={`w-full flex items-center p-2.5 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group ${isCollapsed ? 'lg:px-2 justify-center' : 'lg:px-3'}`}
                 >
-                  <div className="w-11 h-11 bg-white border border-slate-200 rounded-2xl flex items-center justify-center shadow-sm relative group">
-                    <User className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                    <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-codeo-green border-2 border-white rounded-full" />
+                  <div className="relative
+                    flex items-center justify-center
+                    w-9 h-9 bg-white border border-slate-200 rounded-xl
+                    shadow-sm group-hover:shadow transition-all duration-200
+                    text-slate-500 group-hover:text-codeo-green"
+                  >
+                    <Settings className="h-4 w-4 transition-colors" />
                   </div>
+                  {!isCollapsed && (
+                    <span className="ml-3 text-sm font-medium text-slate-700 group-hover:text-codeo-green transition-colors">
+                      Paramètres
+                    </span>
+                  )}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right" className="bg-slate-900 text-white text-sm font-medium">
-                <p>Ken Kennedy</p>
-                <p className="text-xs text-slate-400 mt-1">Voir les paramètres</p>
-              </TooltipContent>
+              {isCollapsed && (
+                <TooltipContent side="right" className="bg-slate-900 text-white text-sm font-medium">
+                  <p>Paramètres</p>
+                </TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>
-          
-          <button
-            onClick={() => router.push('/dashboard/settings')}
-            className={`w-full flex items-center gap-4 mb-4 p-3 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group ${isCollapsed ? 'lg:hidden' : ''}`}
-          >
-            <div className="w-11 h-11 bg-white border border-slate-200 rounded-2xl flex items-center justify-center shadow-sm relative group">
-              <User className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-codeo-green border-2 border-white rounded-full" />
-            </div>
-            <div className={`flex-1 min-w-0 transition-all duration-500 ease-out text-left ${isCollapsed ? 'lg:opacity-0 lg:scale-90 lg:translate-x-2 lg:absolute' : 'lg:opacity-100 lg:scale-100 lg:translate-x-0 lg:relative'}`}>
-              <div className="font-bold text-slate-900 text-base truncate leading-tight group-hover:text-codeo-green transition-colors">Ken Kennedy</div>
-              <div className="flex items-center gap-1.5 mt-1">
-                <div className="relative flex items-center">
-                  <Sparkles className="h-3 w-3 text-codeo-green relative z-10 animate-pulse" />
-                </div>
-                <span className="text-[10px] font-black text-codeo-green uppercase tracking-tighter bg-codeo-green/5 px-2 py-0.5 rounded-full border border-codeo-green/10">Early Adopter</span>
-              </div>
-              <div className="text-xs text-slate-500 mt-1">Voir les paramètres →</div>
-            </div>
-          </button>
-          
-          {/* Bouton déconnexion en mode réduit */}
+
+          {/* Bouton Déconnexion */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={handleLogout}
-                  className={`hidden lg:flex w-full items-center justify-center border border-red-200 text-red-500 bg-red-50/50 hover:bg-red-50 rounded-lg px-3 py-2.5 transition-all active:scale-[0.98] mb-2 ${isCollapsed ? '' : 'lg:hidden'}`}
+                  className={`w-full flex items-center p-2.5 rounded-xl hover:bg-red-50 transition-all cursor-pointer group ${isCollapsed ? 'lg:px-2 justify-center' : 'lg:px-3'}`}
                 >
-                  <LogOut className="h-4 w-4" />
+                  <div className="relative
+                    flex items-center justify-center
+                    w-9 h-9 bg-white border border-red-100 rounded-xl
+                    shadow-sm group-hover:shadow transition-all duration-200
+                    text-red-400 group-hover:text-red-600"
+                  >
+                    <LogOut className="h-4 w-4 transition-colors" />
+                  </div>
+                  {!isCollapsed && (
+                    <span className="ml-3 text-sm font-medium text-red-500 group-hover:text-red-600 transition-colors">
+                      Déconnexion
+                    </span>
+                  )}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right" className="bg-slate-900 text-white text-sm font-medium">
-                <p>Déconnexion</p>
-              </TooltipContent>
+              {isCollapsed && (
+                <TooltipContent side="right" className="bg-slate-900 text-white text-sm font-medium">
+                  <p>Déconnexion</p>
+                </TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>
-          
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center justify-center gap-2 border border-red-200 text-red-500 bg-red-50/50 hover:bg-red-50 rounded-lg px-3 py-2.5 font-medium text-[13px] transition-all active:scale-[0.98] ${isCollapsed ? 'lg:hidden' : ''}`}
-          >
-            <LogOut className="h-4 w-4" />
-            <span className={`transition-all duration-500 ease-out ${isCollapsed ? 'lg:opacity-0 lg:scale-90 lg:translate-x-2 lg:absolute' : 'lg:opacity-100 lg:scale-100 lg:translate-x-0 lg:relative'}`}>Déconnexion</span>
-          </button>
         </div>
       </aside>
 

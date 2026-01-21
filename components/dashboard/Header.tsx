@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Cpu, Zap, HelpCircle, Settings, Menu, Infinity } from 'lucide-react'
+import { Cpu, Zap, HelpCircle, Settings, Menu, Infinity, ChevronDown } from 'lucide-react'
 import Tooltip from './ui/Tooltip'
+import UserDropdown from './UserDropdown'
 
 interface HeaderProps {
   remainingScans?: number
@@ -58,8 +59,15 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
     <header className="bg-white border-b border-slate-200 relative z-10">
       <div className="px-4 sm:px-6 py-2 h-16 flex items-center">
         <div className="w-full flex items-center justify-between">
-          {/* Left side - Title */}
-          <div className="flex items-center gap-3 flex-1 min-w-0 pl-12 lg:pl-0">
+          {/* Left side - Title and Menu Button */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <button 
+              onClick={onMenuClick}
+              className="p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors lg:hidden"
+              aria-label="Menu"
+            >
+              <Menu className="h-5 w-5 text-slate-600" />
+            </button>
             <h1 className="text-lg font-bold text-slate-900 whitespace-nowrap overflow-hidden">
               Tableau de board - Codeo UI
             </h1>
@@ -72,7 +80,7 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
           {/* Right side - Credits and actions */}
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Scans IA Badge */}
-            <div className="relative ml-4">
+            <div className="relative hidden md:block">
               <div
                 className={`${scansDisplay.bgColor} ${scansDisplay.color} px-3 py-1.5 rounded-lg font-medium text-sm cursor-help flex items-center gap-2`}
                 onMouseEnter={() => setShowTooltip(true)}
@@ -81,9 +89,9 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
                 {plan !== 'starter' && (
                   <Infinity className="h-4 w-4" />
                 )}
-                <div className="flex flex-col sm:flex-row items-center gap-0 sm:gap-2">
+                <div className="flex items-center gap-2">
                   <span className="font-bold">{scansDisplay.text}</span>
-                  <span className="text-xs sm:text-sm">{scansDisplay.label}</span>
+                  <span className="text-sm">{scansDisplay.label}</span>
                 </div>
               </div>
               
@@ -93,14 +101,15 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
             </div>
 
             {/* Help Button */}
-            <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative z-10">
+            <button 
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative z-10"
+              aria-label="Aide"
+            >
               <HelpCircle className="h-5 w-5" />
             </button>
 
-            {/* Settings Button */}
-            <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative z-10">
-              <Settings className="h-5 w-5" />
-            </button>
+            {/* User Dropdown */}
+            <UserDropdown />
           </div>
         </div>
       </div>

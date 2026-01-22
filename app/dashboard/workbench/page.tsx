@@ -1,27 +1,23 @@
 "use client";
 
 import React from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react';
+import { motion } from "framer-motion";
 import { toast, Toaster } from "sonner";
-import { Crown, Zap, Upload, History, MessageSquare, Settings, ChevronRight, ChevronLeft, FileText, Image, Code, Eye, Smartphone, Tablet, Monitor, Sparkles, Palette, Accessibility, Github, Play, Trash2, Atom, Layers, Zap as ZapIcon, Folder, RotateCcw } from 'lucide-react';
+import {
+  Crown, Zap, Upload, History, MessageSquare, Settings, ChevronRight, ChevronLeft,
+  FileText, Image, Code as CodeIcon, Eye, Smartphone, Tablet, Monitor, Sparkles,
+  Palette, Accessibility, Github, Play, Trash2, Atom, Layers, Zap as ZapIcon,
+  Folder, RotateCcw
+} from 'lucide-react';
+import { LanguageSelector } from '@/components/dashboard/LanguageSelector';
+import { FrameworkSelector, FrameworkOption } from '@/components/dashboard/FrameworkSelector';
+import { StylingSelector, StylingOption } from '@/components/dashboard/StylingSelector';
 import { usePlan } from '../layout';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-type PlanType = "starter" | "pro" | "business";
-
 type WorkbenchState = "empty" | "editing";
-
-interface FrameworkOption {
-  id: string;
-  name: string;
-  description: string;
-  icon: any;
-  iconColor: string;
-  badge?: "alpha" | "beta";
-}
 
 interface WorkbenchFile {
   id: string;
@@ -51,6 +47,7 @@ export default function WorkbenchPage() {
 
   // Build Settings
   const [selectedFramework, setSelectedFramework] = useState<string>("React");
+  const [selectedLanguage, setSelectedLanguage] = useState<'typescript' | 'javascript'>('typescript');
   const [selectedStyling, setSelectedStyling] = useState<string>("Tailwind CSS");
   const [accessibilityMode, setAccessibilityMode] = useState<boolean>(false);
 
@@ -68,16 +65,17 @@ export default function WorkbenchPage() {
   // Framework options with colored Lucide icons
   const frameworkOptions: FrameworkOption[] = [
     {
-      id: "react",
-      name: "React",
-      description: "Composants modulaires avec hooks modernes",
+      id: 'react',
+      name: 'React',
+      description: 'Composants modulaires avec hooks modernes',
       icon: Atom,
-      iconColor: "#61DAFB"
+      iconColor: '#61DAFB',
+      badge: 'beta'
     },
     {
-      id: "nextjs",
-      name: "Next.js",
-      description: "Framework React avec SSR et optimisations",
+      id: 'nextjs',
+      name: 'Next.js',
+      description: 'Framework React avec SSR et optimisations',
       icon: ZapIcon,
       iconColor: "#000000"
     },
@@ -98,20 +96,22 @@ export default function WorkbenchPage() {
     }
   ];
 
-  const stylingOptions: FrameworkOption[] = [
+  const stylingOptions: StylingOption[] = [
     {
       id: "tailwind",
       name: "Tailwind CSS",
       description: "Framework CSS utilitaire pour styling rapide",
       icon: Palette,
-      iconColor: "#06B6D4"
+      iconColor: "#06B6D4",
+      badge: 'popular'
     },
     {
       id: "css-modules",
       name: "CSS Modules",
       description: "CSS scoped avec modules JavaScript",
-      icon: Code,
-      iconColor: "#F97316"
+      icon: CodeIcon,
+      iconColor: "#F97316",
+      badge: 'new'
     }
   ];
 
@@ -230,7 +230,6 @@ export default function Component() {
           ? 'grid-cols-[280px_1fr_0px]'
           : 'grid-cols-[280px_1fr_320px]'
       }`}>
-
         {/* SIDEBAR GAUCHE (280px) - UPLOAD & HISTORIQUE */}
         <div className="bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col">
 
@@ -238,8 +237,8 @@ export default function Component() {
           <div className="p-4 border-b border-slate-200 dark:border-slate-700">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <Upload className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-900 dark:text-white">Upload Design</span>
+                <CodeIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                <span className="text-sm font-medium text-slate-900 dark:text-white">Code</span>
               </div>
 
               <div
@@ -284,7 +283,7 @@ export default function Component() {
                     {file.type === "image" ? (
                       <Image className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     ) : (
-                      <Code className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      <CodeIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -298,222 +297,58 @@ export default function Component() {
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Build Settings */}
-            <div className="p-4 border-t border-slate-200 dark:border-slate-700">
-              <div className="flex items-center gap-2 mb-4">
-                <Settings className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-900 dark:text-white">Build Settings</span>
+          {/* Build Settings */}
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-4">
+              <Settings className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+              <span className="text-sm font-medium text-slate-900 dark:text-white">Build Settings</span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Framework Selector */}
+              <FrameworkSelector
+                value={selectedFramework}
+                onValueChange={setSelectedFramework}
+                options={frameworkOptions}
+              />   
+              {/* Language Selector */}
+              <div className="mt-4">
+                <LanguageSelector 
+                  value={selectedLanguage}
+                  onValueChange={setSelectedLanguage}
+                />
               </div>
 
-              <div className="space-y-3">
-                {/* Framework Selector */}
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Framework
-                  </label>
-                  <Select key={`framework-${selectedFramework}`} value={selectedFramework} onValueChange={setSelectedFramework}>
-                    <SelectTrigger className="w-full h-12 bg-transparent border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
-                      <SelectValue>
-                        {() => {
-                          const option = frameworkOptions.find(opt => opt.name === selectedFramework);
+              {/* Styling Selector */}
+              <div className="mt-4">
+                <StylingSelector 
+                  value={selectedStyling}
+                  onValueChange={setSelectedStyling}
+                />
+              </div>
 
-                          if (!option) {
-                            const defaultOption = frameworkOptions[0];
-                            const DefaultIcon = defaultOption.icon;
-                            return (
-                              <div className="flex items-center gap-3">
-                                <DefaultIcon
-                                  className="w-5 h-5 flex-shrink-0"
-                                  style={{ color: defaultOption.iconColor }}
-                                />
-                                <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                  {defaultOption.name}
-                                </span>
-                              </div>
-                            );
-                          }
-
-                          const IconComponent = option.icon;
-                          return (
-                            <div className="flex items-center gap-3">
-                              <IconComponent
-                                className="w-5 h-5 flex-shrink-0"
-                                style={{ color: option.iconColor }}
-                              />
-                              <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                {option.name}
-                                {option.badge && (
-                                  <span className={`ml-2 px-1.5 py-0.5 text-xs rounded-full ${
-                                    option.badge === 'beta'
-                                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                      : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                                  }`}>
-                                    {option.badge.toUpperCase()}
-                                  </span>
-                                )}
-                              </span>
-                            </div>
-                          );
-                        }}
-                      </SelectValue>
-                    </SelectTrigger>
-
-                    <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
-                      <AnimatePresence>
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.15, ease: "easeOut" }}
-                        >
-                          {frameworkOptions.map((option) => {
-                            const IconComponent = option.icon;
-                            return (
-                              <SelectItem
-                                key={option.id}
-                                value={option.name}
-                                className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 focus:bg-slate-50 dark:focus:bg-slate-700/50 transition-colors duration-150"
-                              >
-                                <div className="flex items-start gap-3 w-full">
-                                  <IconComponent
-                                    className="w-5 h-5 mt-0.5 flex-shrink-0"
-                                    style={{ color: option.iconColor }}
-                                  />
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                        {option.name}
-                                      </span>
-                                      {option.badge && (
-                                        <span className={`px-1.5 py-0.5 text-xs rounded-full ${
-                                          option.badge === 'beta'
-                                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                                        }`}>
-                                          {option.badge.toUpperCase()}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">
-                                      {option.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </motion.div>
-                      </AnimatePresence>
-                    </SelectContent>
-                  </Select>
-                  </div>
-
-                {/* Styling Selector */}
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Styling
-                  </label>
-                  <Select key={`styling-${selectedStyling}`} value={selectedStyling} onValueChange={setSelectedStyling}>
-                    <SelectTrigger className="w-full h-12 bg-transparent border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
-                      <SelectValue>
-                        {() => {
-                          const option = stylingOptions.find(opt => opt.name === selectedStyling);
-
-                          if (!option) {
-                            const defaultOption = stylingOptions[0];
-                            const DefaultIcon = defaultOption.icon;
-                            return (
-                              <div className="flex items-center gap-3">
-                                <DefaultIcon
-                                  className="w-5 h-5 flex-shrink-0"
-                                  style={{ color: defaultOption.iconColor }}
-                                />
-                                <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                  {defaultOption.name}
-                                </span>
-                              </div>
-                            );
-                          }
-
-                          const IconComponent = option.icon;
-                          return (
-                            <div className="flex items-center gap-3">
-                              <IconComponent
-                                className="w-5 h-5 flex-shrink-0"
-                                style={{ color: option.iconColor }}
-                              />
-                              <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                {option.name}
-                              </span>
-                            </div>
-                          );
-                        }}
-                      </SelectValue>
-                    </SelectTrigger>
-
-                    <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
-                      <AnimatePresence>
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.15, ease: "easeOut" }}
-                        >
-                          {stylingOptions.map((option) => {
-                            const IconComponent = option.icon;
-                            return (
-                              <SelectItem
-                                key={option.id}
-                                value={option.name}
-                                className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 focus:bg-slate-50 dark:focus:bg-slate-700/50 transition-colors duration-150"
-                              >
-                                <div className="flex items-start gap-3 w-full">
-                                  <IconComponent
-                                    className="w-5 h-5 mt-0.5 flex-shrink-0"
-                                    style={{ color: option.iconColor }}
-                                  />
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                        {option.name}
-                                      </span>
-                                    </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">
-                                      {option.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </motion.div>
-                      </AnimatePresence>
-                    </SelectContent>
-                  </Select>
-                  </div>
-
-                {/* Accessibility Mode */}
-                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
-                  <div className="flex items-center gap-2">
-                    <Accessibility className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Accessibility Mode
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setAccessibilityMode(!accessibilityMode)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-codeo-green focus:ring-offset-2 ${
-                      accessibilityMode ? 'bg-codeo-green' : 'bg-slate-300 dark:bg-slate-600'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        accessibilityMode ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
+              {/* Accessibility Mode */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2">
+                  <Accessibility className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Accessibility Mode
+                  </span>
                 </div>
+                <button
+                  onClick={() => setAccessibilityMode(!accessibilityMode)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-codeo-green focus:ring-offset-2 ${
+                    accessibilityMode ? 'bg-codeo-green' : 'bg-slate-300 dark:bg-slate-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      accessibilityMode ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
           </div>
@@ -649,24 +484,89 @@ export default function Component() {
               {/* Actions (Droite) */}
               <div className="flex items-center gap-3">
                 {/* Historique */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => toast("Generation History coming soon")}
-                      className="w-8 h-8 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors relative flex items-center justify-center"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                      {versionHistory.length > 0 && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-codeo-green text-white text-xs font-bold rounded-full flex items-center justify-center">
-                          {versionHistory.length}
-                        </span>
+                <DropdownMenu>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className="w-8 h-8 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors relative flex items-center justify-center"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          {versionHistory.length > 0 && (
+                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-codeo-green text-white text-xs font-bold rounded-full flex items-center justify-center">
+                              {versionHistory.length}
+                            </span>
+                          )}
+                        </button>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Historique des générations</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-80">
+                    <div className="p-2">
+                      <div className="px-3 py-2 text-sm font-medium text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 mb-2">
+                        Historique des générations
+                      </div>
+                      {versionHistory.length > 0 ? (
+                        <div className="max-h-64 overflow-y-auto">
+                          {versionHistory.map((version) => (
+                            <button
+                              key={version.id}
+                              onClick={() => loadVersion(version)}
+                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                                version.isActive
+                                  ? 'bg-codeo-green/10 border border-codeo-green/20'
+                                  : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                              }`}
+                            >
+                              <div className="w-10 h-8 bg-slate-100 dark:bg-slate-700 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <img 
+                                  src={version.thumbnail} 
+                                  alt={version.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="flex-1 text-left min-w-0">
+                                <div className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                  {version.name}
+                                </div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">
+                                  {version.framework} • {version.styling}
+                                </div>
+                                <div className="text-xs text-slate-400 dark:text-slate-500">
+                                  {formatRelativeTime(version.timestamp)}
+                                </div>
+                              </div>
+                              {version.isActive && (
+                                <div className="w-2 h-2 bg-codeo-green rounded-full"></div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                            Aucun historique disponible
+                          </p>
+                        </div>
                       )}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Historique des générations</p>
-                  </TooltipContent>
-                </Tooltip>
+                      {versionHistory.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                          <button
+                            onClick={clearHistory}
+                            className="w-full flex items-center gap-2 p-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-colors"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Effacer tout l'historique
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* AI Chat */}
                 <Tooltip>
@@ -713,7 +613,7 @@ export default function Component() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      {workbenchState === "empty" ? "Start Editing" : "Reset"}
+                      {workbenchState === "empty" ? "Generate" : "Reset"}
                     </motion.button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -743,7 +643,7 @@ export default function Component() {
                     onClick={() => setWorkbenchState("editing")}
                     className="px-6 py-3 bg-codeo-green text-white font-medium rounded-lg hover:bg-codeo-green/90 transition-colors"
                   >
-                    Start Building
+                    Generate
                   </button>
                 </div>
               </div>
@@ -914,7 +814,7 @@ export default function Component() {
               </div>
             )}
           </div>
-        </div>
+        </div>      
 
         {/* SIDEBAR DROITE (320px) - IA CHAT & OPTIONS */}
         <div className={`bg-slate-50 dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 flex flex-col transition-all duration-300 ${
@@ -1020,7 +920,7 @@ export default function Component() {
         </div>
       </div>
 
-      <Toaster position="bottom-center" richColors closeButton />
+      <Toaster position="bottom-right" richColors closeButton />
     </div>
   );
 }

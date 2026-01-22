@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Plus,
   LayoutDashboard,
@@ -107,7 +108,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const sectionHeaderContent = (
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between px-3 py-2.5 text-[13px] font-semibold text-slate-600 hover:text-slate-900 transition-all duration-200 group hover:bg-codeo-green/5 rounded-lg ${isCollapsed ? "lg:flex-col lg:justify-center" : ""}`}
+        className={`w-full flex items-center justify-between px-3 py-2.5 text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-all duration-200 group hover:bg-codeo-green/5 rounded-lg ${isCollapsed ? "lg:flex-col lg:justify-center" : ""}`}
       >
         <div
           className={`flex items-center ${isCollapsed ? "lg:flex-col" : "gap-2"}`}
@@ -151,58 +152,68 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const isBlocked = item.badge && !itemHasAccess;
 
     const navItemContent = (
-      <Link
-        href={item.href}
-        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-          if (isBlocked) {
-            e.preventDefault();
-            alert(`Fonctionnalité ${item.badge} disponible prochainement !`);
-          } else {
-            // Fermer la sidebar mobile après le clic
-            onClose();
-          }
-        }}
-        className={`
+      <motion.div
+        whileHover={{ x: 4, scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      >
+        <Link
+          href={item.href}
+          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            if (isBlocked) {
+              e.preventDefault();
+              alert(`Fonctionnalité ${item.badge} disponible prochainement !`);
+            } else {
+              // Fermer la sidebar mobile après le clic
+              onClose();
+            }
+          }}
+          className={`
           flex items-center justify-between px-3 py-3 rounded-lg transition-all duration-200 no-underline group list-none relative
           ${
             item.current
-              ? "bg-codeo-green text-white font-medium shadow-md shadow-codeo-green/25 border border-codeo-green/20"
+              ? "bg-[var(--primary)]/8 text-[var(--primary)] font-medium border-l-2 border-[var(--primary)] shadow-sm"
               : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
           }
             ${isBlocked ? "cursor-not-allowed opacity-70" : ""}
-          ${isCollapsed ? "lg:flex-col lg:justify-center lg:items-center" : ""}
+            ${isCollapsed ? "lg:flex-col lg:justify-center lg:items-center" : ""}
         `}
-      >
-        {/* Indicateur actif */}
-        {item.current && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full" />
-        )}
-        <div
-          className={`flex items-center ${isCollapsed ? "lg:flex-col" : "gap-3"}`}
         >
-          <item.icon
-            className={`h-4 w-4 transition-colors ${item.current ? "text-white" : "text-slate-400 group-hover:text-slate-600"}`}
-          />
-          <span
-            className={`text-[14px] font-medium leading-none transition-all duration-500 ease-out ${isCollapsed ? "lg:opacity-0 lg:scale-90 lg:translate-x-2 lg:absolute" : "lg:opacity-100 lg:scale-100 lg:translate-x-0 lg:relative"}`}
+          {/* Indicateur actif avec effet de lueur */}
+          {item.current && (
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[var(--primary)] rounded-r-full shadow-[0_0_8px_rgba(var(--primary),0.3)]" />
+          )}
+          <div
+            className={`flex items-center ${isCollapsed ? "lg:flex-col" : "gap-3"}`}
           >
-            {item.name}
-          </span>
-        </div>
-        {item.badge && (
-          <span
-            className={`text-[10px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded border
-            ${
-              item.badge === "Bientôt"
-                ? "bg-slate-100 text-slate-400 border-slate-200"
-                : "bg-codeo-green/10 text-codeo-green border-codeo-green/20"
-            }
-          `}
-          >
-            {item.badge}
-          </span>
-        )}
-      </Link>
+            <item.icon
+              className={`h-4 w-4 transition-colors ${item.current ? "text-[var(--primary)]" : "text-slate-400 group-hover:text-slate-600"}`}
+            />
+            <span
+              className={`text-[14px] font-medium leading-none transition-all duration-500 ease-out ${isCollapsed ? "lg:opacity-0 lg:scale-90 lg:translate-x-2 lg:absolute" : "lg:opacity-100 lg:scale-100 lg:translate-x-0 lg:relative"}`}
+            >
+              {item.name}
+            </span>
+          </div>
+          {item.badge && (
+            <div className="flex items-center gap-1">
+              {item.badge !== "Bientôt" && (
+                <div className={`w-1.5 h-1.5 rounded-full bg-[var(--primary)]`} />
+              )}
+              <span
+                className={`text-[10px] font-semibold uppercase tracking-tighter px-1.5 py-0.5 rounded
+                ${
+                  item.badge === "Bientôt"
+                    ? "bg-slate-100 text-slate-400"
+                    : "text-[var(--primary)]"
+                }
+                `}
+              >
+                {item.badge}
+              </span>
+            </div>
+          )}
+        </Link>
+      </motion.div>
     );
 
     // Si la sidebar est réduite, ajouter un tooltip
@@ -264,20 +275,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 className="flex items-center justify-center no-underline transition-opacity hover:opacity-80"
               >
                 <div
-                  className={`font-black text-slate-900 tracking-tight text-center ${!isCollapsed ? "text-xl" : "lg:text-2xl text-xl"}`}
+                  className={`font-bold text-slate-900 tracking-tight text-center ${!isCollapsed ? "text-xl" : "lg:text-2xl text-xl"}`}
                 >
                   {!isCollapsed ? (
                     <>
-                      Code<span className="text-codeo-green">o</span> U
-                      <span className="text-codeo-green">I</span>
+                      Code<span className="text-[var(--primary)]">o</span> U
+                      <span className="text-[var(--primary)]">I</span>
                     </>
                   ) : (
                     <>
                       <span className="lg:hidden">
-                        Code<span className="text-codeo-green">o</span> U
-                        <span className="text-codeo-green">I</span>
+                        Code<span className="text-[var(--primary)]">o</span> U
+                        <span className="text-[var(--primary)]">I</span>
                       </span>
-                      <span className="hidden lg:inline text-codeo-green">
+                      <span className="hidden lg:inline text-[var(--primary)]">
                         C
                       </span>
                     </>
@@ -290,10 +301,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
               <div className="flex items-center justify-center gap-2">
                 <div className="relative flex items-center justify-center h-2 w-2">
-                  <span className="absolute inset-0 rounded-full bg-codeo-green animate-ping opacity-25" />
-                  <span className="relative h-2 w-2 rounded-full bg-codeo-green" />
+                  <span className="absolute inset-0 rounded-full bg-[var(--primary)] animate-ping opacity-25" />
+                  <span className="relative h-2 w-2 rounded-full bg-[var(--primary)]" />
                 </div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
                   V-AST Neural Engine
                 </p>
               </div>
@@ -358,7 +369,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <TooltipTrigger asChild>
                     <button
                       onClick={handleNewProject}
-                      className={`w-full border border-codeo-green text-codeo-green bg-codeo-green/5 hover:bg-codeo-green/10 rounded-lg px-3 py-2.5 font-medium text-[13px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${isCollapsed ? "lg:flex-col" : ""}`}
+                      className={`w-full border border-[var(--primary)] text-[var(--primary)] bg-[var(--primary)]/5 hover:bg-[var(--primary)]/10 rounded-lg px-3 py-2.5 font-medium text-[13px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${isCollapsed ? "lg:flex-col" : ""}`}
                     >
                       <Plus className="h-4 w-4" />
                       <span
@@ -545,12 +556,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     flex items-center justify-center
                     w-9 h-9 bg-white border border-slate-200 rounded-xl
                     shadow-sm group-hover:shadow transition-all duration-200
-                    text-slate-500 group-hover:text-codeo-green"
+                    text-slate-500 group-hover:text-[var(--primary)]"
                     >
                       <Settings className="h-4 w-4 transition-colors" />
                     </div>
                     {(!isCollapsed || isOpen) && (
-                      <span className="ml-3 text-sm font-medium text-slate-700 group-hover:text-codeo-green transition-colors">
+                      <span className="ml-3 text-sm font-medium text-slate-700 group-hover:text-[var(--primary)] transition-colors">
                         Paramètres
                       </span>
                     )}

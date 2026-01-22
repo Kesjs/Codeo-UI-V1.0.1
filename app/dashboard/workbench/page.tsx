@@ -443,7 +443,7 @@ export default function Component() {
                         onClick={() => setSelectedViewport("mobile")}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
                           selectedViewport === "mobile"
-                            ? 'bg-codeo-green/10 border border-codeo-green/20'
+                            ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
                         }`}
                       >
@@ -452,16 +452,16 @@ export default function Component() {
                           <div className="text-sm font-medium text-slate-900 dark:text-white">Mobile</div>
                           <div className="text-xs text-slate-500 dark:text-slate-400">375px</div>
                         </div>
-                        {selectedViewport === "mobile" && (
-                          <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
-                        )}
+                          {selectedViewport === "mobile" && (
+                            <div className="ml-auto w-2 h-2 bg-[var(--primary)] rounded-full"></div>
+                          )}
                       </button>
 
                       <button
                         onClick={() => setSelectedViewport("tablet")}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
                           selectedViewport === "tablet"
-                            ? 'bg-codeo-green/10 border border-codeo-green/20'
+                            ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
                         }`}
                       >
@@ -470,16 +470,16 @@ export default function Component() {
                           <div className="text-sm font-medium text-slate-900 dark:text-white">Tablet</div>
                           <div className="text-xs text-slate-500 dark:text-slate-400">768px</div>
                         </div>
-                        {selectedViewport === "tablet" && (
-                          <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
-                        )}
+                          {selectedViewport === "tablet" && (
+                            <div className="ml-auto w-2 h-2 bg-[var(--primary)] rounded-full"></div>
+                          )}
                       </button>
 
                       <button
                         onClick={() => setSelectedViewport("desktop")}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
                           selectedViewport === "desktop"
-                            ? 'bg-codeo-green/10 border border-codeo-green/20'
+                            ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
                         }`}
                       >
@@ -488,9 +488,9 @@ export default function Component() {
                           <div className="text-sm font-medium text-slate-900 dark:text-white">Desktop</div>
                           <div className="text-xs text-slate-500 dark:text-slate-400">1440px</div>
                         </div>
-                        {selectedViewport === "desktop" && (
-                          <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
-                        )}
+                          {selectedViewport === "desktop" && (
+                            <div className="ml-auto w-2 h-2 bg-[var(--primary)] rounded-full"></div>
+                          )}
                       </button>
                     </div>
                   </DropdownMenuContent>
@@ -512,7 +512,7 @@ export default function Component() {
                         >
                           <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                           {versionHistory.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 md:w-4 md:h-4 bg-codeo-green text-white text-[10px] md:text-xs font-bold rounded-full flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 md:w-4 md:h-4 bg-[var(--primary)] text-white text-[10px] md:text-xs font-bold rounded-full flex items-center justify-center">
                               {versionHistory.length}
                             </span>
                           )}
@@ -537,7 +537,7 @@ export default function Component() {
                               onClick={() => loadVersion(version)}
                               className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
                                 version.isActive
-                                  ? 'bg-codeo-green/10 border border-codeo-green/20'
+                                  ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                                   : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
                               }`}
                             >
@@ -560,7 +560,7 @@ export default function Component() {
                                 </div>
                               </div>
                               {version.isActive && (
-                                <div className="w-2 h-2 bg-codeo-green rounded-full"></div>
+                                <div className="w-2 h-2 bg-[var(--primary)] rounded-full"></div>
                               )}
                             </button>
                           ))}
@@ -629,7 +629,7 @@ export default function Component() {
                   <TooltipTrigger asChild>
                     <motion.button
                       onClick={() => setWorkbenchState(workbenchState === "empty" ? "editing" : "empty")}
-                      className="h-8 md:h-10 px-2 md:px-4 bg-codeo-green hover:bg-codeo-green/90 text-white text-xs md:text-sm font-semibold rounded-lg transition-colors flex-shrink-0"
+                      className={`h-8 md:h-10 px-2 md:px-4 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white text-xs md:text-sm font-semibold rounded-lg transition-colors flex-shrink-0`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -670,7 +670,7 @@ export default function Component() {
                   </p>
                   <button
                     onClick={() => setWorkbenchState("editing")}
-                    className="px-6 py-3 bg-codeo-green text-white font-medium rounded-lg hover:bg-codeo-green/90 transition-colors"
+                    className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary)]/90 transition-colors"
                   >
                     Generate
                   </button>

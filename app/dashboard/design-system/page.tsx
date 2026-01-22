@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   Palette,
@@ -15,17 +15,19 @@ import {
   Grid,
   Circle,
   Square,
-  Minus
+  Minus,
+  Download,
+  RotateCcw
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const colorTokens = [
-  { name: 'Codeo Green', value: 'hsl(123.8, 69.2%, 50.4%)', css: '--codeo-green', usage: 'Couleur principale du branding' },
-  { name: 'Codeo Light BG', value: 'rgba(44, 255, 0, 0.04)', css: '--codeo-light-bg', usage: 'Fond léger pour éléments verts' },
-  { name: 'Primary', value: 'hsl(var(--primary))', css: '--primary', usage: 'Couleur primaire du thème' },
-  { name: 'Secondary', value: 'hsl(var(--secondary))', css: '--secondary', usage: 'Couleur secondaire' },
-  { name: 'Accent', value: 'hsl(var(--accent))', css: '--accent', usage: 'Couleur d\'accentuation' },
+  { name: 'Primary', key: 'primary', usage: 'Couleur principale du branding' },
+  { name: 'Secondary', key: 'secondary', usage: 'Couleur secondaire' },
+  { name: 'Accent', key: 'accent', usage: 'Couleur d\'accentuation' },
+  { name: 'Dashboard BG', key: 'dashboardBg', usage: 'Fond du dashboard' },
 ]
 
 const typographyScale = [
@@ -58,6 +60,17 @@ const borderRadiusScale = [
 
 export default function DesignSystemPage() {
   const [copiedToken, setCopiedToken] = useState<string | null>(null)
+  const [showOnboarding, setShowOnboarding] = useState(true)
+  const [typographyTexts, setTypographyTexts] = useState({
+    H1: 'Heading 1',
+    H2: 'Heading 2', 
+    H3: 'Heading 3',
+    Body: 'Body text avec une ligne de hauteur confortable pour la lisibilité',
+    Small: 'Small text',
+    Caption: 'Caption text'
+  })
+  
+  const { theme, updateColor, updateRadius, resetTheme, exportTailwindConfig } = useTheme()
 
   const copyToClipboard = (text: string, tokenName: string) => {
     navigator.clipboard.writeText(text)
@@ -66,8 +79,67 @@ export default function DesignSystemPage() {
     setTimeout(() => setCopiedToken(null), 2000)
   }
 
+  const handleExportConfig = () => {
+    const config = exportTailwindConfig()
+    const blob = new Blob([config], { type: 'text/javascript' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'tailwind.config.js'
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success('Configuration exportée avec succès !')
+  }
+
+  const handleColorChange = (key: string, value: string) => {
+    updateColor(key as keyof typeof theme.colors, value)
+  }
+
+  const handleTypographyEdit = (key: string, value: string) => {
+    setTypographyTexts(prev => ({ ...prev, [key]: value }))
+  }
+
   return (
     <div className="space-y-8">
+      {/* Bannière d'onboarding */}
+      {showOnboarding && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-codeo-green/10 to-codeo-green/5 border border-codeo-green/20 rounded-2xl p-6 relative"
+        >
+          <button
+            onClick={() => setShowOnboarding(false)}
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+          >
+            ×
+          </button>
+          <div className="flex items-center gap-3 mb-3">
+            <Sparkles className="w-6 h-6 text-codeo-green" />
+            <h2 className="text-xl font-bold text-slate-900">Bienvenue dans votre Studio de Design</h2>
+          </div>
+          <p className="text-slate-600 mb-4">
+            Personnalisez l'identité de votre interface ici, elle sera appliquée à tout votre espace de travail.
+          </p>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setShowOnboarding(false)}
+              className="bg-codeo-green hover:bg-codeo-green/90"
+            >
+              Commencer à personnaliser
+            </Button>
+            <Button
+              variant="outline"
+              onClick={resetTheme}
+              className="border-codeo-green/50 text-codeo-green hover:bg-codeo-green/10"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Réinitialiser par défaut
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -79,11 +151,29 @@ export default function DesignSystemPage() {
             <div className="w-12 h-12 bg-codeo-green/10 rounded-xl flex items-center justify-center">
               <Palette className="w-6 h-6 text-codeo-green" />
             </div>
-            Design System
+            Studio de Design
           </h1>
           <p className="text-slate-600 dark:text-slate-400 mt-2">
-            Référence complète des tokens, composants et guidelines du design system Codeo UI
+            Personnalisez dynamiquement les couleurs, arrondis et typographie de votre interface
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleExportConfig}
+            variant="outline"
+            className="border-codeo-green/50 text-codeo-green hover:bg-codeo-green/10"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Exporter tailwind.config.js
+          </Button>
+          <Button
+            onClick={resetTheme}
+            variant="outline"
+            className="border-slate-300 text-slate-600 hover:bg-slate-50"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Réinitialiser
+          </Button>
         </div>
       </motion.div>
 
@@ -104,10 +194,10 @@ export default function DesignSystemPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {colorTokens.map((token) => (
             <div
-              key={token.name}
+              key={token.key}
               className="group relative bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:border-codeo-green/50 transition-all"
             >
               <div className="flex items-start justify-between mb-3">
@@ -115,32 +205,29 @@ export default function DesignSystemPage() {
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-1">{token.name}</h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">{token.usage}</p>
                 </div>
-                <button
-                  onClick={() => copyToClipboard(token.css, token.name)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"
-                >
-                  {copiedToken === token.name ? (
-                    <Check className="w-4 h-4 text-codeo-green" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-slate-400" />
-                  )}
-                </button>
               </div>
-              <div
-                className="w-full h-16 rounded-lg mb-2 border border-slate-200 dark:border-slate-700"
-                style={{ backgroundColor: token.value.includes('hsl') ? token.value : token.value }}
-              />
+              
+              {/* Color Picker */}
+              <div className="mb-3">
+                <input
+                  type="color"
+                  value={theme.colors[token.key as keyof typeof theme.colors]}
+                  onChange={(e) => handleColorChange(token.key, e.target.value)}
+                  className="w-full h-16 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer"
+                />
+              </div>
+              
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-500 dark:text-slate-400">Valeur:</span>
-                  <code className="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
-                    {token.value}
+                  <code className="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 text-xs">
+                    {theme.colors[token.key as keyof typeof theme.colors]}
                   </code>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-500 dark:text-slate-400">CSS:</span>
-                  <code className="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
-                    {token.css}
+                  <code className="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 text-xs">
+                    --{token.key}
                   </code>
                 </div>
               </div>
@@ -174,8 +261,14 @@ export default function DesignSystemPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <div className={`${scale.size} ${scale.weight} text-slate-900 dark:text-white mb-2`} style={{ lineHeight: scale.lineHeight }}>
-                    {scale.example}
+                  <div 
+                    className={`${scale.size} ${scale.weight} text-slate-900 dark:text-white mb-2`} 
+                    style={{ lineHeight: scale.lineHeight, cursor: 'text', outline: 'none', minHeight: '1.5em' }}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleTypographyEdit(scale.name, e.currentTarget.textContent || '')}
+                  >
+                    {typographyTexts[scale.name as keyof typeof typographyTexts]}
                   </div>
                 </div>
                 <div className="text-right text-xs text-slate-500 dark:text-slate-400 space-y-1 ml-4">
@@ -243,28 +336,60 @@ export default function DesignSystemPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {borderRadiusScale.map((radius) => (
-            <div
-              key={radius.name}
-              className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4"
-            >
-              <div className="mb-3">
-                <div
-                  className="w-20 h-20 bg-codeo-green/20 border-2 border-codeo-green/50 mx-auto"
-                  style={{ borderRadius: radius.value === 'var(--radius)' ? '4px' : radius.value === '9999px' ? '50%' : radius.value }}
-                />
+        <div className="space-y-6">
+          {/* Radius Slider */}
+          <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-slate-900 dark:text-white">Rayon d'arrondi global</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Contrôlez l'arrondi des composants (0px = Brutalisme, 40px = Soft UI)</p>
               </div>
-              <div className="text-center">
-                <div className="font-semibold text-slate-900 dark:text-white text-sm mb-1">{radius.name}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                  <div>{radius.value}</div>
-                  <div>{radius.pixels}</div>
-                </div>
-                <div className="text-xs text-slate-400 dark:text-slate-500 italic">{radius.usage}</div>
+              <div className="text-lg font-mono bg-white dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                {theme.radius}px
               </div>
             </div>
-          ))}
+            <input
+              type="range"
+              min="0"
+              max="40"
+              value={theme.radius}
+              onChange={(e) => updateRadius(Number(e.target.value))}
+              className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, hsl(123.8, 69.2%, 50.4%) 0%, hsl(123.8, 69.2%, 50.4%) ${(theme.radius / 40) * 100}%, #e2e8f0 ${(theme.radius / 40) * 100}%, #e2e8f0 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-2">
+              <span>0px (Brutalisme)</span>
+              <span>20px (Standard)</span>
+              <span>40px (Soft UI)</span>
+            </div>
+          </div>
+
+          {/* Preview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {borderRadiusScale.map((radius) => (
+              <div
+                key={radius.name}
+                className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4"
+              >
+                <div className="mb-3">
+                  <div
+                    className="w-20 h-20 bg-codeo-green/20 border-2 border-codeo-green/50 mx-auto"
+                    style={{ borderRadius: radius.value === 'var(--radius)' ? `${theme.radius}px` : radius.value === '9999px' ? '50%' : radius.value }}
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm mb-1">{radius.name}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                    <div>{radius.value === 'var(--radius)' ? `${theme.radius}px` : radius.value}</div>
+                    <div>{radius.value === 'var(--radius)' ? `${theme.radius}px` : radius.pixels}</div>
+                  </div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500 italic">{radius.usage}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </motion.section>
 

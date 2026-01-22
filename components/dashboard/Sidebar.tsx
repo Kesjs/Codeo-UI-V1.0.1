@@ -464,9 +464,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <NavItem
                     item={{
                       name: "Design System",
-                      href: "#",
+                      href: "/dashboard/design-system",
                       icon: Palette,
-                      badge: "Bientôt",
+                      current: pathname === "/dashboard/design-system",
                     }}
                   />
                 </div>

@@ -17,8 +17,8 @@ export function Header() {
   const [activeSection, setActiveSection] = useState('')
   const [isResourcesOpen, setIsResourcesOpen] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
-  const resourcesButtonRef = useRef<HTMLButtonElement>(null)
-  const closeTimeoutRef = useRef<NodeJS.Timeout>()
+  const resourcesButtonRef = useRef<HTMLButtonElement | null>(null)
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [isLoggedIn] = useState(false)
 
@@ -118,7 +118,7 @@ export function Header() {
   const openResourcesDropdown = () => {
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current)
-      closeTimeoutRef.current = undefined
+      closeTimeoutRef.current = null
     }
     if (resourcesButtonRef.current) {
       const rect = resourcesButtonRef.current.getBoundingClientRect()

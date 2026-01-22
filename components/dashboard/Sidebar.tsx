@@ -538,7 +538,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => router.push("/dashboard/settings")}
-                    className={`w-full flex items-center p-2.5 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group ${isCollapsed ? "lg:px-2 justify-center" : "lg:px-3"}`}
+                    className={`w-full flex items-center p-2.5 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group ${isCollapsed && !isOpen ? "lg:px-2 justify-center" : "lg:px-3"}`}
                   >
                     <div
                       className="relative
@@ -549,14 +549,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     >
                       <Settings className="h-4 w-4 transition-colors" />
                     </div>
-                    {!isCollapsed && (
+                    {(!isCollapsed || isOpen) && (
                       <span className="ml-3 text-sm font-medium text-slate-700 group-hover:text-codeo-green transition-colors">
                         Paramètres
                       </span>
                     )}
                   </button>
                 </TooltipTrigger>
-                {isCollapsed && (
+                {isCollapsed && !isOpen && (
                   <TooltipContent
                     side="right"
                     className="bg-slate-900 text-white text-sm font-medium"
@@ -573,7 +573,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleLogout}
-                    className={`w-full flex items-center p-2.5 rounded-xl hover:bg-red-50 transition-all cursor-pointer group ${isCollapsed ? "lg:px-2 justify-center" : "lg:px-3"}`}
+                    className={`w-full flex items-center p-2.5 rounded-xl hover:bg-red-50 transition-all cursor-pointer group ${isCollapsed && !isOpen ? "lg:px-2 justify-center" : "lg:px-3"}`}
                   >
                     <div
                       className="relative
@@ -584,14 +584,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     >
                       <LogOut className="h-4 w-4 transition-colors" />
                     </div>
-                    {!isCollapsed && (
+                    {(!isCollapsed || isOpen) && (
                       <span className="ml-3 text-sm font-medium text-red-500 group-hover:text-red-600 transition-colors">
                         Déconnexion
                       </span>
                     )}
                   </button>
                 </TooltipTrigger>
-                {isCollapsed && (
+                {isCollapsed && !isOpen && (
                   <TooltipContent
                     side="right"
                     className="bg-slate-900 text-white text-sm font-medium"

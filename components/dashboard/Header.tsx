@@ -63,7 +63,7 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <button 
               onClick={onMenuClick}
-              className="p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors lg:hidden"
+              className="p-2 -ml-2 rounded-none hover:bg-slate-100 transition-colors lg:hidden"
               aria-label="Menu"
             >
               <Menu className="h-5 w-5 text-slate-600" />
@@ -82,7 +82,7 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
             {/* Scans IA Badge */}
             <div className="relative hidden md:block">
               <div
-                className={`${scansDisplay.bgColor} ${scansDisplay.color} px-3 py-1.5 rounded-lg font-medium text-sm cursor-help flex items-center gap-2`}
+                className={`${scansDisplay.bgColor} ${scansDisplay.color} px-3 py-1.5 rounded-none font-medium text-sm cursor-help flex items-center gap-2`}
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
               >
@@ -102,7 +102,7 @@ export default function Header({ remainingScans = 5, totalScans = 10, plan = 'st
 
             {/* Help Button */}
             <button 
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative z-10"
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-none transition-colors relative z-10"
               aria-label="Aide"
             >
               <HelpCircle className="h-5 w-5" />

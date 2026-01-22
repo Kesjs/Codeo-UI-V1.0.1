@@ -39,7 +39,7 @@ const mockGlobalData: SearchResult[] = [
   { id: '6', type: 'component', title: 'Data Table', description: 'Tableau de données avec tri et filtrage', path: '/dashboard/components', metadata: { framework: 'Vue', tags: ['table', 'data'] } },
   
   // Collections
-  { id: '7', type: 'collection', title: 'Design System Corporate', description: 'Collection complète entreprise', path: '/dashboard/collections', metadata: { tags: ['design-system', 'corporate'] } },
+  { id: '7', type: 'collection', title: 'UI Kit Complete', description: 'Collection complète d\'interfaces', path: '/dashboard/collections', metadata: { tags: ['ui-kit', 'complete'] } },
   { id: '8', type: 'collection', title: 'E-commerce Templates', description: 'Templates boutique en ligne', path: '/dashboard/collections', metadata: { tags: ['ecommerce', 'templates'] } },
   
   // Utilisateurs (pour plan Business)

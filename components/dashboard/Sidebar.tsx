@@ -108,7 +108,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const sectionHeaderContent = (
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between px-3 py-2.5 text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-all duration-200 group hover:bg-codeo-green/5 rounded-lg ${isCollapsed ? "lg:flex-col lg:justify-center" : ""}`}
+        className={`w-full flex items-center justify-between px-3 py-2.5 text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-all duration-200 group rounded-none ${isCollapsed ? "lg:flex-col lg:justify-center" : ""}`}
       >
         <div
           className={`flex items-center ${isCollapsed ? "lg:flex-col" : "gap-2"}`}
@@ -168,11 +168,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             }
           }}
           className={`
-          flex items-center justify-between px-3 py-3 rounded-lg transition-all duration-200 no-underline group list-none relative
+          flex items-center justify-between px-3 py-3 rounded-none transition-all duration-200 no-underline group list-none relative
           ${
             item.current
               ? "bg-[var(--primary)]/8 text-[var(--primary)] font-medium border-l-2 border-[var(--primary)] shadow-sm"
-              : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              : "text-slate-700 hover:text-slate-900"
           }
             ${isBlocked ? "cursor-not-allowed opacity-70" : ""}
             ${isCollapsed ? "lg:flex-col lg:justify-center lg:items-center" : ""}
@@ -319,7 +319,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="group w-6 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700
-                    hover:bg-slate-50 dark:hover:bg-slate-700 dark:hover:border-slate-600
                     rounded-full transition-all duration-300 flex items-center justify-center
                     focus:outline-none overflow-hidden"
                     aria-label={
@@ -369,7 +368,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <TooltipTrigger asChild>
                     <button
                       onClick={handleNewProject}
-                      className={`w-full border border-[var(--primary)] text-[var(--primary)] bg-[var(--primary)]/5 hover:bg-[var(--primary)]/10 rounded-lg px-3 py-2.5 font-medium text-[13px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${isCollapsed ? "lg:flex-col" : ""}`}
+                      className={`w-full border border-[var(--primary)] text-[var(--primary)] bg-[var(--primary)]/5 rounded-none px-3 py-2.5 font-medium text-[13px] transition-all flex items-center justify-center gap-2 ${isCollapsed ? "lg:flex-col" : ""}`}
                     >
                       <Plus className="h-4 w-4" />
                       <span
@@ -390,7 +389,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             ) : (
               <button
                 onClick={handleNewProject}
-                className={`w-full border border-codeo-green text-codeo-green bg-codeo-green/5 hover:bg-codeo-green/10 rounded-lg px-3 py-2.5 font-medium text-[13px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${isCollapsed ? "lg:flex-col" : ""}`}
+                className={`w-full border border-codeo-green text-codeo-green bg-codeo-green/5 rounded-none px-3 py-2.5 font-medium text-[13px] transition-all flex items-center justify-center gap-2 ${isCollapsed ? "lg:flex-col" : ""}`}
               >
                 <Plus className="h-4 w-4" />
                 <span
@@ -472,14 +471,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       current: pathname === "/dashboard/collections",
                     }}
                   />
-                  <NavItem
-                    item={{
-                      name: "Design System",
-                      href: "/dashboard/design-system",
-                      icon: Palette,
-                      current: pathname === "/dashboard/design-system",
-                    }}
-                  />
                 </div>
               )}
             </div>
@@ -549,12 +540,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => router.push("/dashboard/settings")}
-                    className={`w-full flex items-center p-2.5 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group ${isCollapsed && !isOpen ? "lg:px-2 justify-center" : "lg:px-3"}`}
+                    className={`w-full flex items-center p-2.5 rounded-none transition-all cursor-pointer group ${isCollapsed && !isOpen ? "lg:px-2 justify-center" : "lg:px-3"}`}
                   >
                     <div
                       className="relative
                     flex items-center justify-center
-                    w-9 h-9 bg-white border border-slate-200 rounded-xl
+                    w-9 h-9 bg-white border border-slate-200 rounded-none
                     shadow-sm group-hover:shadow transition-all duration-200
                     text-slate-500 group-hover:text-[var(--primary)]"
                     >
@@ -584,12 +575,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleLogout}
-                    className={`w-full flex items-center p-2.5 rounded-xl hover:bg-red-50 transition-all cursor-pointer group ${isCollapsed && !isOpen ? "lg:px-2 justify-center" : "lg:px-3"}`}
+                    className={`w-full flex items-center p-2.5 rounded-none transition-all cursor-pointer group ${isCollapsed && !isOpen ? "lg:px-2 justify-center" : "lg:px-3"}`}
                   >
                     <div
                       className="relative
                     flex items-center justify-center
-                    w-9 h-9 bg-white border border-red-100 rounded-xl
+                    w-9 h-9 bg-white border border-red-100 rounded-none
                     shadow-sm group-hover:shadow transition-all duration-200
                     text-red-400 group-hover:text-red-600"
                     >

@@ -1,41 +1,30 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  User, 
-  CreditCard, 
-  Settings as SettingsIcon, 
-  Bell, 
-  Shield, 
-  Users, 
-  Palette, 
-  Globe, 
-  Zap,
-  Database,
-  Key,
-  HelpCircle,
-  LogOut
+  User, CreditCard, Settings as SettingsIcon, Bell, 
+  Shield, Users, Palette, Globe, Key, HelpCircle, 
+  Download, ChevronRight, Zap, Terminal
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { usePlan } from '../layout'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
   const { activePlan, simulatedPlan, setSimulatedPlan, isDevMode } = usePlan()
+  const { theme } = useTheme()
 
   const tabs = [
     { id: 'profile', label: 'Profil', icon: User },
-    { id: 'subscription', label: 'Abonnement', icon: CreditCard },
-    { id: 'workbench', label: 'Workbench', icon: SettingsIcon },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Sécurité', icon: Shield },
+    { id: 'subscription', label: 'Plan', icon: CreditCard },
+    { id: 'workbench', label: 'Dev', icon: SettingsIcon },
     { id: 'team', label: 'Équipe', icon: Users },
-    { id: 'appearance', label: 'Apparence', icon: Palette },
-    { id: 'integrations', label: 'Intégrations', icon: Globe },
-    { id: 'api', label: 'API & Clés', icon: Key },
+    { id: 'api', label: 'API', icon: Key },
+    { id: 'security', label: 'Sécurité', icon: Shield },
     { id: 'support', label: 'Aide', icon: HelpCircle },
   ]
 
@@ -43,75 +32,99 @@ export default function SettingsPage() {
     switch (activeTab) {
       case 'profile':
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Informations personnelles</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nom complet</label>
-                  <Input defaultValue="Ken Kennedy" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Adresse email</label>
-                  <Input defaultValue="ken@example.com" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nom d'utilisateur</label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">
-                      codeo.app/
-                    </span>
-                    <Input defaultValue="ken" className="rounded-l-none" />
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none">
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                  <div className="w-1 h-4 bg-[var(--primary)]" /> Informations personnelles
+                </h3>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Nom complet</label>
+                    <Input defaultValue="Ken Kennedy" className="rounded-none border-slate-200 focus:border-[var(--primary)] h-12" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Adresse email</label>
+                    <Input defaultValue="ken@example.com" className="rounded-none border-slate-200 h-12" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Entreprise</label>
+                    <Input placeholder="Nom de l'entreprise" className="rounded-none border-slate-200 h-12" />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Rôle</label>
-                  <Select defaultValue="early-adopter">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="early-adopter">Early Adopter</SelectItem>
-                      <SelectItem value="pro">Pro</SelectItem>
-                      <SelectItem value="business">Business</SelectItem>
-                    </SelectContent>
-                  </Select>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none">
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                  <div className="w-1 h-4 bg-[var(--primary)]" /> Préférences Système
+                </h3>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-sm font-medium">Langue Interface</span>
+                    <Select defaultValue="fr">
+                      <SelectTrigger className="w-32 rounded-none h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fr">FR</SelectItem>
+                        <SelectItem value="en">EN</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-sm font-medium">Thème</span>
+                    <Select defaultValue="dark">
+                      <SelectTrigger className="w-32 rounded-none h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Clair</SelectItem>
+                        <SelectItem value="dark">Sombre</SelectItem>
+                        <SelectItem value="system">Système</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center justify-between py-3">
+                    <span className="text-sm font-medium">Notifications</span>
+                    <Select defaultValue="enabled">
+                      <SelectTrigger className="w-32 rounded-none h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="enabled">Activées</SelectItem>
+                        <SelectItem value="disabled">Désactivées</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Préférences</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Langue</p>
-                    <p className="text-sm text-slate-500">Choisissez votre langue préférée</p>
+            {/* SECTION AVANCÉE */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                <div className="w-1 h-4 bg-[var(--primary)]" /> Paramètres Avancés
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-sm font-medium">Export automatique</span>
+                    <Button variant="ghost" size="sm" className="rounded-none text-[10px] font-bold uppercase">ACTIVER</Button>
                   </div>
-                  <Select defaultValue="fr">
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fr">Français</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-sm font-medium">Sauvegarde cloud</span>
+                    <Button variant="ghost" size="sm" className="rounded-none text-[10px] font-bold uppercase">CONFIGURER</Button>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Fuseau horaire</p>
-                    <p className="text-sm text-slate-500">Définissez votre fuseau horaire</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-sm font-medium">API Rate Limiting</span>
+                    <span className="text-[10px] font-mono text-slate-400">1000 req/min</span>
                   </div>
-                  <Select defaultValue="utc+1">
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="utc+1">UTC+1</SelectItem>
-                      <SelectItem value="utc+0">UTC+0</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm font-medium">Cache TTL</span>
+                    <span className="text-[10px] font-mono text-slate-400">3600s</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -119,360 +132,309 @@ export default function SettingsPage() {
         )
 
       case 'subscription':
+        const currentPlan = simulatedPlan || activePlan
+        const planLimits = {
+          starter: { scans: 50, generations: 100, features: ['Next.js', 'Basic Animations'] },
+          pro: { scans: 500, generations: 1000, features: ['V-AST Turbo', 'Multi-framework', 'GPU Priority'] },
+          business: { scans: '∞', generations: '∞', features: ['V-AST Enterprise', 'Team Stats', 'Security Audit', 'Priority Support'] }
+        }
+
         return (
-          <div className="space-y-6">
-            <div className={`bg-gradient-to-br ${activePlan === 'business' ? 'from-purple-600 to-purple-800' : 'from-codeo-green to-emerald-700'} rounded-2xl p-8 text-white`}>
-              <h3 className="text-2xl font-bold mb-2">Plan Actuel : {activePlan === 'starter' ? 'Starter' : activePlan === 'pro' ? 'Pro' : 'Business'}</h3>
-              <p className="text-white/80 mb-6">
-                {activePlan === 'starter' && '0€/mois • 10 scans • Traitement standard'}
-                {activePlan === 'pro' && '49€/mois • Illimité scans • GPU prioritaire'}
-                {activePlan === 'business' && '149€/mois • Illimité scans • Instance dédiée'}
-              </p>
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold">
-                    {activePlan === 'starter' ? '8' : activePlan === 'pro' ? '47' : '142'}
-                  </div>
-                  <div className="text-sm text-white/70">
-                    {activePlan === 'starter' ? 'Scans ce mois' : 'Scans ce mois'}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">
-                    {activePlan === 'starter' ? '2' : '∞'}
-                  </div>
-                  <div className="text-sm text-white/70">
-                    {activePlan === 'starter' ? 'Scans restants' : 'Scans restants'}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">
-                    {activePlan === 'starter' ? '1x' : activePlan === 'pro' ? '2.5x' : '3x'}
-                  </div>
-                  <div className="text-sm text-white/70">Vitesse</div>
-                </div>
-              </div>
-              <Button className="bg-white text-codeo-green hover:bg-slate-100">
-                {activePlan === 'starter' ? 'Passer Pro – 49 €' : activePlan === 'pro' ? 'Passer Business – 149 €' : 'Gérer l\'abonnement'}
-              </Button>
-            </div>
-
-            {/* Toggle dev uniquement */}
-            {isDevMode && (
-              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Simulation de plan (Dev)</h3>
-                <Select value={simulatedPlan} onValueChange={(v: string) => setSimulatedPlan(v as 'starter' | 'pro' | 'business')}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="starter">Starter</SelectItem>
-                    <SelectItem value="pro">Pro</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Historique des paiements</h3>
-              <div className="space-y-3">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">Abonnement {activePlan === 'starter' ? 'Starter' : activePlan === 'pro' ? 'Pro' : 'Business'}</p>
-                      <p className="text-sm text-slate-500">15 Jan 2026</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">
-                        {activePlan === 'starter' ? '0€' : activePlan === 'pro' ? '49€' : '149€'}
-                      </p>
-                      <p className="text-sm text-green-600">Payé</p>
-                    </div>
-                  </div>
+          <div className="space-y-8">
+            {/* SIMULATEUR DE PLAN */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-none">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                <div className="w-1 h-4 bg-[var(--primary)]" /> Simulateur de Plan
+              </h3>
+              <div className="flex gap-4">
+                {(['starter', 'pro', 'business'] as const).map((plan) => (
+                  <button
+                    key={plan}
+                    onClick={() => setSimulatedPlan(plan)}
+                    className={`flex-1 p-4 border-2 rounded-none transition-all uppercase text-xs font-black tracking-widest ${
+                      currentPlan === plan
+                        ? 'border-[var(--primary)] bg-[var(--primary)] text-black'
+                        : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-400'
+                    }`}
+                  >
+                    {plan}
+                  </button>
                 ))}
               </div>
+              {isDevMode && (
+                <p className="text-[10px] text-slate-400 mt-2 font-mono">Mode simulation activé</p>
+              )}
+            </div>
+
+            {/* STATUS ACTUEL */}
+            <div className="bg-black p-8 rounded-none border-l-4 border-[var(--primary)] text-white relative overflow-hidden">
+               <div className="relative z-10">
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--primary)] uppercase">Plan Actif</span>
+                    <h3 className="text-3xl font-black uppercase italic tracking-tighter mt-2">{currentPlan}</h3>
+                    {simulatedPlan && simulatedPlan !== activePlan && (
+                      <span className="text-[10px] text-yellow-400 font-mono mt-1 block">SIMULATION</span>
+                    )}
+                  </div>
+                  <Zap className="w-12 h-12 text-[var(--primary)] opacity-50" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {planLimits[currentPlan as 'starter' | 'pro' | 'business'].scans}
+                    </p>
+                    <p className="text-[10px] uppercase text-slate-500">Scans / Mois</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {planLimits[currentPlan as 'starter' | 'pro' | 'business'].generations}
+                    </p>
+                     <p className="text-[10px] uppercase text-slate-500">Générations</p>
+                   </div>
+                </div>
+
+                {/* FONCTIONNALITÉS DU PLAN */}
+                <div className="mb-8">
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-slate-300 mb-4">Fonctionnalités</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {planLimits[currentPlan as 'starter' | 'pro' | 'business'].features.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-[var(--primary)] rounded-full" />
+                        <span className="text-sm text-slate-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {currentPlan !== 'business' && (
+                  <Button className="bg-[var(--primary)] text-black font-black uppercase rounded-none px-8 hover:opacity-90">
+                    Upgrade to Business
+                  </Button>
+                )}
+               </div>
+            </div>
+
+            {/* RESTRICTIONS SELON PLAN */}
+            {currentPlan === 'starter' && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-6 rounded-none">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2" />
+                  <div>
+                    <h4 className="text-sm font-bold text-yellow-800 dark:text-yellow-200 mb-2">Limitations Starter</h4>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                      Certaines fonctionnalités avancées sont bridées. Passez au plan PRO pour accéder à V-AST Turbo et aux exports multi-frameworks.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+
+      case 'api':
+        return (
+          <div className="bg-slate-950 p-6 rounded-none border border-slate-800">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-slate-300 flex items-center gap-2 uppercase">
+                <Terminal className="w-4 h-4 text-[var(--primary)]" /> API Access Key
+              </h3>
+              <span className="text-[10px] text-green-500 animate-pulse font-mono tracking-tighter">● SYSTEM_LIVE</span>
+            </div>
+            <div className="flex gap-2">
+              <code className="flex-1 bg-black p-4 text-[var(--primary)] font-mono text-sm border border-slate-800">
+                sk_live_2026_x86_64_codeo_f82jks92
+              </code>
+              <Button variant="outline" className="rounded-none border-slate-800 text-slate-400 hover:bg-[var(--primary)] hover:text-black">
+                COPY
+              </Button>
             </div>
           </div>
         )
 
       case 'workbench':
+        const currentPlanForWorkbench = simulatedPlan || activePlan
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Configuration du Workbench</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Framework par défaut</p>
-                    <p className="text-sm text-slate-500">React, Next.js, Vue...</p>
+          <div className="space-y-8">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                <div className="w-1 h-4 bg-[var(--primary)]" /> Configuration Workbench
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Thème Éditeur</label>
+                    <Select defaultValue="dark">
+                      <SelectTrigger className="rounded-none h-12">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dark">Sombre</SelectItem>
+                        <SelectItem value="light">Clair</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <Select defaultValue="react">
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="react">React</SelectItem>
-                      <SelectItem value="nextjs">Next.js</SelectItem>
-                      <SelectItem value="vue">Vue</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Taille Police</label>
+                    <Select defaultValue="14">
+                      <SelectTrigger className="rounded-none h-12">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="12">12px</SelectItem>
+                        <SelectItem value="14">14px</SelectItem>
+                        <SelectItem value="16">16px</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Style Engine</p>
-                    <p className="text-sm text-slate-500">Tailwind, CSS Modules...</p>
+                <div className="space-y-6">
+                  <div className={`space-y-2 ${currentPlanForWorkbench === 'starter' ? 'opacity-50' : ''}`}>
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest flex items-center gap-2">
+                      V-AST Engine
+                      {currentPlanForWorkbench === 'starter' && (
+                        <span className="text-[8px] bg-[var(--primary)] text-black px-1 py-0.5 font-black uppercase">PRO</span>
+                      )}
+                    </label>
+                    <Select defaultValue={currentPlanForWorkbench === 'starter' ? 'basic' : 'turbo'} disabled={currentPlanForWorkbench === 'starter'}>
+                      <SelectTrigger className="rounded-none h-12">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">Basic</SelectItem>
+                        <SelectItem value="turbo" disabled={currentPlanForWorkbench === 'starter'}>Turbo</SelectItem>
+                        <SelectItem value="enterprise" disabled={currentPlanForWorkbench !== 'business'}>Enterprise</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <Select defaultValue="tailwind">
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="tailwind">Tailwind</SelectItem>
-                      <SelectItem value="css-modules">CSS Modules</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Animations par défaut</p>
-                    <p className="text-sm text-slate-500">Framer Motion activé</p>
+                  <div className={`space-y-2 ${currentPlanForWorkbench === 'starter' ? 'opacity-50' : ''}`}>
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest flex items-center gap-2">
+                      Exports Multi-frameworks
+                      {currentPlanForWorkbench === 'starter' && (
+                        <span className="text-[8px] bg-[var(--primary)] text-black px-1 py-0.5 font-black uppercase">PRO</span>
+                      )}
+                    </label>
+                    <Button
+                      variant="outline"
+                      className="rounded-none h-12 w-full"
+                      disabled={currentPlanForWorkbench === 'starter'}
+                    >
+                      {currentPlanForWorkbench === 'starter' ? 'Indisponible' : 'Activer'}
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm">Activé</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Accessibilité</p>
-                    <p className="text-sm text-slate-500">ARIA et sémantique</p>
-                  </div>
-                  <Button variant="outline" size="sm">Activé</Button>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Préférences de génération</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
+            {currentPlanForWorkbench === 'starter' && (
+              <div className="bg-[var(--codeo-light-bg)] dark:bg-slate-900/50 border border-[var(--primary)] p-6 rounded-none">
+                <div className="flex items-start gap-3">
+                  <Zap className="w-5 h-5 text-[var(--primary)] mt-1" />
                   <div>
-                    <p className="font-medium text-slate-900">Mode sombre par défaut</p>
-                    <p className="text-sm text-slate-500">Générer les composants en dark mode</p>
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Débloquez les fonctionnalités PRO</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                      Accédez à V-AST Turbo, aux exports multi-frameworks et à la priorité GPU.
+                    </p>
+                    <Button className="bg-[var(--primary)] text-black font-black uppercase rounded-none px-6 text-xs">
+                      Passer au plan PRO
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm">Non</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Version mobile</p>
-                    <p className="text-sm text-slate-500">Optimiser pour mobile first</p>
-                  </div>
-                  <Button variant="outline" size="sm">Non</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Optimisation SEO</p>
-                    <p className="text-sm text-slate-500">Méta-tags et structure SEO</p>
-                  </div>
-                  <Button variant="outline" size="sm">Activé</Button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )
 
-      case 'notifications':
+      case 'team':
+        const currentPlanForTeam = simulatedPlan || activePlan
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Préférences de notification</h3>
-              <div className="space-y-4">
-                {[
-                  { title: 'Email', desc: 'Recevoir les notifications par email', enabled: true },
-                  { title: 'Push', desc: 'Notifications push dans le navigateur', enabled: false },
-                  { title: 'Génération terminée', desc: 'Quand un composant est généré', enabled: true },
-                  { title: 'Mises à jour', desc: 'Nouvelles fonctionnalités et mises à jour', enabled: true },
-                  { title: 'Facturation', desc: 'Rappels de paiement et factures', enabled: true },
-                  { title: 'Sécurité', desc: 'Alertes de sécurité importantes', enabled: true },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-slate-900">{item.title}</p>
-                      <p className="text-sm text-slate-500">{item.desc}</p>
+          <div className="space-y-8">
+            <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none ${currentPlanForTeam === 'starter' ? 'opacity-50' : ''}`}>
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                <div className="w-1 h-4 bg-[var(--primary)]" /> Gestion d'Équipe
+                {currentPlanForTeam === 'starter' && (
+                  <span className="text-[8px] bg-[var(--primary)] text-black px-1 py-0.5 font-black uppercase ml-2">BUSINESS</span>
+                )}
+              </h3>
+
+              {currentPlanForTeam === 'starter' ? (
+                <div className="text-center py-12">
+                  <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                  <h4 className="text-lg font-bold text-slate-600 dark:text-slate-400 mb-2">Fonctionnalité Business</h4>
+                  <p className="text-sm text-slate-500 mb-6">La gestion d'équipe est disponible uniquement avec le plan Business.</p>
+                  <Button className="bg-[var(--primary)] text-black font-black uppercase rounded-none px-8">
+                    Upgrade to Business
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-none text-center">
+                      <div className="text-2xl font-bold text-[var(--primary)]">12</div>
+                      <div className="text-[10px] uppercase text-slate-500">Membres actifs</div>
                     </div>
-                    <Button variant={item.enabled ? "default" : "outline"} size="sm">
-                      {item.enabled ? 'Activé' : 'Désactivé'}
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-none text-center">
+                      <div className="text-2xl font-bold text-[var(--primary)]">847</div>
+                      <div className="text-[10px] uppercase text-slate-500">Générations équipe</div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-none text-center">
+                      <div className="text-2xl font-bold text-[var(--primary)]">98%</div>
+                      <div className="text-[10px] uppercase text-slate-500">Taux réussite</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Button variant="outline" className="rounded-none w-full justify-start">
+                      <Users className="w-4 h-4 mr-2" />
+                      Inviter un membre
+                    </Button>
+                    <Button variant="outline" className="rounded-none w-full justify-start">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Audit de sécurité équipe
                     </Button>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         )
 
       case 'security':
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Sécurité du compte</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-slate-900">Authentification à deux facteurs</p>
-                    <p className="text-sm text-slate-500">Ajoutez une couche de sécurité</p>
-                  </div>
-                  <Button variant="outline" size="sm">Configurer</Button>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-slate-900">Mot de passe</p>
-                    <p className="text-sm text-slate-500">Dernier changement : il y a 30 jours</p>
-                  </div>
-                  <Button variant="outline" size="sm">Modifier</Button>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-slate-900">Sessions actives</p>
-                    <p className="text-sm text-slate-500">3 appareils connectés</p>
-                  </div>
-                  <Button variant="outline" size="sm">Voir</Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Confidentialité</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Profil public</p>
-                    <p className="text-sm text-slate-500">Rendre votre profil visible</p>
-                  </div>
-                  <Button variant="outline" size="sm">Non</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Analytics</p>
-                    <p className="text-sm text-slate-500">Partager les données d'utilisation</p>
-                  </div>
-                  <Button variant="outline" size="sm">Oui</Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-
-      case 'team':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Gestion de l'équipe</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-slate-900">Membres actifs</p>
-                    <p className="text-sm text-slate-500">7 / 10 membres</p>
-                  </div>
-                  <Button variant="outline" size="sm">Inviter</Button>
-                </div>
-                <div className="space-y-2">
-                  {['Ken Kennedy (Admin)', 'Alice Martin (Membre)', 'Bob Dubois (Membre)'].map((member, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
-                      <span className="text-sm">{member}</span>
-                      <Button variant="ghost" size="sm">Gérer</Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-
-      case 'appearance':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Thème et apparence</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Mode sombre</p>
-                    <p className="text-sm text-slate-500">Interface sombre par défaut</p>
-                  </div>
-                  <Button variant="outline" size="sm">Système</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Compact mode</p>
-                    <p className="text-sm text-slate-500">Interface plus compacte</p>
-                  </div>
-                  <Button variant="outline" size="sm">Non</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Animations</p>
-                    <p className="text-sm text-slate-500">Animations et transitions</p>
-                  </div>
-                  <Button variant="outline" size="sm">Activé</Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-
-      case 'integrations':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Intégrations</h3>
-              <div className="space-y-4">
-                {[
-                  { name: 'GitHub', desc: 'Connectez vos dépôts GitHub', connected: true },
-                  { name: 'Figma', desc: 'Importez vos designs Figma', connected: false },
-                  { name: 'VS Code', desc: 'Extension VS Code', connected: true },
-                  { name: 'Slack', desc: 'Notifications Slack', connected: false },
-                ].map((integration, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-slate-900">{integration.name}</p>
-                      <p className="text-sm text-slate-500">{integration.desc}</p>
-                    </div>
-                    <Button variant={integration.connected ? "default" : "outline"} size="sm">
-                      {integration.connected ? 'Connecté' : 'Connecter'}
+          <div className="space-y-8">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                <div className="w-1 h-4 bg-[var(--primary)]" /> Sécurité & Authentification
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Mot de passe</label>
+                    <Button variant="outline" className="rounded-none w-full justify-start h-12">
+                      Changer le mot de passe
                     </Button>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-
-      case 'api':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Clés API</h3>
-              <div className="space-y-4">
-                <div className="p-3 bg-slate-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium text-slate-900">Clé principale</p>
-                    <Button variant="outline" size="sm">Régénérer</Button>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Authentification 2FA</label>
+                    <Button variant="outline" className="rounded-none w-full justify-start h-12">
+                      Configurer 2FA
+                    </Button>
                   </div>
-                  <code className="text-sm bg-slate-900 text-green-400 p-2 rounded block">
-                    sk_live_1234567890abcdef...
-                  </code>
                 </div>
-                <Button className="w-full">Créer une nouvelle clé</Button>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Webhooks</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-slate-900">Webhook URL</p>
-                    <p className="text-sm text-slate-500">https://votre-app.com/webhook</p>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Sessions actives</label>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      1 session active • Dernière connexion: Aujourd'hui
+                    </div>
                   </div>
-                  <Button variant="outline" size="sm">Tester</Button>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Logs de sécurité</label>
+                    <Button variant="outline" className="rounded-none w-full justify-start h-12">
+                      Voir les logs
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -481,81 +443,109 @@ export default function SettingsPage() {
 
       case 'support':
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Centre d'aide</h3>
-              <div className="space-y-4">
-                {[
-                  { title: 'Documentation', desc: 'Guides et tutoriels complets', icon: '📚' },
-                  { title: 'Support chat', desc: 'Discutez avec notre équipe', icon: '💬' },
-                  { title: 'Email support', desc: 'support@codeo.app', icon: '📧' },
-                  { title: 'Statut du service', desc: 'Vérifiez l état des services', icon: '🔍' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{item.icon}</span>
-                      <div>
-                        <p className="font-medium text-slate-900">{item.title}</p>
-                        <p className="text-sm text-slate-500">{item.desc}</p>
-                      </div>
+          <div className="space-y-8">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-none">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 flex items-center gap-2">
+                <div className="w-1 h-4 bg-[var(--primary)]" /> Centre d'Aide & Support
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <Button variant="outline" className="rounded-none w-full justify-start h-14">
+                    <HelpCircle className="w-5 h-5 mr-3" />
+                    <div className="text-left">
+                      <div className="font-bold">Documentation</div>
+                      <div className="text-xs text-slate-500">Guides et tutoriels</div>
                     </div>
-                    <Button variant="ghost" size="sm">→</Button>
-                  </div>
-                ))}
+                  </Button>
+                  <Button variant="outline" className="rounded-none w-full justify-start h-14">
+                    <Bell className="w-5 h-5 mr-3" />
+                    <div className="text-left">
+                      <div className="font-bold">Contact Support</div>
+                      <div className="text-xs text-slate-500">Équipe disponible 24/7</div>
+                    </div>
+                  </Button>
+                </div>
+                <div className="space-y-4">
+                  <Button variant="outline" className="rounded-none w-full justify-start h-14">
+                    <Download className="w-5 h-5 mr-3" />
+                    <div className="text-left">
+                      <div className="font-bold">Téléchargements</div>
+                      <div className="text-xs text-slate-500">SDK et outils</div>
+                    </div>
+                  </Button>
+                  <Button variant="outline" className="rounded-none w-full justify-start h-14">
+                    <Globe className="w-5 h-5 mr-3" />
+                    <div className="text-left">
+                      <div className="font-bold">Communauté</div>
+                      <div className="text-xs text-slate-500">Forum et Discord</div>
+                    </div>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )
 
       default:
-        return <div>Sélectionnez une catégorie</div>
+        return <div className="p-12 text-center text-slate-400 font-mono text-xs uppercase">Module in development...</div>
     }
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Paramètres</h1>
-        <p className="text-slate-500">Gérez toutes les préférences de votre compte Codeo</p>
+    <div className="max-w-7xl mx-auto space-y-4 py-4">
+      {/* HEADER SECTION */}
+      <div className="flex justify-end items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="text-right">
+           <p className="text-[10px] font-mono text-slate-400 mb-1">BUILD: 2026.01.22</p>
+           <p className="text-[10px] font-mono text-slate-400">PLAN: {activePlan?.toUpperCase()}</p>
+           {simulatedPlan && simulatedPlan !== activePlan && (
+             <p className="text-[10px] font-mono text-yellow-400">SIM: {simulatedPlan?.toUpperCase()}</p>
+           )}
+        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar des paramètres */}
-        <div className="lg:w-80">
-          <nav className="space-y-1">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-codeo-green text-white font-medium'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
-          </nav>
-        </div>
+      {/* HORIZONTAL NAVTABS */}
+      <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar bg-white dark:bg-slate-50 sticky top-0 z-20 -mt-6">
+        {tabs.map((tab) => {
+          const Icon = tab.icon
+          const isActive = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-3 px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative min-w-max border-b-2 ${
+                isActive
+                  ? 'text-[var(--primary)] border-[var(--primary)]'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          )
+        })}
+      </div>
 
-        {/* Contenu principal */}
-        <div className="flex-1">
+      {/* CONTENT AREA */}
+      <div className="min-h-[600px]">
+        <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
             {renderContent()}
           </motion.div>
-        </div>
+        </AnimatePresence>
+      </div>
+
+      {/* FOOTER ACTION */}
+      <div className="flex justify-end gap-6 border-t border-slate-200 dark:border-slate-800 pt-8">
+         <Button variant="ghost" className="rounded-none font-bold uppercase text-[10px] tracking-widest px-8 py-3">Discard changes</Button>
+         <Button className="bg-black text-white dark:bg-white dark:text-black rounded-none font-bold uppercase text-[10px] tracking-widest px-8 py-3">Save configuration</Button>
       </div>
     </div>
   )
 }
-                            

@@ -73,7 +73,7 @@ function SmartProfile() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-3 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+          className="flex items-center gap-3 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
           <div className="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center relative">
             <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
@@ -169,7 +169,7 @@ function getPageSubtitle(pathname: string, projectCount: number): string {
 // Crédits du plan (desktop)
 function PlanCredits({ config }: { config: PlanConfig }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+    <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
       <Zap className="w-4 h-4 text-codeo-green" />
       <div className="text-sm">
         <div className="font-semibold text-slate-900 dark:text-white">
@@ -737,17 +737,17 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-br from-codeo-light-bg to-white dark:from-slate-900/50 dark:to-slate-900/30 rounded-[1rem] border border-slate-200/60 dark:border-slate-800/60 p-6 lg:p-8 shadow-sm"
+          className="bg-gradient-to-br from-codeo-light-bg to-white dark:from-slate-900/50 dark:to-slate-900/30 border border-slate-200/60 dark:border-slate-800/60 p-6 lg:p-8 shadow-sm"
         >
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
             {/* Icône et badge plan */}
             <div className="flex items-center gap-4">
-              <div className="size-16 bg-codeo-green/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <div className="size-16 bg-codeo-green/10 flex items-center justify-center flex-shrink-0">
                 <Sparkles className="size-8 text-codeo-green" />
               </div>
               <div>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold ${config.badgeColor}`}
+                  className={`px-3 py-1 text-xs font-bold ${config.badgeColor}`}
                 >
                   {config.name}
                 </span>
@@ -855,7 +855,7 @@ export default function DashboardPage() {
             <section>
               <div className="flex items-center justify-between mb-6 px-1">
                 <div className="flex items-center gap-3">
-                  <div className="size-10 bg-codeo-green/10 rounded-xl flex items-center justify-center">
+                  <div className="size-10 bg-codeo-green/10 flex items-center justify-center">
                     <History className="size-5 text-codeo-green" />
                   </div>
                   <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white">
@@ -900,7 +900,7 @@ export default function DashboardPage() {
               </div>
 
               {activePlan === "business" && (
-                <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="flex -space-x-2">
@@ -959,7 +959,7 @@ export default function DashboardPage() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="size-8 rounded-full hover:bg-green-50 hover:text-green-600"
+                          className="size-8 hover:bg-green-50 hover:text-green-600"
                           onClick={() => handleFeedback(project.id, "up")}
                         >
                           <ThumbsUp size={16} />
@@ -988,7 +988,7 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.5 }}
-                  className="bg-gradient-to-br from-codeo-green to-emerald-700 rounded-3xl p-8 text-white shadow-2xl shadow-codeo-green/20 relative overflow-hidden"
+                  className="bg-gradient-to-br from-codeo-green to-emerald-700 p-8 text-white shadow-2xl shadow-codeo-green/20 relative overflow-hidden"
                 >
                   <div className="absolute -top-20 -right-20 size-64 bg-white/10 rounded-full blur-3xl" />
                   <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -1000,7 +1000,7 @@ export default function DashboardPage() {
                         {config.upsellText}
                       </p>
                     </div>
-                    <Button className="bg-white text-codeo-green hover:bg-slate-100 rounded-2xl px-8 py-6 font-black text-lg shadow-lg whitespace-nowrap">
+                    <Button className="bg-white text-codeo-green hover:bg-slate-100 px-8 py-6 font-black text-lg shadow-lg whitespace-nowrap">
                       {config.upsellButton}{" "}
                       <ArrowUpRight className="ml-2 size-5" />
                     </Button>
@@ -1021,9 +1021,9 @@ export default function DashboardPage() {
               {/* Engine */}
               <AccordionItem
                 value="engine"
-                className="border-none lg:border lg:rounded-2xl lg:bg-white lg:dark:bg-slate-900 lg:shadow-sm lg:p-7"
+                className="border-none lg:border lg:bg-white lg:dark:bg-slate-900 lg:shadow-sm lg:p-7"
               >
-                <AccordionTrigger className="lg:hidden py-4 px-4 bg-slate-50 dark:bg-slate-800 rounded-xl text-lg font-semibold">
+                <AccordionTrigger className="lg:hidden py-4 px-4 bg-slate-50 dark:bg-slate-800 text-lg font-semibold">
                   Codeo Engine
                 </AccordionTrigger>
                 <AccordionContent className="lg:contents pt-0 lg:pt-0">
@@ -1031,7 +1031,7 @@ export default function DashboardPage() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
-                    className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-7 shadow-sm"
+                    className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-7 shadow-sm"
                   >
                     <h3 className="text-sm font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 mb-6 flex items-center justify-between">
                       Codeo Engine
@@ -1065,9 +1065,9 @@ export default function DashboardPage() {
               {/* Guide rapide */}
               <AccordionItem
                 value="guide"
-                className="border-none lg:border lg:rounded-2xl lg:bg-white lg:dark:bg-slate-900 lg:shadow-sm lg:p-7"
+                className="border-none lg:border lg:bg-white lg:dark:bg-slate-900 lg:shadow-sm lg:p-7"
               >
-                <AccordionTrigger className="lg:hidden py-4 px-4 bg-slate-50 dark:bg-slate-800 rounded-xl text-lg font-semibold">
+                <AccordionTrigger className="lg:hidden py-4 px-4 bg-slate-50 dark:bg-slate-800 text-lg font-semibold">
                   Guide rapide
                 </AccordionTrigger>
                 <AccordionContent className="lg:contents pt-0 lg:pt-0">
@@ -1075,7 +1075,7 @@ export default function DashboardPage() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5, duration: 0.6 }}
-                    className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-7 shadow-sm"
+                    className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-7 shadow-sm"
                   >
                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                       <LayoutDashboard className="size-5 text-codeo-green" /> En
@@ -1114,7 +1114,7 @@ export default function DashboardPage() {
               {activePlan === "business" && config.team && (
                 <AccordionItem
                   value="team"
-                  className="border-none lg:border lg:rounded-2xl lg:bg-white lg:dark:bg-slate-900 lg:shadow-sm lg:p-7"
+                  className="border-none lg:border lg:bg-white lg:dark:bg-slate-900 lg:shadow-sm lg:p-7"
                 >
                   <AccordionTrigger className="lg:hidden py-4 px-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-lg font-semibold">
                     Équipe Business
@@ -1124,14 +1124,14 @@ export default function DashboardPage() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6, duration: 0.6 }}
-                      className="bg-purple-50 dark:bg-purple-950/30 rounded-2xl p-6 shadow-sm border border-purple-100 dark:border-purple-900/40"
+                      className="bg-purple-50 dark:bg-purple-950/30 p-6 shadow-sm border border-purple-100 dark:border-purple-900/40"
                     >
                       <h3 className="text-lg font-black text-purple-800 dark:text-purple-200 mb-6 flex items-center gap-2">
                         <Users size={20} /> Équipe ({config.team.activeUsers}/
                         {config.team.activeUsers + config.team.invitedUsers})
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-purple-100 dark:border-purple-900/30">
+                        <div className="bg-white dark:bg-slate-900 p-4 border border-purple-100 dark:border-purple-900/30">
                           <div className="flex items-center gap-3 mb-2">
                             <Activity size={20} className="text-purple-600" />
                             <p className="text-sm font-semibold">
@@ -1142,7 +1142,7 @@ export default function DashboardPage() {
                             {config.team.lastActivity}
                           </p>
                         </div>
-                        <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-purple-100 dark:border-purple-900/30">
+                        <div className="bg-white dark:bg-slate-900 p-4 border border-purple-100 dark:border-purple-900/30">
                           <div className="flex items-center gap-3 mb-2">
                             <Clock size={20} className="text-purple-600" />
                             <p className="text-sm font-semibold">
@@ -1218,7 +1218,7 @@ function StatsSection({
         <TooltipTrigger asChild>
           <motion.div
             variants={cardVariants}
-            className="min-w-[240px] bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-5 shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden"
+            className="min-w-[240px] bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border border-slate-100 dark:border-slate-700/50 p-5 shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden"
           >
             <div className="flex flex-col h-full">
               {/* En-tête avec badge POPULAIRE intégré */}
@@ -1239,7 +1239,7 @@ function StatsSection({
                       </span>
                     </div>
                     {activePlan === "business" && (
-                      <span className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 text-purple-800 dark:text-purple-200 text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                      <span className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 text-purple-800 dark:text-purple-200 text-xs font-bold px-2 py-0.5 whitespace-nowrap">
                         POPULAIRE
                       </span>
                     )}
@@ -1255,7 +1255,7 @@ function StatsSection({
               {/* Contenu */}
               {activePlan !== "business" ? (
                 <div className="mt-3 space-y-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                  <div className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800/30 rounded-lg">
+                  <div className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800/30">
                     <Zap className="w-5 h-5 text-amber-500" />
                     <div>
                       <div className="text-sm font-medium text-slate-900 dark:text-white">
@@ -1296,7 +1296,7 @@ function StatsSection({
                 </div>
               ) : (
                 <div className="mt-3 space-y-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                  <div className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800/30 rounded-lg">
+                  <div className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800/30">
                     <Users className="w-5 h-5 text-purple-500" />
                     <div>
                       <div className="text-sm font-medium text-slate-900 dark:text-white">
@@ -1331,7 +1331,7 @@ function StatsSection({
         <TooltipTrigger asChild>
           <motion.div
             variants={cardVariants}
-            className="min-w-[240px] bg-white dark:bg-slate-900 rounded-2xl border p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="min-w-[240px] bg-white dark:bg-slate-900 border p-5 shadow-sm hover:shadow-md transition-shadow"
           >
             <h3 className="text-base font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">
               Scans IA ce mois
@@ -1404,7 +1404,7 @@ function StatsSection({
               {/* Indicateur de tendance pour Pro et Business */}
               {(activePlan === "pro" || activePlan === "business") && (
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center justify-center gap-2 p-2 bg-slate-50 dark:bg-slate-800/30 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 p-2 bg-slate-50 dark:bg-slate-800/30">
                     <div className="flex items-center gap-1.5">
                       <Activity className="w-4 h-4 text-codeo-green" />
                       <div className="text-sm font-medium text-codeo-green">
@@ -1428,7 +1428,7 @@ function StatsSection({
         <TooltipTrigger asChild>
           <motion.div
             variants={cardVariants}
-            className="min-w-[240px] bg-gradient-to-br from-codeo-green/10 to-emerald-100 dark:from-codeo-green/20 dark:to-emerald-950 rounded-2xl p-5 shadow-md border border-codeo-green/20"
+            className="min-w-[240px] bg-gradient-to-br from-codeo-green/10 to-emerald-100 dark:from-codeo-green/20 dark:to-emerald-950 p-5 shadow-md border border-codeo-green/20"
           >
             <h3 className="text-base font-black uppercase tracking-widest text-codeo-green mb-3">
               Temps & Valeur
@@ -1477,7 +1477,7 @@ function StatsSection({
         <TooltipTrigger asChild>
           <motion.div
             variants={cardVariants}
-            className="min-w-[240px] bg-white dark:bg-slate-900 rounded-2xl border p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="min-w-[240px] bg-white dark:bg-slate-900 border p-5 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex justify-between items-start">
               <div>
@@ -1493,11 +1493,11 @@ function StatsSection({
                   </span>
                 </div>
                 {config.avgEfficiency >= 95 ? (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-xs font-bold">
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-xs font-bold">
                     <ShieldCheck size={12} /> Excellent
                   </div>
                 ) : (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-bold">
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-bold">
                     <Activity size={12} /> Bon
                   </div>
                 )}
@@ -1505,7 +1505,7 @@ function StatsSection({
 
               {activePlan === "pro" && config.gpuUsage && (
                 <div className="text-right">
-                  <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 text-xs font-bold">
+                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 text-xs font-bold">
                     <Zap className="w-3 h-3" fill="currentColor" />
                     Turbo {config.gpuUsage.speedBoost}
                   </div>
@@ -1517,7 +1517,7 @@ function StatsSection({
 
               {activePlan === "business" && config.securityMetrics && (
                 <div className="text-right">
-                  <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 text-xs font-bold">
+                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 text-xs font-bold">
                     <ShieldCheck className="w-3 h-3" />
                     Sécurité {config.securityMetrics.securityScore}/100
                   </div>

@@ -152,7 +152,7 @@ export default function WorkbenchPage() {
 
 export default function Component() {
   return (
-    <div className="p-6 bg-white rounded-lg border">
+    <div className="p-6 bg-white rounded-none border">
       <h2 className="text-xl font-semibold mb-4">
         Latest Generated Component
       </h2>
@@ -253,7 +253,7 @@ export default function Component() {
               </div>
 
               <div
-                className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors cursor-pointer"
+                className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-none p-6 text-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors cursor-pointer"
                 onClick={() => toast("Upload functionality coming soon")}
               >
                 <Image className="w-8 h-8 mx-auto mb-3 text-slate-400" />
@@ -262,7 +262,7 @@ export default function Component() {
               </div>
 
               {uploadedFile && (
-                <div className="bg-white dark:bg-slate-700 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
+                <div className="bg-white dark:bg-slate-700 rounded-none p-3 border border-slate-200 dark:border-slate-600">
                   <div className="flex items-center gap-2 mb-2">
                     <FileText className="w-4 h-4 text-green-600" />
                     <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
@@ -292,7 +292,7 @@ export default function Component() {
               {fileHistory.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all cursor-pointer"
+                  className="flex items-center gap-3 p-2 rounded-none hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all cursor-pointer"
                 >
                   <div className="w-8 h-8 bg-slate-200 dark:bg-slate-600 rounded flex items-center justify-center flex-shrink-0">
                     {file.type === "image" ? (
@@ -421,7 +421,7 @@ export default function Component() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <DropdownMenuTrigger asChild>
-                        <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-1.5 md:p-2 transition-colors flex items-center gap-1 md:gap-2">
+                        <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-none p-1.5 md:p-2 transition-colors flex items-center gap-1 md:gap-2">
                           {selectedViewport === "mobile" && <Smartphone className="w-3 h-3 md:w-4 md:h-4" />}
                           {selectedViewport === "tablet" && <Tablet className="w-3 h-3 md:w-4 md:h-4" />}
                           {selectedViewport === "desktop" && <Monitor className="w-3 h-3 md:w-4 md:h-4" />}
@@ -437,11 +437,11 @@ export default function Component() {
                     </TooltipContent>
                   </Tooltip>
 
-                  <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
+                  <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-none shadow-xl">
                     <div className="p-2">
                       <button
                         onClick={() => setSelectedViewport("mobile")}
-                        className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                        className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                           selectedViewport === "mobile"
                             ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -459,7 +459,7 @@ export default function Component() {
 
                       <button
                         onClick={() => setSelectedViewport("tablet")}
-                        className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                        className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                           selectedViewport === "tablet"
                             ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -477,7 +477,7 @@ export default function Component() {
 
                       <button
                         onClick={() => setSelectedViewport("desktop")}
-                        className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                        className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                           selectedViewport === "desktop"
                             ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -508,7 +508,7 @@ export default function Component() {
                     <TooltipTrigger asChild>
                       <DropdownMenuTrigger asChild>
                         <button
-                          className="w-7 h-7 md:w-8 md:h-8 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors relative flex items-center justify-center"
+                          className="w-7 h-7 md:w-8 md:h-8 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-none border border-slate-200 dark:border-slate-600 transition-colors relative flex items-center justify-center"
                         >
                           <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                           {versionHistory.length > 0 && (
@@ -524,7 +524,7 @@ export default function Component() {
                     </TooltipContent>
                   </Tooltip>
 
-                  <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-80">
+                  <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-none shadow-xl w-80">
                     <div className="p-2">
                       <div className="px-3 py-2 text-sm font-medium text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 mb-2">
                         Historique des générations
@@ -535,7 +535,7 @@ export default function Component() {
                             <button
                               key={version.id}
                               onClick={() => loadVersion(version)}
-                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                              className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                                 version.isActive
                                   ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
                                   : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -592,7 +592,7 @@ export default function Component() {
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
-                      className={`w-7 h-7 md:w-8 md:h-8 rounded-lg border transition-all duration-200 flex items-center justify-center flex-shrink-0 z-10 ${
+                      className={`w-7 h-7 md:w-8 md:h-8 rounded-none border transition-all duration-200 flex items-center justify-center flex-shrink-0 z-10 ${
                         isRightSidebarCollapsed
                           ? 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-950/50 text-purple-600 dark:text-purple-400'
                           : 'bg-purple-100 dark:bg-purple-900/40 border-purple-300 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300'
@@ -612,7 +612,7 @@ export default function Component() {
                   <TooltipTrigger asChild>
                     <motion.button
                       onClick={() => toast.success("Exporting to GitHub...")}
-                      className="w-8 h-8 md:w-10 md:h-10 bg-slate-900 hover:bg-slate-800 text-white rounded-lg flex items-center justify-center transition-colors hidden sm:flex"
+                      className="w-8 h-8 md:w-10 md:h-10 bg-slate-900 hover:bg-slate-800 text-white rounded-none flex items-center justify-center transition-colors hidden sm:flex"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -629,7 +629,7 @@ export default function Component() {
                   <TooltipTrigger asChild>
                     <motion.button
                       onClick={() => setWorkbenchState(workbenchState === "empty" ? "editing" : "empty")}
-                      className={`h-8 md:h-10 px-2 md:px-4 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white text-xs md:text-sm font-semibold rounded-lg transition-colors flex-shrink-0`}
+                      className={`h-8 md:h-10 px-2 md:px-4 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white text-xs md:text-sm font-semibold rounded-none transition-colors flex-shrink-0`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -670,7 +670,7 @@ export default function Component() {
                   </p>
                   <button
                     onClick={() => setWorkbenchState("editing")}
-                    className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary)]/90 transition-colors"
+                    className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-none hover:bg-[var(--primary)]/90 transition-colors"
                   >
                     Generate
                   </button>
@@ -707,7 +707,7 @@ export default function Component() {
 
 export default function Component() {
   return (
-    <div className="p-6 bg-white rounded-lg border">
+    <div className="p-6 bg-white rounded-none border">
       <h2 className="text-xl font-semibold mb-4">
         Generated Component
       </h2>
@@ -749,7 +749,7 @@ export default function Component() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <DropdownMenuTrigger asChild>
-                              <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 transition-colors flex items-center gap-2">
+                              <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-none p-2 transition-colors flex items-center gap-2">
                                 <Grid className="w-4 h-4" />
                                 <span className="text-xs font-medium capitalize">
                                   {selectedBackground === "grid" ? "Grille" :
@@ -763,11 +763,11 @@ export default function Component() {
                             <p className="text-xs">Changer le fond de prévisualisation</p>
                           </TooltipContent>
                         </Tooltip>
-                        <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
+                        <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-none shadow-xl">
                           <div className="p-2">
                             <button
                               onClick={() => setSelectedBackground("grid")}
-                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                              className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                                 selectedBackground === "grid"
                                   ? 'bg-codeo-green/10 border border-codeo-green/20'
                                   : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -784,7 +784,7 @@ export default function Component() {
                             </button>
                             <button
                               onClick={() => setSelectedBackground("white")}
-                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                              className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                                 selectedBackground === "white"
                                   ? 'bg-codeo-green/10 border border-codeo-green/20'
                                   : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -801,7 +801,7 @@ export default function Component() {
                             </button>
                             <button
                               onClick={() => setSelectedBackground("black")}
-                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                              className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                                 selectedBackground === "black"
                                   ? 'bg-codeo-green/10 border border-codeo-green/20'
                                   : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -818,7 +818,7 @@ export default function Component() {
                             </button>
                             <button
                               onClick={() => setSelectedBackground("transparent")}
-                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                              className={`w-full flex items-center gap-3 p-3 rounded-none transition-all duration-200 ${
                                 selectedBackground === "transparent"
                                   ? 'bg-codeo-green/10 border border-codeo-green/20'
                                   : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
@@ -879,7 +879,7 @@ export default function Component() {
                       ${selectedViewport === 'desktop' ? 'max-w-lg scale-100' : ''}
                     `}>
                       <motion.div
-                        className="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg"
+                        className="p-6 bg-white dark:bg-slate-800 rounded-none border border-slate-200 dark:border-slate-700 shadow-lg"
                         animate={{
                           scale: isPreviewPlaying && previewAnimationStep === 1 ? 1.05 : 1,
                           rotate: isPreviewPlaying && previewAnimationStep === 2 ? 2 : 0,
@@ -907,7 +907,7 @@ export default function Component() {
                           transition={{ duration: 0.3 }}
                         >
                           <motion.div
-                            className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg"
+                            className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-none"
                             animate={{
                               x: isPreviewPlaying && previewAnimationStep === 3 ? 10 : 0,
                               backgroundColor: isPreviewPlaying && previewAnimationStep === 3 ? '#dcfce7' : undefined
@@ -934,7 +934,7 @@ export default function Component() {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3 }}
-                              className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800"
+                              className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-none border border-green-200 dark:border-green-800"
                             >
                               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                                 <span className="text-white font-bold text-sm">✓</span>
@@ -987,7 +987,7 @@ export default function Component() {
             </div>
 
             <div className="space-y-4 mb-6">
-              <div className="bg-white dark:bg-slate-700 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
+              <div className="bg-white dark:bg-slate-700 rounded-none p-3 border border-slate-200 dark:border-slate-600">
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   "Hello! I'm your AI assistant. How can I help you with your design?"
                 </p>
@@ -996,7 +996,7 @@ export default function Component() {
                 </span>
               </div>
 
-              <div className="bg-codeo-green/10 rounded-lg p-3 border border-codeo-green/20">
+              <div className="bg-codeo-green/10 rounded-none p-3 border border-codeo-green/20">
                 <p className="text-sm text-codeo-green">
                   "Can you help me optimize this component for better performance?"
                 </p>
@@ -1040,7 +1040,7 @@ export default function Component() {
               <input
                 type="text"
                 placeholder="Ask the AI assistant..."
-                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-codeo-green/50 focus:border-codeo-green"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-codeo-green/50 focus:border-codeo-green"
               />
             </div>
           </div>

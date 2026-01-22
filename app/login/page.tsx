@@ -37,7 +37,15 @@ export default function LoginPage() {
     try {
       // Simulation de connexion
       await new Promise((resolve) => setTimeout(resolve, 1500))
-      router.push('/dashboard')
+
+      // Déclencher le next-toploader après le feedback visuel
+      const event = new Event('mousedown');
+      document.dispatchEvent(event);
+
+      // Rediriger après un court délai pour laisser le temps à l'animation de se lancer
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 150);
     } catch (error) {
       setErrorMsg('Identifiants incorrects. Veuillez réessayer.')
     } finally {

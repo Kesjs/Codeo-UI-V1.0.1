@@ -258,19 +258,18 @@ export default MyComponent;`);
     }
 
     const mockCode = `// Composant généré avec ${config.engine}
-import React${workbenchConfig.useTypeScript ? ", { useState }" : ""} from 'react';
+import React${workbenchConfig.useTypeScript ? ', { useState }' : ''} from 'react';
 
-const ${workbenchConfig.componentName} = () => {
+const MyComponent = () => {
   return (
-    <div className="p-6 rounded-xl ${workbenchConfig.darkMode ? "bg-slate-800 text-white" : "bg-white text-slate-900"}">
+    <div className="p-6 rounded-xl ${workbenchConfig.darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}">
       <h2 className="text-xl font-bold mb-4">${workbenchConfig.componentName}</h2>
       <p>Composant généré par ${config.engine} avec ${workbenchConfig.framework}</p>
     </div>
   );
 };
 
-export default ${workbenchConfig.componentName};
-`;
+export default MyComponent;`;
 
     setGeneratedCode(mockCode);
     setIsGenerating(false);
@@ -307,8 +306,8 @@ export default ${workbenchConfig.componentName};
           <div className="px-4 sm:px-6 py-3 flex items-center justify-between max-w-screen-2xl mx-auto">
             {/* Logo et titre principal */}
             <div className="flex items-center gap-3">
-              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-${planColors[activePlan as PlanType].bg}-50 to-${planColors[activePlan as PlanType].bg}-100 dark:from-${planColors[activePlan as PlanType].bg}-950/40 dark:to-${planColors[activePlan as PlanType].bg}-900/30 border border-${planColors[activePlan as PlanType].bg}-200 dark:border-${planColors[activePlan as PlanType].bg}-800`}>
-                <Cpu className={`w-5 h-5 sm:w-6 sm:h-6 text-${planColors[activePlan as PlanType].text}`} />
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/40 dark:to-green-900/30 border border-green-200 dark:border-green-800`}>
+                <Cpu className={`w-5 h-5 sm:w-6 sm:h-6 text-green-600`} />
                 <div className="hidden sm:block">
                   <p className="font-bold text-sm sm:text-base leading-tight">{config.name}</p>
                   <p className={`text-xs ${config.statusColor} font-medium`}>{config.status}</p>
@@ -518,13 +517,29 @@ export default ${workbenchConfig.componentName};
           </div>
         </div>
 
-        {/* MAIN CONTENT - RESPONSIVE */}
-        <div className="flex flex-1 h-screen overflow-hidden">
-          {/* DESKTOP LAYOUT - Split View */}
-          <div className="hidden lg:flex flex-1 overflow-hidden">
-            {/* GAUCHE - Upload - 35% */}
-            <div className="w-[35%] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-              <div className="flex flex-col h-full overflow-hidden">
+        {/* MAIN CONTENT - NOUVELLE DISPOSITION 3 ZONES */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* DESKTOP LAYOUT - 3 Zones principales */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* SIDEBAR GAUCHE - Navigation fixe */}
+            <div className="w-20 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hidden lg:flex flex-col items-center py-6">
+              <div className="space-y-4">
+                <div className="w-12 h-12 bg-codeo-green/10 rounded-xl flex items-center justify-center">
+                  <Upload className="w-6 h-6 text-codeo-green" />
+                </div>
+                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
+                  <Code2 className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                </div>
+                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
+                  <Settings className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* ZONE PRINCIPALE CENTRALE - Upload + Code Editor (70%) */}
+            <div className="flex-1 flex overflow-hidden bg-white dark:bg-slate-950 hidden lg:flex">
+              {/* Upload Zone - Split horizontal gauche */}
+              <div className="w-1/2 border-r border-slate-200 dark:border-slate-800 flex flex-col">
                 <div className="flex-1 overflow-y-auto p-6">
                   <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Upload Design</h2>
 
@@ -599,10 +614,10 @@ export default ${workbenchConfig.componentName};
                   )}
                 </div>
               </div>
-            </div>
+              </div>
 
-            {/* DROITE - Code - 65% */}
-            <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-950">
+              {/* Code Editor Zone - Split horizontal droite */}
+              <div className="flex-1 flex-col overflow-hidden bg-white dark:bg-slate-950">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col h-full">
                 <TabsList className="justify-start px-6 py-2 border-b bg-transparent h-12 items-center flex-shrink-0">
                   <TabsTrigger value="code" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800 h-8">
@@ -617,20 +632,23 @@ export default ${workbenchConfig.componentName};
 
                 <TabsContent value="code" className="flex-1 mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col h-full">
                   {generatedCode ? (
-                    <div className="flex-1 overflow-hidden p-4 h-full">
+                    <div className="flex-1 overflow-hidden p-6 h-full">
                       <AnimatePresence>
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ duration: 0.5, ease: "easeOut" }}
-                          className={`h-full bg-slate-950 border border-white/5 shadow-2xl transition-all duration-300 ${
-                            isEditorFocused ? 'ring-2 ring-codeo-green/50 border-codeo-green/30' : ''
+                          className="h-full"
+                        >
+                          {/* Conteneur IDE haut de gamme */}
+                          <div className={`h-full bg-[#1e1e1e] rounded-[2.5rem] border border-white/5 shadow-2xl p-6 transition-all duration-300 ${
+                            isEditorFocused ? 'ring-2 ring-codeo-green/50 border-codeo-green/30 shadow-codeo-green/10' : ''
                           }`}
                           onFocus={() => setIsEditorFocused(true)}
                           onBlur={() => setIsEditorFocused(false)}
                           tabIndex={0}
-                        >
+                          >
                           {/* Barre de titre style Mac OS */}
                           <div className="h-10 bg-black/20 backdrop-blur-md flex items-center justify-between px-4 border-b border-white/5">
                             {/* Contrôles de fenêtre Mac */}
@@ -657,36 +675,37 @@ export default ${workbenchConfig.componentName};
                             </div>
                           </div>
                           
-                          {/* Conteneur de l'éditeur */}
-                          <div className="h-[calc(100%-2.5rem)] overflow-hidden">
-                            {isClient && (
-                              <MonacoEditor
-                                language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
-                                theme="codeo-dark"
-                                value={generatedCode}
-                                height="100%"
-                                options={{
-                                  readOnly: true,
-                                  minimap: { enabled: false },
-                                  fontSize: 13,
-                                  lineNumbers: "on",
-                                  scrollBeyondLastLine: false,
-                                  wordWrap: "on",
-                                  padding: { top: 16, bottom: 16 },
-                                  fontFamily: 'JetBrains Mono, Monaco, Consolas, monospace',
-                                  renderLineHighlight: 'line',
-                                  cursorBlinking: 'smooth',
-                                  smoothScrolling: true,
-                                  scrollbar: {
-                                    vertical: 'visible',
-                                    horizontal: 'visible',
-                                    verticalScrollbarSize: 6,
-                                    horizontalScrollbarSize: 6,
-                                    useShadows: false
-                                  }
-                                }}
-                              />
-                            )}
+                            {/* Conteneur de l'éditeur */}
+                            <div className="h-[calc(100%-4rem)] overflow-hidden rounded-xl">
+                              {isClient && (
+                                <MonacoEditor
+                                  language={workbenchConfig.useTypeScript ? "typescript" : "javascript"}
+                                  theme="codeo-dark"
+                                  value={generatedCode}
+                                  height="100%"
+                                  options={{
+                                    readOnly: true,
+                                    minimap: { enabled: false },
+                                    fontSize: 13,
+                                    lineNumbers: "on",
+                                    scrollBeyondLastLine: false,
+                                    wordWrap: "on",
+                                    padding: { top: 16, bottom: 16 },
+                                    fontFamily: 'JetBrains Mono, Monaco, Consolas, monospace',
+                                    renderLineHighlight: 'line',
+                                    cursorBlinking: 'smooth',
+                                    smoothScrolling: true,
+                                    scrollbar: {
+                                      vertical: 'visible',
+                                      horizontal: 'visible',
+                                      verticalScrollbarSize: 8,
+                                      horizontalScrollbarSize: 8,
+                                      useShadows: false
+                                    }
+                                  }}
+                                />
+                              )}
+                            </div>
                           </div>
                         </motion.div>
                       </AnimatePresence>
@@ -710,6 +729,158 @@ export default ${workbenchConfig.componentName};
                   </div>
                 </TabsContent>
               </Tabs>
+            </div>
+
+            {/* PANNEAU CONFIGURATION DROITE - Escamotable */}
+            <div className={`w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 ${
+              isConfigPanelCollapsed ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+            } hidden lg:flex xl:hidden flex-col`}>
+              <div className="flex-shrink-0 p-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold tracking-tight">Configuration</h2>
+                  <Button variant="ghost" size="icon" onClick={() => setIsConfigPanelCollapsed(!isConfigPanelCollapsed)} className="h-8 w-8">
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <Card className={`p-4 bg-gradient-to-br from-green-50 to-transparent dark:from-green-950/30 border-green-200 dark:border-green-800`}>
+                  <div className="flex items-center gap-3">
+                    <Cpu className={`w-6 h-6 text-green-600`} />
+                    <div>
+                      <p className="font-bold text-sm">{config.name}</p>
+                      <p className={`text-xs ${config.statusColor}`}>{config.engine}</p>
+                    </div>
+                  </div>
+                </Card>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">Framework</Label>
+                    <Select
+                      value={workbenchConfig.framework}
+                      onValueChange={(v: FrameworkType) => setWorkbenchConfig(prev => ({ ...prev, framework: v }))}
+                    >
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {config.frameworks.map((f: FrameworkType) => (
+                          <SelectItem key={f} value={f}>
+                            <span className="flex items-center gap-2">
+                              {getFrameworkIcon(f)}
+                              {f.charAt(0).toUpperCase() + f.slice(1)}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {activePlan === "starter" && <p className="text-xs text-slate-500 mt-1">Next.js et Vue disponibles en Pro ✨</p>}
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">Style Engine</Label>
+                    <Select
+                      value={workbenchConfig.styleEngine}
+                      onValueChange={(v: StyleEngine) => setWorkbenchConfig(prev => ({ ...prev, styleEngine: v }))}
+                    >
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {config.styleEngines.map((s: StyleEngine) => (
+                          <SelectItem key={s} value={s}>
+                            {s === "css-modules" ? "CSS Modules" : s === "styled-components" ? "Styled Components" : "Tailwind"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">Nom du composant</Label>
+                    <Input
+                      className="h-10"
+                      value={workbenchConfig.componentName}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWorkbenchConfig(prev => ({ ...prev, componentName: e.target.value }))}
+                      placeholder="MyComponent"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="ts-desktop" className="text-sm font-medium">TypeScript</Label>
+                      <Switch
+                        id="ts-desktop"
+                        checked={workbenchConfig.useTypeScript}
+                        onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, useTypeScript: v }))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="dark-desktop" className="text-sm font-medium">Dark Mode</Label>
+                      <Switch
+                        id="dark-desktop"
+                        checked={workbenchConfig.darkMode}
+                        onCheckedChange={(v: boolean) => setWorkbenchConfig(prev => ({ ...prev, darkMode: v }))}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fonctionnalités Pro */}
+                <Card className={`p-4 ${activePlan === "starter" ? "opacity-50" : ""} bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Zap className="w-5 h-5 text-amber-600" />
+                    <h3 className="font-semibold text-sm">Fonctionnalités Pro</h3>
+                    {activePlan === "starter" && <Lock className="w-4 h-4 text-amber-600" />}
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Animations fluides</Label>
+                      <Switch
+                        checked={workbenchConfig.enableAnimations}
+                        onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAnimations: v })) : undefined}
+                        disabled={activePlan === "starter"}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className={activePlan === "starter" ? "text-slate-500" : ""}>Accessibilité ARIA</Label>
+                      <Switch
+                        checked={workbenchConfig.enableAccessibility}
+                        onCheckedChange={activePlan !== "starter" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableAccessibility: v })) : undefined}
+                        disabled={activePlan === "starter"}
+                      />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Fonctionnalités Business */}
+                <Card className={`p-4 ${activePlan !== "business" ? "opacity-50" : ""} bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Crown className="w-5 h-5 text-purple-600" />
+                    <h3 className="font-semibold text-sm">Fonctionnalités Business</h3>
+                    {activePlan !== "business" && <Lock className="w-4 h-4 text-purple-600" />}
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Sécurité entreprise</Label>
+                      <Switch
+                        checked={workbenchConfig.enableSecurity}
+                        onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableSecurity: v })) : undefined}
+                        disabled={activePlan !== "business"}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className={activePlan !== "business" ? "text-slate-500" : ""}>Design System synchronisé</Label>
+                      <Switch
+                        checked={workbenchConfig.enableDesignSystem}
+                        onCheckedChange={activePlan === "business" ? (v: boolean) => setWorkbenchConfig(prev => ({ ...prev, enableDesignSystem: v })) : undefined}
+                        disabled={activePlan !== "business"}
+                      />
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
 
@@ -1162,7 +1333,7 @@ export default ${workbenchConfig.componentName};
                   />
                 </div>
 
-                
+
               </div>
 
               {/* Fonctionnalités Pro */}

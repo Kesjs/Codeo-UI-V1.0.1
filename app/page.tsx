@@ -225,7 +225,6 @@ export default function Home() {
   }
 
   const [isChanging, setIsChanging] = useState(false)
-  const [isHoveringLang, setIsHoveringLang] = useState(false)
 
   const handleFrameworkChange = (lang: Framework) => {
     if (lang !== selectedFramework) {
@@ -246,16 +245,6 @@ export default function Home() {
     }
   };
 
-  // Gestion du survol des boutons de langage
-  const handleLangHover = (isHovering: boolean) => {
-    setIsHoveringLang(isHovering);
-    if (isHovering) {
-      setPauseLangCycle(true);
-    } else if (!isHovering && !isChanging) {
-      // Ne reprendre le cycle que si l'utilisateur n'a pas sélectionné de langage
-      setTimeout(() => setPauseLangCycle(false), 1000);
-    }
-  };
   const codeSnippets: Record<Framework, string> = {
     html: `<section class="relative min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 font-sans">
         <header class="fixed top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md px-6 py-4">
@@ -500,21 +489,13 @@ export default HeroSection;`,
   }
 
   return (
-    <div className="min-h-screen bg-codeo-light-bg font-sans text-slate-900 selection:bg-codeo-green/30">
-      <main className="bg-codeo-light-bg">
+    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-codeo-green/30">
+      <main className="bg-white">
         {/* HERO SECTION */}
  <section
   id="/"
-  className="relative pt-16 pb-16 md:pt-24 md:pb-24 overflow-hidden text-center transition-colors duration-500"
-  style={{ backgroundColor: languages[activeLangIndex].heroBg }}
-  onMouseEnter={() => setPauseLangCycle(true)}
-  onMouseLeave={() => setPauseLangCycle(false)}
+  className="relative pt-16 pb-16 md:pt-24 md:pb-24 overflow-hidden text-center bg-white"
 >
-  {/* Glow Background */}
-  <div
-    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[700px] md:h-[700px] blur-[80px] md:blur-[140px] rounded-full transition-colors duration-1000 opacity-20 pointer-events-none"
-    style={{ backgroundColor: languages[activeLangIndex].glow }}
-  />
 
   <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
     <div className="flex flex-col items-center -mt-8">
@@ -525,28 +506,29 @@ export default HeroSection;`,
       </div>
 
       {/* Main Title */}
-      <h1 className="text-slate-900 tracking-tighter text-4xl sm:text-6xl lg:text-7xl xl:text-[90px] font-black leading-[1.1] md:leading-[0.95] max-w-[1100px] [text-wrap:balance] mt-12">
-        L'intelligence visuelle au service de <span className="text-codeo-green">vos pixels.</span>
+      <h1 className="text-slate-900 tracking-tighter text-3xl sm:text-5xl lg:text-6xl xl:text-[75px] font-black leading-[1.1] md:leading-[0.95] max-w-[1100px] [text-wrap:balance] mt-12">
+        L'intelligence visuelle<br className="hidden sm:block" />
+        au service de <span className="text-codeo-green">vos pixels.</span>
       </h1>
 
       {/* Description & Dynamic Switcher */}
       <div className="mt-6 max-w-[900px]">
-        <p className="text-slate-500 text-base sm:text-lg md:text-2xl font-medium leading-relaxed [text-wrap:balance]">
-          Propulsé par notre moteur de vision propriétaire, donnez vie à vos designs en convertissant vos captures d'écran UI en composants
-          
+        <p className="text-slate-500 text-sm sm:text-base md:text-xl font-medium leading-relaxed [text-wrap:balance]">
+          Propulsé par notre moteur de vision propriétaire,<br className="hidden sm:block" />
+          donnez vie à vos designs en convertissant vos captures d'écran UI<br className="hidden sm:block" />
+          en composants
+
           {/* Wrapper pour le bouton dynamique pour qu'il ne casse pas la ligne n'importe comment */}
           <span className="inline-block mx-2 align-middle">
-            <div 
+            <div
               className="relative inline-flex items-center justify-center w-[90px] md:w-[110px] h-7 md:h-9 overflow-hidden rounded-lg border border-slate-200/50 bg-white/30 backdrop-blur-sm shadow-sm transition-all duration-200"
-              onMouseEnter={() => handleLangHover(true)}
-              onMouseLeave={() => handleLangHover(false)}
               style={{ backgroundColor: `${languages[activeLangIndex].glow}30` }}
             >
               {languages.map((lang, index) => {
                 const isActive = activeLangIndex === index;
                 const isNext = activeLangIndex === (index - 1 + languages.length) % languages.length;
                 const isPrevious = activeLangIndex === (index + 1) % languages.length;
-                
+
                 return (
                   <button
                     key={lang.name}
@@ -558,7 +540,7 @@ export default HeroSection;`,
                     className={twMerge(
                       'absolute inset-0 flex items-center justify-center text-[9px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 ease-[cubic-bezier(0.4, 0, 0.2, 1)]',
                       lang.text,
-                      isActive 
+                      isActive
                         ? 'translate-y-0 opacity-100 scale-100 z-10'
                         : isNext ? 'translate-y-full opacity-0 scale-95' : '-translate-y-full opacity-0 scale-95'
                     )}
@@ -569,7 +551,7 @@ export default HeroSection;`,
               })}
             </div>
           </span>
-          
+
           propres et optimisés.
         </p>
       </div>
@@ -704,7 +686,7 @@ export default HeroSection;`,
         </section>
 
         {/* FEATURES */}
-        <section id="features" className="py-32 bg-codeo-light-bg">
+        <section id="features" className="py-32 bg-white">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-8 tracking-tighter">
@@ -750,7 +732,7 @@ export default HeroSection;`,
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="p-6 rounded-md bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col"
+                  className="p-6 rounded-md bg-slate-50/50 border border-slate-200/50 shadow-sm hover:shadow-md hover:bg-white transition-all duration-300 h-full flex flex-col"
                 >
                   <div className="size-10 rounded-md bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-codeo-green group-hover:bg-codeo-green/5 group-hover:border-codeo-green/20 transition-all mb-3 shadow-sm">
                     {React.cloneElement(item.icon, { className: 'size-6' })}
@@ -764,7 +746,7 @@ export default HeroSection;`,
         </section>
 
         {/* ENGINE */}
-        <section id="engine" className="py-32 bg-codeo-light-bg border-y border-slate-200 relative overflow-hidden">
+        <section id="engine" className="py-32 bg-white border-y border-slate-200 relative overflow-hidden">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-50 rounded-md blur-3xl opacity-50 -z-10" />
 
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -883,7 +865,7 @@ export default HeroSection;`,
         </section>
 
         {/* PRICING */}
-        <section id="pricing" className="py-32 bg-codeo-light-bg">
+        <section id="pricing" className="py-32 bg-white">
           <div className="max-w-7xl mx-auto px-6 text-center">
             <h2 className="text-5xl font-black text-slate-900 mb-20 tracking-tighter">
               Échellez votre production.
@@ -1026,7 +1008,7 @@ export default HeroSection;`,
                       </div>
                     </div>
 
-                    <div className="mt-8 p-4 bg-codeo-light-bg rounded-xl border border-codeo-green/20">
+                    <div className="mt-8 p-4 bg-white rounded-xl border border-codeo-green/20">
                       <div className="flex items-start gap-3">
                         <ShieldCheck className="size-5 text-codeo-green shrink-0 mt-0.5" />
                         <div>

@@ -190,15 +190,17 @@ export default function DynamicHeader({
     >
       <div className="px-4 lg:px-6 py-3">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
-          {/* Menu hamburger + Logo mobile - visible sur mobile */}
-          <div className="sm:hidden flex items-center gap-3">
+          {/* Menu hamburger + Logo mobile/tablet - visible sur mobile et tablette */}
+          <div className="lg:hidden flex items-center gap-3 flex-shrink-0 z-50">
             <button
               onClick={() =>
                 isSidebarOpen
                   ? onMenuClose && onMenuClose()
                   : onMenuClick && onMenuClick()
               }
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300 flex-shrink-0 touch-manipulation"
+              aria-label={isSidebarOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={isSidebarOpen}
             >
               <div className="relative w-5 h-5 overflow-hidden">
                 <HiOutlineMenuAlt2
@@ -218,15 +220,15 @@ export default function DynamicHeader({
               </div>
             </button>
 
-            {/* Logo Codeo UI sur mobile */}
+            {/* Logo Codeo UI sur mobile/tablet */}
             <div className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
               Code<span className="text-codeo-green">o</span> U
               <span className="text-codeo-green">I</span>
             </div>
           </div>
 
-          {/* Nom de la section active avec trait - caché sur mobile */}
-          <div className="hidden sm:flex flex-col items-center min-w-0 flex-shrink-0 w-[120px] relative">
+          {/* Nom de la section active avec trait - caché sur mobile/tablet */}
+          <div className="hidden lg:flex flex-col items-center min-w-0 flex-shrink-0 w-[120px] relative">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"

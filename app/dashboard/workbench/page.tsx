@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { useState } from 'react';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast, Toaster } from "sonner";
+import dynamic from 'next/dynamic';
 import {
   Crown, Zap, Upload, History, MessageSquare, Settings, ChevronRight, ChevronLeft,
   FileText, Image, Code as CodeIcon, Eye, Smartphone, Tablet, Monitor, Sparkles,
   Palette, Accessibility, Github, Play, Trash2, Atom, Layers, Zap as ZapIcon,
-  Folder, RotateCcw
+  Folder, RotateCcw, Grid
 } from 'lucide-react';
 import { LanguageSelector } from '@/components/dashboard/LanguageSelector';
 import { FrameworkSelector, FrameworkOption } from '@/components/dashboard/FrameworkSelector';
@@ -17,7 +18,10 @@ import { usePlan } from '../layout';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
+const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+
 type WorkbenchState = "empty" | "editing";
+type BackgroundType = "grid" | "white" | "black" | "transparent";
 
 interface WorkbenchFile {
   id: string;
@@ -53,6 +57,9 @@ export default function WorkbenchPage() {
 
   // Viewport selection
   const [selectedViewport, setSelectedViewport] = useState<string>("desktop");
+
+  // Background selection for preview
+  const [selectedBackground, setSelectedBackground] = useState<BackgroundType>("white");
 
   // Live Preview animation
   const [isPreviewPlaying, setIsPreviewPlaying] = useState<boolean>(false);
@@ -231,13 +238,17 @@ export default function Component() {
           : 'grid-cols-[280px_1fr_320px]'
       }`}>
         {/* SIDEBAR GAUCHE (280px) - UPLOAD & HISTORIQUE */}
-        <div className="bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col">
+        <div className="backdrop-blur-md bg-slate-50/80 dark:bg-slate-800/80 border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col h-full overflow-hidden">
 
           {/* Component 1: Upload Zone */}
-          <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <CodeIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                <CodeIcon className={`w-4 h-4 transition-all duration-300 ${
+                  selectedFramework === "React" 
+                    ? "text-slate-600 dark:text-slate-400 drop-shadow-[0_0_8px_rgba(97,218,251,0.6)]" 
+                    : "text-slate-600 dark:text-slate-400"
+                }`} />
                 <span className="text-sm font-medium text-slate-900 dark:text-white">Code</span>
               </div>
 
@@ -267,9 +278,13 @@ export default function Component() {
           </div>
 
           {/* Component 7: Historique */}
-          <div className="flex-1 p-4">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
             <div className="flex items-center gap-2 mb-4">
-              <History className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+              <History className={`w-4 h-4 transition-all duration-300 ${
+                selectedFramework === "React" 
+                  ? "text-slate-600 dark:text-slate-400 drop-shadow-[0_0_8px_rgba(97,218,251,0.6)]" 
+                  : "text-slate-600 dark:text-slate-400"
+              }`} />
               <span className="text-sm font-medium text-slate-900 dark:text-white">Recent Files</span>
             </div>
 
@@ -300,9 +315,13 @@ export default function Component() {
           </div>
 
           {/* Build Settings */}
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
             <div className="flex items-center gap-2 mb-4">
-              <Settings className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+              <Settings className={`w-4 h-4 transition-all duration-300 ${
+                selectedFramework === "React" 
+                  ? "text-slate-600 dark:text-slate-400 drop-shadow-[0_0_8px_rgba(97,218,251,0.6)]" 
+                  : "text-slate-600 dark:text-slate-400"
+              }`} />
               <span className="text-sm font-medium text-slate-900 dark:text-white">Build Settings</span>
             </div>
 
@@ -359,27 +378,27 @@ export default function Component() {
 
           {/* Component 2: Toolbar - GitHub/Vercel Style */}
           <TooltipProvider>
-            <div className="border-b border-slate-200 dark:border-slate-700 px-4 py-2 flex items-center justify-between bg-white dark:bg-slate-900">
+            <div className="border-b border-slate-200 dark:border-slate-700 px-2 md:px-4 py-2 flex items-center justify-between bg-white dark:bg-slate-900 gap-2 overflow-x-auto">
               {/* Navigation (Gauche) - Breadcrumb */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Folder className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                      <span className="text-slate-500 dark:text-slate-400">workbench</span>
-                      <span className="text-slate-400 dark:text-slate-500">/</span>
+                    <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                      <Folder className="w-3 h-3 md:w-4 md:h-4 text-slate-500 dark:text-slate-400" />
+                      <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">workbench</span>
+                      <span className="text-slate-400 dark:text-slate-500 hidden sm:inline">/</span>
                       {isEditingProjectName ? (
                         <input
                           value={projectName}
                           onChange={(e) => setProjectName(e.target.value)}
                           onBlur={() => setIsEditingProjectName(false)}
                           onKeyDown={(e) => e.key === 'Enter' && setIsEditingProjectName(false)}
-                          className="bg-transparent border-none outline-none text-slate-900 dark:text-white font-medium px-1 py-0.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
+                          className="bg-transparent border-none outline-none text-slate-900 dark:text-white font-medium px-1 py-0.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 min-w-[80px] max-w-[200px]"
                           autoFocus
                         />
                       ) : (
                         <span
-                          className="text-slate-900 dark:text-white font-medium cursor-pointer hover:text-codeo-green transition-colors"
+                          className="text-slate-900 dark:text-white font-medium cursor-pointer hover:text-codeo-green transition-colors truncate max-w-[120px] md:max-w-none"
                           onClick={() => setIsEditingProjectName(true)}
                         >
                           {uploadedFile ? uploadedFile.name.replace(/\.[^/.]+$/, "") : projectName}
@@ -393,20 +412,20 @@ export default function Component() {
                 </Tooltip>
 
                 {/* Séparateur */}
-                <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700"></div>
+                <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
               </div>
 
               {/* Viewport Control (Centre) - Bouton unique avec dropdown */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
                 <DropdownMenu>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <DropdownMenuTrigger asChild>
-                        <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 transition-colors flex items-center gap-2">
-                          {selectedViewport === "mobile" && <Smartphone className="w-4 h-4" />}
-                          {selectedViewport === "tablet" && <Tablet className="w-4 h-4" />}
-                          {selectedViewport === "desktop" && <Monitor className="w-4 h-4" />}
-                          <span className="text-xs font-medium capitalize">
+                        <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-1.5 md:p-2 transition-colors flex items-center gap-1 md:gap-2">
+                          {selectedViewport === "mobile" && <Smartphone className="w-3 h-3 md:w-4 md:h-4" />}
+                          {selectedViewport === "tablet" && <Tablet className="w-3 h-3 md:w-4 md:h-4" />}
+                          {selectedViewport === "desktop" && <Monitor className="w-3 h-3 md:w-4 md:h-4" />}
+                          <span className="text-xs font-medium capitalize hidden sm:inline">
                             {selectedViewport === "mobile" ? "Mobile" :
                              selectedViewport === "tablet" ? "Tablet" : "Desktop"}
                           </span>
@@ -478,22 +497,22 @@ export default function Component() {
                 </DropdownMenu>
 
                 {/* Séparateur */}
-                <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700"></div>
+                <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
               </div>
 
               {/* Actions (Droite) */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
                 {/* Historique */}
                 <DropdownMenu>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <DropdownMenuTrigger asChild>
                         <button
-                          className="w-8 h-8 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors relative flex items-center justify-center"
+                          className="w-7 h-7 md:w-8 md:h-8 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors relative flex items-center justify-center"
                         >
-                          <RotateCcw className="w-4 h-4" />
+                          <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                           {versionHistory.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-codeo-green text-white text-xs font-bold rounded-full flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 md:w-4 md:h-4 bg-codeo-green text-white text-[10px] md:text-xs font-bold rounded-full flex items-center justify-center">
                               {versionHistory.length}
                             </span>
                           )}
@@ -568,18 +587,19 @@ export default function Component() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* AI Chat */}
+                {/* AI Chat - Toujours visible et accessible */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
-                      className={`w-8 h-8 rounded-lg border transition-all duration-200 flex items-center justify-center ${
+                      className={`w-7 h-7 md:w-8 md:h-8 rounded-lg border transition-all duration-200 flex items-center justify-center flex-shrink-0 z-10 ${
                         isRightSidebarCollapsed
                           ? 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-950/50 text-purple-600 dark:text-purple-400'
                           : 'bg-purple-100 dark:bg-purple-900/40 border-purple-300 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300'
                       }`}
+                      aria-label={isRightSidebarCollapsed ? "Afficher l'IA" : "Masquer l'IA"}
                     >
-                      <MessageSquare className="w-4 h-4" />
+                      <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -587,16 +607,16 @@ export default function Component() {
                   </TooltipContent>
                 </Tooltip>
 
-                {/* Export GitHub - Elite Mode */}
+                {/* Export GitHub - Elite Mode - Masqué sur très petits écrans */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <motion.button
                       onClick={() => toast.success("Exporting to GitHub...")}
-                      className="w-10 h-10 bg-slate-900 hover:bg-slate-800 text-white rounded-lg flex items-center justify-center transition-colors"
+                      className="w-8 h-8 md:w-10 md:h-10 bg-slate-900 hover:bg-slate-800 text-white rounded-lg flex items-center justify-center transition-colors hidden sm:flex"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <Github className="w-5 h-5" />
+                      <Github className="w-4 h-4 md:w-5 md:h-5" />
                     </motion.button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -609,11 +629,12 @@ export default function Component() {
                   <TooltipTrigger asChild>
                     <motion.button
                       onClick={() => setWorkbenchState(workbenchState === "empty" ? "editing" : "empty")}
-                      className="h-10 px-4 bg-codeo-green hover:bg-codeo-green/90 text-white text-sm font-semibold rounded-lg transition-colors"
+                      className="h-8 md:h-10 px-2 md:px-4 bg-codeo-green hover:bg-codeo-green/90 text-white text-xs md:text-sm font-semibold rounded-lg transition-colors flex-shrink-0"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      {workbenchState === "empty" ? "Generate" : "Reset"}
+                      <span className="hidden sm:inline">{workbenchState === "empty" ? "Generate" : "Reset"}</span>
+                      <span className="sm:hidden">{workbenchState === "empty" ? "Gen" : "Rst"}</span>
                     </motion.button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -626,9 +647,17 @@ export default function Component() {
 
           {/* Zone de contenu - Empty State OU SplitView */}
           <div className="flex-1 overflow-hidden">
-            {workbenchState === "empty" ? (
-              /* Component 8: Empty State */
-              <div className="h-full flex items-center justify-center p-8">
+            <AnimatePresence mode="wait">
+              {workbenchState === "empty" ? (
+                /* Component 8: Empty State */
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                  className="h-full flex items-center justify-center p-8"
+                >
                 <div className="text-center max-w-md">
                   <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 mx-auto">
                     <Upload className="w-8 h-8 text-slate-400" />
@@ -646,10 +675,17 @@ export default function Component() {
                     Generate
                   </button>
                 </div>
-              </div>
-            ) : (
-              /* Component 5: SplitView - Éditeur + Preview */
-              <div className="h-full flex">
+                </motion.div>
+              ) : (
+                /* Component 5: SplitView - Éditeur + Preview */
+                <motion.div
+                  key="editing"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                  className="h-full flex"
+                >
                 {/* Component 3: Éditeur */}
                 <div className="flex-1 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
                   <div className="h-full flex flex-col">
@@ -658,12 +694,16 @@ export default function Component() {
                         Component.tsx
                       </span>
                       <span className="text-xs text-slate-500 dark:text-slate-400">
-                        42 lines
+                        {generatedCode.split('\n').length} lines
                       </span>
                     </div>
-                    <div className="flex-1 bg-slate-900 p-4">
-                      <pre className="text-sm text-slate-300 font-mono leading-relaxed">
-                        {`import React from 'react';
+                    <div className="flex-1 p-4 bg-slate-900">
+                      <div className="h-full rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
+                        <MonacoEditor
+                          height="100%"
+                          defaultLanguage={selectedLanguage === 'typescript' ? 'typescript' : 'javascript'}
+                          theme="vs-dark"
+                          value={generatedCode || `import React from 'react';
 
 export default function Component() {
   return (
@@ -677,7 +717,22 @@ export default function Component() {
     </div>
   );
 }`}
-                      </pre>
+                          onChange={(value: string | undefined) => setGeneratedCode(value || '')}
+                          options={{
+                            minimap: { enabled: false },
+                            fontSize: 14,
+                            wordWrap: 'on',
+                            automaticLayout: true,
+                            scrollBeyondLastLine: false,
+                            padding: { top: 16, bottom: 16 },
+                            lineNumbers: 'on',
+                            roundedSelection: false,
+                            cursorStyle: 'line',
+                            theme: 'vs-dark',
+                            fontFamily: 'JetBrains Mono, monospace',
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -688,7 +743,100 @@ export default function Component() {
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Live Preview
                     </span>
-                    <button
+                    <div className="flex items-center gap-2">
+                      {/* Background Selector */}
+                      <DropdownMenu>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <DropdownMenuTrigger asChild>
+                              <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 transition-colors flex items-center gap-2">
+                                <Grid className="w-4 h-4" />
+                                <span className="text-xs font-medium capitalize">
+                                  {selectedBackground === "grid" ? "Grille" :
+                                   selectedBackground === "white" ? "Blanc" :
+                                   selectedBackground === "black" ? "Noir" : "Transparent"}
+                                </span>
+                              </button>
+                            </DropdownMenuTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Changer le fond de prévisualisation</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
+                          <div className="p-2">
+                            <button
+                              onClick={() => setSelectedBackground("grid")}
+                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                                selectedBackground === "grid"
+                                  ? 'bg-codeo-green/10 border border-codeo-green/20'
+                                  : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                              }`}
+                            >
+                              <Grid className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                              <div className="text-left">
+                                <div className="text-sm font-medium text-slate-900 dark:text-white">Grille</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Pattern de grille</div>
+                              </div>
+                              {selectedBackground === "grid" && (
+                                <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
+                              )}
+                            </button>
+                            <button
+                              onClick={() => setSelectedBackground("white")}
+                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                                selectedBackground === "white"
+                                  ? 'bg-codeo-green/10 border border-codeo-green/20'
+                                  : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                              }`}
+                            >
+                              <div className="w-5 h-5 bg-white border border-slate-300 rounded"></div>
+                              <div className="text-left">
+                                <div className="text-sm font-medium text-slate-900 dark:text-white">Blanc</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Fond blanc</div>
+                              </div>
+                              {selectedBackground === "white" && (
+                                <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
+                              )}
+                            </button>
+                            <button
+                              onClick={() => setSelectedBackground("black")}
+                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                                selectedBackground === "black"
+                                  ? 'bg-codeo-green/10 border border-codeo-green/20'
+                                  : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                              }`}
+                            >
+                              <div className="w-5 h-5 bg-slate-900 border border-slate-700 rounded"></div>
+                              <div className="text-left">
+                                <div className="text-sm font-medium text-slate-900 dark:text-white">Noir</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Fond noir</div>
+                              </div>
+                              {selectedBackground === "black" && (
+                                <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
+                              )}
+                            </button>
+                            <button
+                              onClick={() => setSelectedBackground("transparent")}
+                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                                selectedBackground === "transparent"
+                                  ? 'bg-codeo-green/10 border border-codeo-green/20'
+                                  : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                              }`}
+                            >
+                              <div className="w-5 h-5 bg-transparent border-2 border-dashed border-slate-400 rounded"></div>
+                              <div className="text-left">
+                                <div className="text-sm font-medium text-slate-900 dark:text-white">Transparent</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Fond transparent</div>
+                              </div>
+                              {selectedBackground === "transparent" && (
+                                <div className="ml-auto w-2 h-2 bg-codeo-green rounded-full"></div>
+                              )}
+                            </button>
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <button
                       onClick={() => {
                         setIsPreviewPlaying(!isPreviewPlaying);
                         if (!isPreviewPlaying) {
@@ -713,8 +861,17 @@ export default function Component() {
                       <Play className={`w-3 h-3 ${isPreviewPlaying ? 'rotate-180' : ''} transition-transform`} />
                     </button>
                   </div>
+                  </div>
 
-                  <div className="flex-1 flex items-center justify-center p-4">
+                  <div className={`flex-1 flex items-center justify-center p-4 transition-all duration-300 ${
+                    selectedBackground === "grid" 
+                      ? "bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"
+                      : selectedBackground === "white"
+                      ? "bg-white"
+                      : selectedBackground === "black"
+                      ? "bg-slate-900"
+                      : "bg-transparent"
+                  }`}>
                     <div className={`
                       transition-all duration-500 ease-in-out
                       ${selectedViewport === 'mobile' ? 'max-w-sm scale-90' : ''}
@@ -811,18 +968,19 @@ export default function Component() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>      
 
         {/* SIDEBAR DROITE (320px) - IA CHAT & OPTIONS */}
-        <div className={`bg-slate-50 dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 flex flex-col transition-all duration-300 ${
+        <div className={`backdrop-blur-md bg-slate-50/80 dark:bg-slate-800/80 border-l border-slate-200/50 dark:border-slate-700/50 flex flex-col h-full overflow-hidden transition-all duration-300 ${
           isRightSidebarCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-80'
         }`}>
 
           {/* Component 6: IA Chat */}
-          <div className="flex-1 p-4">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
             <div className="flex items-center gap-2 mb-4">
               <MessageSquare className="w-4 h-4 text-slate-600 dark:text-slate-400" />
               <span className="text-sm font-medium text-slate-900 dark:text-white">AI Assistant</span>
@@ -888,7 +1046,7 @@ export default function Component() {
           </div>
 
           {/* Options avancées */}
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
             <div className="flex items-center gap-2 mb-4">
               <Settings className="w-4 h-4 text-slate-600 dark:text-slate-400" />
               <span className="text-sm font-medium text-slate-900 dark:text-white">Advanced Options</span>

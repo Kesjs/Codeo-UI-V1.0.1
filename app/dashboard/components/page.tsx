@@ -1,69 +1,327 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import {
+  Eye,
+  Copy,
+  Trash2,
+  MoreVertical,
+  ArrowUpDown,
+  Package,
+  Navigation,
+  FileText,
+  Megaphone,
+  Table,
+  Plus,
+  Sparkles
+} from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+
+type ComponentType = 'all' | 'navigation' | 'forms' | 'marketing' | 'tables'
+type SortOption = 'recent' | 'name' | 'framework'
+
+interface Component {
+  id: string
+  name: string
+  type: ComponentType
+  framework: string
+  thumbnail: string
+  updatedAt: string
+}
+
+// Données factices
+const mockComponents: Component[] = [
+  { id: '1', name: 'Navigation Bar', type: 'navigation', framework: 'React', thumbnail: '', updatedAt: '2024-01-15' },
+  { id: '2', name: 'Login Form', type: 'forms', framework: 'Vue', thumbnail: '', updatedAt: '2024-01-14' },
+  { id: '3', name: 'Hero Section', type: 'marketing', framework: 'React', thumbnail: '', updatedAt: '2024-01-13' },
+  { id: '4', name: 'Data Table', type: 'tables', framework: 'Next.js', thumbnail: '', updatedAt: '2024-01-12' },
+  { id: '5', name: 'Sidebar Menu', type: 'navigation', framework: 'React', thumbnail: '', updatedAt: '2024-01-11' },
+  { id: '6', name: 'Contact Form', type: 'forms', framework: 'Vue', thumbnail: '', updatedAt: '2024-01-10' },
+]
+
+const typeLabels: Record<ComponentType, string> = {
+  all: 'Tous',
+  navigation: 'Navigation',
+  forms: 'Formulaires',
+  marketing: 'Marketing',
+  tables: 'Tableaux'
+}
+
+const typeIcons: Record<ComponentType, typeof Navigation> = {
+  all: Package,
+  navigation: Navigation,
+  forms: FileText,
+  marketing: Megaphone,
+  tables: Table
+}
+
 export default function ComponentsPage() {
+  const router = useRouter()
+  const [selectedType, setSelectedType] = useState<ComponentType>('all')
+  const [sortBy, setSortBy] = useState<SortOption>('recent')
+  const [components] = useState<Component[]>(mockComponents)
+
+  // Filtrer les composants
+  const filteredComponents = components.filter(
+    comp => selectedType === 'all' || comp.type === selectedType
+  )
+
+  // Trier les composants
+  const sortedComponents = [...filteredComponents].sort((a, b) => {
+    switch (sortBy) {
+      case 'name':
+        return a.name.localeCompare(b.name)
+      case 'framework':
+        return a.framework.localeCompare(b.framework)
+      case 'recent':
+      default:
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    }
+  })
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - date.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 0) return "Aujourd'hui"
+    if (diffDays === 1) return "Hier"
+    if (diffDays < 7) return `Il y a ${diffDays} jours`
+    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  }
+
+  const handlePreview = (id: string) => {
+    toast.success('Ouverture de la prévisualisation...')
+  }
+
+  const handleCopy = (id: string) => {
+    toast.success('Code copié dans le presse-papiers')
+  }
+
+  const handleDelete = (id: string) => {
+    toast.success('Composant supprimé')
+  }
+
+  // Si aucun composant
+  if (components.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Mes composants</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            0 composants sauvegardés
+          </p>
+        </div>
+
+        {/* Onboarding contextuel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-12 text-center"
+        >
+          <div className="w-16 h-16 bg-codeo-green/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package className="w-8 h-8 text-codeo-green" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+            Votre coffre-fort est vide
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+            Les composants que vous générez dans le Workbench apparaîtront ici automatiquement.
+          </p>
+          <Button
+            className="mt-6 bg-codeo-green hover:bg-codeo-green/90 text-white"
+            onClick={() => router.push('/dashboard/workbench')}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Créer mon premier composant
+          </Button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Header avec stats */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Mes composants</h1>
-          <p className="text-slate-500">Gérez votre bibliothèque de composants</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Mes composants</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {components.length} composant{components.length > 1 ? 's' : ''} sauvegardé{components.length > 1 ? 's' : ''}
+          </p>
         </div>
-        <div className="flex space-x-3">
-          <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-codeo-green focus:ring-codeo-green sm:text-sm">
-            <option>Tous les frameworks</option>
-            <option>React</option>
-            <option>Vue</option>
-            <option>Angular</option>
-          </select>
-          <button
-            type="button"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-codeo-green hover:bg-codeo-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-codeo-green"
+        
+        <div className="flex items-center gap-2">
+          {/* Menu de tri */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <ArrowUpDown className="w-4 h-4" />
+                <span className="hidden sm:inline">
+                  {sortBy === 'recent' && 'Plus récents'}
+                  {sortBy === 'name' && 'Nom (A-Z)'}
+                  {sortBy === 'framework' && 'Framework'}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setSortBy('recent')}>
+                Plus récents
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortBy('name')}>
+                Nom (A-Z)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortBy('framework')}>
+                Framework
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Bouton Nouveau */}
+          <Button 
+            className="bg-codeo-green hover:bg-codeo-green/90 text-white gap-2"
+            onClick={() => router.push('/dashboard/workbench')}
           >
+            <Plus className="w-4 h-4" />
             Nouveau
-          </button>
+          </Button>
         </div>
       </div>
-      
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className="group relative">
-                <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300" />
-                </div>
-                <div className="mt-2 flex justify-between items-start">
-                  <div>
-                    <h3 className="text-sm font-medium text-slate-900">Composant {item}</h3>
-                    <p className="text-xs text-slate-500">Modifié il y a {item} jour{item > 1 ? 's' : ''}</p>
+
+      {/* Barre de filtres (Chips) */}
+      <div className="flex flex-wrap items-center gap-2">
+        {(Object.keys(typeLabels) as ComponentType[]).map((type) => {
+          const Icon = typeIcons[type]
+          const isActive = selectedType === type
+          const count = type === 'all' 
+            ? components.length 
+            : components.filter(c => c.type === type).length
+
+          return (
+            <button
+              key={type}
+              onClick={() => setSelectedType(type)}
+              className={`
+                inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+                ${isActive
+                  ? 'bg-codeo-green text-white shadow-lg shadow-codeo-green/20'
+                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-codeo-green/50 hover:text-codeo-green'
+                }
+              `}
+            >
+              <Icon className="w-4 h-4" />
+              <span>{typeLabels[type]}</span>
+              <span className={`
+                px-2 py-0.5 rounded-full text-xs
+                ${isActive
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                }
+              `}>
+                {count}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Grille de composants */}
+      {sortedComponents.length === 0 ? (
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+          <p className="text-slate-500 dark:text-slate-400">
+            Aucun composant trouvé pour ce filtre.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedComponents.map((component, index) => (
+            <motion.div
+              key={component.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="group relative"
+            >
+              {/* Carte avec effet de verre */}
+              <div className="
+                relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700
+                transition-all duration-300 overflow-hidden
+                hover:border-codeo-green/50 hover:shadow-xl hover:shadow-codeo-green/10
+                hover:scale-[1.02]
+              ">
+                {/* Thumbnail */}
+                <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 relative overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Package className="w-12 h-12 text-slate-400 dark:text-slate-500" />
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                    React
-                  </span>
+                  
+                  {/* Overlay avec Preview central */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <Button
+                      onClick={() => handlePreview(component.id)}
+                      className="bg-codeo-green hover:bg-codeo-green/90 text-white shadow-lg"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Preview
+                    </Button>
+                  </div>
+
+                  {/* Menu d'actions (More) */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => handleCopy(component.id)}>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copier le code
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(component.id)}
+                          className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Supprimer
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-                <div className="absolute inset-0 bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                  <button className="p-2 text-white bg-black/50 rounded-full hover:bg-black/70">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  </button>
-                  <button className="p-2 text-white bg-black/50 rounded-full hover:bg-black/70">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </button>
-                  <button className="p-2 text-white bg-black/50 rounded-full hover:bg-black/70">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+
+                {/* Contenu */}
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                        {component.name}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {formatDate(component.updatedAt)}
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex-shrink-0">
+                      {component.framework}
+                    </span>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </motion.div>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   )
 }

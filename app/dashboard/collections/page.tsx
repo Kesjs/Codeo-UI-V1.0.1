@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { 
   FolderKanban, 
@@ -20,12 +20,15 @@ import {
   ChevronRight,
   Image as ImageIcon,
   Layers,
-  Sparkles
+  Sparkles,
+  Upload,
+  Package
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
 
 interface Collection {
   id: string
@@ -48,6 +51,8 @@ export default function CollectionsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<string>('recent')
   const [filterFramework, setFilterFramework] = useState<string>('all')
+  const [filterByItems, setFilterByItems] = useState<number | null>(null)
+  const collectionsRef = useRef<HTMLDivElement | null>(null)
 
   // Données enrichies avec nouvelles propriétés
   const collections: Collection[] = [
@@ -152,6 +157,7 @@ export default function CollectionsPage() {
   // Calcul des statistiques
   const totalItems = collections.reduce((sum, col) => sum + col.items, 0)
   const totalFrameworks = new Set(collections.flatMap(col => col.frameworks)).size
+  const averageItems = collections.length > 0 ? Math.round(totalItems / collections.length) : 0
 
   // Filtrage et tri
   const filteredCollections = collections
@@ -160,7 +166,8 @@ export default function CollectionsPage() {
                            collection.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            collection.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       const matchesFramework = filterFramework === 'all' || collection.frameworks.includes(filterFramework)
-      return matchesSearch && matchesFramework
+      const matchesItems = filterByItems === null || collection.items >= filterByItems
+      return matchesSearch && matchesFramework && matchesItems
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -179,6 +186,80 @@ export default function CollectionsPage() {
     return timeStr // On garde le format existant pour simplifier
   }
 
+  // Fonction pour filtrer par nombre d'éléments et scroller
+  const handleFilterByItems = (minItems: number) => {
+    setFilterByItems(minItems)
+    // Scroller vers les collections après un court délai
+    setTimeout(() => {
+      if (collectionsRef.current) {
+        collectionsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
+  }
+
+  // Si aucune collection
+  if (collections.length === 0) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+              <div className="w-12 h-12 bg-codeo-green/10 rounded-xl flex items-center justify-center">
+                <FolderKanban className="w-6 h-6 text-codeo-green" />
+              </div>
+              Collections
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 mt-2">
+              Organisez et gérez vos composants en collections
+            </p>
+          </div>
+          <Button className="bg-codeo-green hover:bg-codeo-green/90">
+            <Plus className="w-4 h-4 mr-2" />
+            Nouvelle collection
+          </Button>
+        </motion.div>
+
+        {/* Empty State avec onboarding */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-12 text-center"
+        >
+          <div className="w-20 h-20 bg-codeo-green/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <FolderKanban className="w-10 h-10 text-codeo-green" />
+          </div>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">
+            Commencez par organiser votre travail
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-8">
+            Créez des collections pour regrouper vos composants et faciliter leur gestion.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button
+              className="bg-codeo-green hover:bg-codeo-green/90 text-white"
+              onClick={() => toast.success('Création d\'une nouvelle collection...')}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Créer une collection
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => toast.info('Import de modèles...')}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Importer des modèles
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Header avec icône */}
@@ -188,13 +269,13 @@ export default function CollectionsPage() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
             <div className="w-12 h-12 bg-codeo-green/10 rounded-xl flex items-center justify-center">
               <FolderKanban className="w-6 h-6 text-codeo-green" />
             </div>
             Collections
           </h1>
-          <p className="text-slate-600 mt-2">
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
             Organisez et gérez vos composants en collections
           </p>
         </div>
@@ -204,18 +285,22 @@ export default function CollectionsPage() {
         </Button>
       </motion.div>
 
-      {/* Statistiques en cartes */}
+      {/* Statistiques en cartes - Interactives */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl border border-slate-200 p-6"
+          className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 cursor-pointer hover:border-codeo-green/50 hover:shadow-lg transition-all duration-200"
+          onClick={() => {
+            setFilterByItems(null)
+            toast.info('Affichage de toutes les collections')
+          }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Total collections</p>
-              <p className="text-2xl font-bold text-slate-900">{collections.length}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total collections</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{collections.length}</p>
             </div>
             <FolderKanban className="w-8 h-8 text-codeo-green/30" />
           </div>
@@ -224,12 +309,13 @@ export default function CollectionsPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl border border-slate-200 p-6"
+          className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 cursor-pointer hover:border-blue-500/50 hover:shadow-lg transition-all duration-200"
+          onClick={() => handleFilterByItems(10)}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Total éléments</p>
-              <p className="text-2xl font-bold text-slate-900">{totalItems}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total éléments</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalItems}</p>
             </div>
             <Layers className="w-8 h-8 text-blue-500/30" />
           </div>
@@ -238,12 +324,16 @@ export default function CollectionsPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl border border-slate-200 p-6"
+          className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 cursor-pointer hover:border-purple-500/50 hover:shadow-lg transition-all duration-200"
+          onClick={() => {
+            setFilterFramework('all')
+            toast.info('Affichage de tous les frameworks')
+          }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Frameworks</p>
-              <p className="text-2xl font-bold text-slate-900">{totalFrameworks}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Frameworks</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalFrameworks}</p>
             </div>
             <Code2 className="w-8 h-8 text-purple-500/30" />
           </div>
@@ -252,13 +342,14 @@ export default function CollectionsPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl border border-slate-200 p-6"
+          className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 cursor-pointer hover:border-amber-500/50 hover:shadow-lg transition-all duration-200"
+          onClick={() => handleFilterByItems(averageItems)}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Moyenne/collection</p>
-              <p className="text-2xl font-bold text-slate-900">
-                {Math.round(totalItems / collections.length)}
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Moyenne/collection</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                {averageItems}
               </p>
             </div>
             <Sparkles className="w-8 h-8 text-amber-500/30" />
@@ -267,7 +358,7 @@ export default function CollectionsPage() {
       </div>
 
       {/* Filtres et recherche */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-codeo-green transition-colors duration-200 z-10 pointer-events-none" />
@@ -275,7 +366,7 @@ export default function CollectionsPage() {
               placeholder="Rechercher une collection..."
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              className="pl-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black/20 border border-black/10 transition-colors duration-200 hover:border-black/15"
+              className="pl-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-codeo-green/50 border border-slate-200 dark:border-slate-700 transition-colors duration-200 hover:border-slate-300 dark:hover:border-slate-600"
             />
           </div>
           <Select value={filterFramework} onValueChange={setFilterFramework}>
@@ -302,167 +393,214 @@ export default function CollectionsPage() {
             </SelectContent>
           </Select>
         </div>
+        {filterByItems !== null && (
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Filtre actif: {filterByItems}+ éléments
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => setFilterByItems(null)}
+            >
+              Réinitialiser
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Grille de collections */}
-      {filteredCollections.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <Folder className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">Aucune collection trouvée</h3>
-          <p className="text-slate-600 mb-6">
-            Aucune collection ne correspond à votre recherche ou filtre.
-          </p>
-          <Button variant="outline" onClick={() => { setSearchQuery(''); setFilterFramework('all') }}>
-            Réinitialiser les filtres
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCollections.map((collection, index) => (
-            <motion.div
-              key={collection.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-codeo-green/30"
-            >
-              {/* Thumbnail avec couleur de fond */}
-              <div className={`relative h-32 ${collection.color} overflow-hidden`}>
-                {collection.thumbnail ? (
-                  <img 
-                    src={collection.thumbnail} 
-                    alt={collection.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <FolderKanban className="w-12 h-12 text-white/30" />
-                  </div>
-                )}
-                {/* Actions au survol */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="bg-white/90 hover:bg-white"
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    Voir
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="bg-white/90 hover:bg-white"
-                  >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Modifier
-                  </Button>
-                    </div>
-                {/* Badge nombre d'éléments */}
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-slate-900 flex items-center gap-1">
-                  <Layers className="w-3 h-3" />
-                  {collection.items}
+      <div ref={collectionsRef}>
+        {filteredCollections.length === 0 ? (
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <Folder className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Aucune collection trouvée</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              Aucune collection ne correspond à votre recherche ou filtre.
+            </p>
+            <Button variant="outline" onClick={() => { setSearchQuery(''); setFilterFramework('all'); setFilterByItems(null) }}>
+              Réinitialiser les filtres
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCollections.map((collection, index) => (
+                <motion.div
+                  key={collection.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group relative"
+                >
+                  {/* Effet de stack - visible au hover */}
+                  <div className="absolute -top-2 left-4 right-4 h-full bg-slate-200/50 dark:bg-slate-700/50 rounded-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute -top-1 left-2 right-2 h-full bg-slate-300/30 dark:bg-slate-600/30 rounded-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  {/* Carte principale avec hover glow */}
+                  <div className="
+                    relative bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700
+                    transition-all duration-300 overflow-hidden
+                    group-hover:border-codeo-green/50 group-hover:shadow-xl
+                    group-hover:scale-[1.02]
+                  ">
+                    {/* Hover Glow basé sur le gradient */}
+                    <div 
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
+                      style={{
+                        background: collection.color.includes('blue') 
+                          ? 'linear-gradient(to bottom right, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15))'
+                          : collection.color.includes('green')
+                          ? 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.15), rgba(20, 184, 166, 0.15))'
+                          : collection.color.includes('orange')
+                          ? 'linear-gradient(to bottom right, rgba(249, 115, 22, 0.15), rgba(220, 38, 38, 0.15))'
+                          : collection.color.includes('indigo')
+                          ? 'linear-gradient(to bottom right, rgba(99, 102, 241, 0.15), rgba(37, 99, 235, 0.15))'
+                          : collection.color.includes('pink')
+                          ? 'linear-gradient(to bottom right, rgba(236, 72, 153, 0.15), rgba(225, 29, 72, 0.15))'
+                          : 'linear-gradient(to bottom right, rgba(234, 179, 8, 0.15), rgba(217, 119, 6, 0.15))'
+                      }}
+                    />
+
+                    {/* Thumbnail avec couleur de fond */}
+                    <div className={`relative h-32 ${collection.color} overflow-hidden`}>
+                      {collection.thumbnail ? (
+                        <img 
+                          src={collection.thumbnail} 
+                          alt={collection.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FolderKanban className="w-12 h-12 text-white/30" />
+                        </div>
+                      )}
+                      {/* Actions au survol */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="bg-white/90 hover:bg-white"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          Voir
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="bg-white/90 hover:bg-white"
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Modifier
+                        </Button>
+                      </div>
+                      {/* Badge nombre d'éléments */}
+                      <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-slate-900 dark:text-white flex items-center gap-1">
+                        <Layers className="w-3 h-3" />
+                        {collection.items}
                       </div>
                     </div>
 
-              {/* Contenu */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-slate-900 truncate mb-1">
-                      {collection.name}
-                    </h3>
-                    <p className="text-sm text-slate-600 line-clamp-2 mb-3">
-                      {collection.description}
-                    </p>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Ouvrir
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Modifier
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Dupliquer
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                    {/* Contenu */}
+                    <div className="p-6 relative z-10">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-slate-900 dark:text-white truncate mb-1">
+                            {collection.name}
+                          </h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
+                            {collection.description}
+                          </p>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <Eye className="w-4 h-4 mr-2" />
+                              Ouvrir
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit className="w-4 h-4 mr-2" />
+                              Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Copy className="w-4 h-4 mr-2" />
+                              Dupliquer
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600 dark:text-red-400">
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
 
-                {/* Frameworks */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {collection.frameworks.map((framework, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 text-slate-700 px-2 py-1 rounded border border-slate-200"
-                    >
-                      <Code2 className="w-3 h-3" />
-                      {framework}
-                    </span>
-                  ))}
-                </div>
+                      {/* Frameworks */}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {collection.frameworks.map((framework, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded border border-slate-200 dark:border-slate-600"
+                          >
+                            <Code2 className="w-3 h-3" />
+                            {framework}
+                          </span>
+                        ))}
+                      </div>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {collection.tags.slice(0, 3).map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="text-xs bg-codeo-green/10 text-codeo-green px-2 py-0.5 rounded border border-codeo-green/20"
-                    >
-                      <Tag className="w-2.5 h-2.5 inline mr-1" />
-                      {tag}
-                    </span>
-                      ))}
-                  {collection.tags.length > 3 && (
-                    <span className="text-xs text-slate-500 px-2 py-0.5">
-                      +{collection.tags.length - 3}
-                    </span>
-                  )}
-                </div>
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {collection.tags.slice(0, 3).map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs bg-codeo-green/10 text-codeo-green px-2 py-0.5 rounded border border-codeo-green/20"
+                          >
+                            <Tag className="w-2.5 h-2.5 inline mr-1" />
+                            {tag}
+                          </span>
+                        ))}
+                        {collection.tags.length > 3 && (
+                          <span className="text-xs text-slate-500 dark:text-slate-400 px-2 py-0.5">
+                            +{collection.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
 
-                {/* Footer avec créateur et date */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={collection.creator.avatar}
-                      alt={collection.creator.name}
-                      className="w-6 h-6 rounded-full border border-slate-200"
-                    />
-                    <span className="text-xs text-slate-600">
-                      {collection.creator.name}
-                      </span>
+                      {/* Footer avec créateur et date */}
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={collection.creator.avatar}
+                            alt={collection.creator.name}
+                            className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-600"
+                          />
+                          <span className="text-xs text-slate-600 dark:text-slate-400">
+                            {collection.creator.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                          <Clock className="w-3 h-3" />
+                          {formatRelativeTime(collection.updated)}
+                        </div>
+                      </div>
                     </div>
-                  <div className="flex items-center gap-1 text-xs text-slate-500">
-                    <Clock className="w-3 h-3" />
-                    {formatRelativeTime(collection.updated)}
-                  </div>
-                </div>
-              </div>
 
-              {/* Lien vers la collection */}
-              <div className="absolute inset-0 cursor-pointer" />
-            </motion.div>
-          ))}
+                    {/* Lien vers la collection */}
+                    <div className="absolute inset-0 cursor-pointer" />
+                  </div>
+                </motion.div>
+            ))}
+          </div>
+        )}
       </div>
-      )}
     </div>
   )
 }
